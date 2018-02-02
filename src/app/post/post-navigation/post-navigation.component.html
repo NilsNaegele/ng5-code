@@ -1,0 +1,12 @@
+<div class="d-flex justify-content-between mb-3">
+
+    <div>
+      <a class="previous" routerLink="/post/{{previousPostID}}" routerLinkActive="active"
+          (click)="onPrevious()" *ngIf="postID !== 1">Previous</a>
+    </div>
+    <div>
+      <a class="next" routerLink="/post/{{nextPostID}}" routerLinkActive="active"
+          (click)="onNext()" *ngIf="postID !== numberPosts">Next</a>
+    </div>
+
+</div>

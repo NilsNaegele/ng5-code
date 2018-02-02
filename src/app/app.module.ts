@@ -6,18 +6,21 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
+import { CoreModule } from './core/core.module';
+import { PostModule } from './post/post.module';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { PostComponent } from './post/post.component';
 import { EmailComponent } from './email/email.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+
+import { DateService } from './shared/date.service';
+import { PostService } from './post/post.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    PostComponent,
     EmailComponent,
     PageNotFoundComponent
   ],
@@ -27,9 +30,11 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    PostModule,
+    CoreModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [ PostService, DateService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
