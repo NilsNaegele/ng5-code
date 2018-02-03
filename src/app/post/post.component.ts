@@ -27,6 +27,13 @@ export class PostComponent implements OnInit, OnDestroy {
 
   postsSubscription: Subscription;
 
+  references = [
+    { link: 'https://cli.angular.io/', name: 'Angular CLI' },
+    { link: 'https://angular.io/docs', name: 'Angular Documentation' },
+    { link: 'https://material.angular.io/', name: 'Angular Material' },
+    { link: 'https://firebase.google.com/', name: 'Firebase' }
+  ];
+
   interpolation = {
     name: 'Interpolation',
     code: `
@@ -110,7 +117,164 @@ ngIf = {
   `
 };
 
+interpolationOne = {
+  name: 'Interpolation',
+  code: `
+          <p>My current hero name is {{ currentHero.name }}</p>
+          <h3>
+              {{ title }}
+              <img src="{{ heroImageUrl }}" style="height: 100px">
+          </h3>
+          <p>The sum of 1 + 1 is {{ 1 + 1 }}</p>
+          <p>The sum of 1 + 1 is not {{ 1 + 1 + getNumber() }}</p>
+  `
+};
 
+templateExpressionsExpressionContext = {
+  name: 'Template Expressions Expression Context',
+  code: `
+        {{ title }}
+        <span [hidden]="isUnchanged">changed</span>
+        <div *ngFor="let hero of heroes">{{ hero.name }}</div>
+        <input #heroInput>{{ heroInput.value }}
+  `
+};
+
+templateStatementsStatementContext = {
+  name: 'Template Statements Statement Context',
+  code: `
+        <button (click)="deleteHero()">Delete Hero</button>
+        <button (click)="onSaveHer($event)">Save Her</button>
+        <button *ngFor="let hero of heroes" (click)="deleteHero(hero)">
+        {{ hero.name }}
+        </button>
+        <form #heroForm (ngSubmit)="onSubmit(heroForm)"> ... </form>
+
+  `
+};
+
+bindingSyntaxOverview = {
+  name: 'Binding Syntax Overview',
+  code: `
+        // one way from component to view
+        {{ expression }}
+        [target]="expression"
+        bind-target="expression"
+
+        // one way from view to component
+        (target)="statement"
+        on-target="statement"
+
+        // two way
+        [(target)]="expression"
+        bindon-target="expression"
+  `
+};
+
+newMentalModel = {
+  name: 'New Mental Model',
+  code: `
+      <div [class.special]="isSpecial">New Mental Model</div>
+      <app-hero-detail></app-hero-detail>
+      <button [disabled]="isUnchanged">Save Her</button>
+      <img [src]="heroImageUrl">
+      <app-hero-detail [hero]="currentHero"></app-hero-detail>
+      <div [ngClass]="{ 'special': isSpecial }"></div>
+      <button (click)="onSave()">Save</button>
+      <app-hero-detail (deleteRequest)="deleteHero()"></app-hero-detail>
+      <div (myClick)="clicked=$event" clickable>Click Me</div>
+      {{ clicked }}
+      <div>
+          Hero Name:
+          <input [(ngModel)]="name">
+      </div>
+      <button [attr.aria-label]="help">Help</button>
+      <div [class.red]="isRed">Favorite</div>
+      <button [style.color]="isSpecial ? 'red' : 'blue'">Special</button>
+  `
+};
+
+bindingTargets = {
+  name: 'Binding Targets',
+  code: `
+      // Property
+      <img [src]="heroImageUrl">
+      <app-hero-detail [hero]="currentHero"></app-hero-detail>
+      <div [ngClass]="{ 'special': isSpecial }"></div>
+
+      // Event
+      <button (click)="onSave()">Save</button>
+      <app-hero-detail (deleteRequest)="deleteHero()"></app-hero-detail>
+      <div (myClick)="clicked="$event" clickable>Click Me</div>
+
+      // Two Way
+      <input [(ngModel)]="name">
+
+      // Attribute
+      <button [attr.aria-label]="help">Help</button>
+
+      // Class
+      <div [class.special]="isSpecial">Special</div>
+
+      // Style
+      <button [style.color]="isSpecial ? 'red' : 'green'">
+
+  `
+};
+
+propertyBinding = {
+  name: 'Property Binding',
+  code: `
+      <img [src]="heroImageUrl">
+      <img bind-src="heroImageUrl"> // canonical form
+      <button [disabled]="isUnchanged">Cancel is disabled</button>
+      <div [ngClass]="classes">[ngClass] binding to the classes property</div>
+      <app-hero-detail [hero]="currentHero"></app-hero-detail>
+      <app-hero-detail prefix="You are my" [hero]="currentHero"></app-hero-detail>
+
+    // ABC.XYZ 123
+  `
+};
+
+p6 = {
+  name: '',
+  code: ``
+};
+
+p7 = {
+  name: '',
+  code: ``
+};
+
+p8 = {
+  name: '',
+  code: ``
+};
+
+p9 = {
+  name: '',
+  code: ``
+};
+
+p10 = {
+  name: '',
+  code: ``
+};
+
+p11 = {
+  name: '',
+  code: ``
+};
+
+p12 = {
+  name: '',
+  code: ``
+};
+
+
+  goToTop() {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
+  }
 
   constructor(private route: ActivatedRoute,
               private router: Router,

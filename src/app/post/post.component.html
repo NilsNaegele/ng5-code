@@ -8,7 +8,6 @@
       <i>{{ post.date | date }}</i> - {{ post.title }}</h2>
 
     <div [ngSwitch]="post.id">
-
       <div *ngSwitchCase="1">
         <h1>{{ interpolation.name }}</h1>
         <pre class="pre">
@@ -40,29 +39,471 @@
                         {{ ngIf.code }}
                   </code>
               </pre>
-
-
-        <p>We are all Open Source Heroes. May the force be with you! Use your superpowers to do good.</p>
+        <h1>Reference Materials</h1>
+        <ul>
+            <li *ngFor="let reference of references">
+                <a href="{{ reference.link }}" target="_blank">{{ reference.name }}</a>
+              </li>
+        </ul>
+        <p>We are all Open Source Heroes. May the force be with you!
+            Use your superpowers to do good ... Together we can and we will
+            make this world a better place, for all.
+          </p>
       </div>
       <div *ngSwitchCase="2">
-        <p>consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
-          diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-          sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-          eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo
-          duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
 
-        <p>consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
-          diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-          sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-          eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo
-          duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+          <h1>{{ interpolationOne.name }}</h1>
+          <pre class="pre">
+                <code class="code">
+                      {{ interpolationOne.code }}
+                </code>
+          </pre>
 
-        <p>consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
-          diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-          sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-          eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo
-          duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-      </div>
+          <h1>{{ templateExpressionsExpressionContext.name }}</h1>
+          <pre class="pre">
+                <code class="code">
+                  {{ templateExpressionsExpressionContext.code }}
+                </code>
+          </pre>
+
+          <h1>{{ templateStatementsStatementContext.name }}</h1>
+          <pre class="pre">
+                <code class="code">
+                    {{ templateStatementsStatementContext.code }}
+                </code>
+          </pre>
+
+          <h1>{{ bindingSyntaxOverview.name }}</h1>
+          <pre class="pre">
+                <code class="code">
+                  {{ bindingSyntaxOverview.code }}
+                </code>
+          </pre>
+
+          <h1>{{ newMentalModel.name }}</h1>
+          <pre class="pre">
+                <code class="code">
+                  {{ newMentalModel.code }}
+                </code>
+          </pre>
+
+          <h1>{{ bindingTargets.name }}</h1>
+          <pre class="pre">
+                <code class="code">
+                  {{ bindingTargets.code }}
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+          <h1></h1>
+          <pre class="pre">
+                <code class="code">
+
+                </code>
+          </pre>
+
+
+          <h1>Reference Materials</h1>
+          <ul>
+              <li *ngFor="let reference of references">
+                  <a href="{{ reference.link }}" target="_blank">{{ reference.name }}</a>
+                </li>
+          </ul>
+          <p>
+            Talk is cheap, show me the code. Software is like sex, it's better when it's free.
+            My name is Linus and I am your God. Open Source. Public Code. Public Domain.
+          </p>
+
+
+
       <div *ngSwitchCase="3">
         <p>sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
           accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
@@ -89,3 +530,4 @@
 
   </div>
 </div>
+<button type="button" class="btn btn-danger btn-lg" (click)="goToTop()">Top</button>

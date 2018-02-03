@@ -13,3 +13,10 @@ a {
   background-color: #fce4ec;
   padding-left: 50px;
 }
+
+button {
+  position: fixed;
+  bottom: 70px;
+  right: 70px;
+  z-index: 10;
+}
