@@ -3,18 +3,18 @@
 	"posts": [
 		{
 			"id": 1,
-			"title": "About Angular Code",
-			"date": "03/02/2018"
+			"title": "Angular Displaying Data",
+			"date": "02/01/2018"
 		},
 		{
 			"id": 2,
-			"title": "Angular API Code 1",
-			"date": "7/02/2018"
+			"title": "Angular Template Syntax",
+			"date": "02/02/2018"
 		},
 		{
 			"id": 3,
-			"title": "Angular API Code 2",
-			"date": "11/02/2018"
+			"title": "Angular Lifecycle Hooks",
+			"date": "02/03/2018"
 		}
 	]
 }

@@ -20,6 +20,10 @@ ul li a {
   transition: color 0.5s;
 }
 
+.white-color {
+  color: #fff;
+}
+
 p {
   color: #fff;
 }

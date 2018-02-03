@@ -1,0 +1,30 @@
+.post-list a {
+    color: #fff;
+    font-family: 'Roboto Sans', sans-serif;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.5s;
+    background-color: #ef9a9a ;
+    border: none;
+}
+
+.post-list a:hover {
+  color: #ff1744;
+  transition: color 0.5s;
+}
+
+.post-list .post-title {
+  font-style: italic;
+  white-space: normal;
+  padding: 7.5px 0;
+}
+
+.post-list .avatar {
+  margin: 0 5px 0 0;
+  font-size: 35px;
+}
+
+li {
+  background-color: #ef9a9a;
+  border: none;
+}

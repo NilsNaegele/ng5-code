@@ -8,9 +8,9 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 
 const appRoutes: Routes = [
 { path: '', redirectTo: '/home', pathMatch: 'full' },
-{ path: 'home', component: HomeComponent },
-{ path: 'post/:id', component: PostComponent },
-{ path: 'email', component: EmailComponent },
+{ path: 'home', component: HomeComponent, data: { state: 'home'} },
+{ path: 'post/:id', component: PostComponent, data: { state: 'post'} },
+{ path: 'email', component: EmailComponent, data: { state: 'email'} },
 { path: '**', component: PageNotFoundComponent }
 ];
 

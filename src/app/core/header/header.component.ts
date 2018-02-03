@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { DateService } from './../../shared/date.service';
 import { PostService } from './../../post/post.service';
@@ -12,13 +13,15 @@ export class HeaderComponent {
   logo = '../../../assets/images/angular.png';
 
 
-  constructor(private postService: PostService,
+  constructor(private router: Router,
+              private postService: PostService,
               private dateService: DateService) { }
 
   refresh() {
     // this.postService.posts.subscribe(posts => {
-    //   this.dateService.
+    //   this.dateService.getMonthYearGroups(posts);
     // });
+    this.router.navigate(['home']);
   }
 
 

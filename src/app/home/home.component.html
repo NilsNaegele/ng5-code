@@ -1,3 +1,27 @@
-<p>
-  home works!
-</p>
+<ul class="list-group post-list container">
+
+    <li class="list-group-item" [@dateChangeAnimation]="dateService.monthYear">
+      <div class="monthYearGroup pb-3" *ngFor="let monthYear of dateService.monthYear">
+
+        <a (click)="dateService.filter2MonthYear(monthYear)">
+          <h2>{{ monthYear | uppercase }}</h2>
+        </a>
+
+        <div *ngFor="let post of posts$ | async">
+          <div class="list-group" *ngIf="post.monthYear === monthYear">
+            <a class="list-group-item row p-1" (click)="gotoPost(post)">
+              <div class="avatar float-left align-middle">
+                {{ post.date | date:'dd' }}
+              </div>
+              <div class="post-title align-middle">{{ post.title }}</div>
+            </a>
+          </div>
+        </div>
+        <a *ngIf="dateService.showAll === true" (click)="showAllPosts()">
+          Show All Posts
+        </a>
+      </div>
+
+    </li>
+
+</ul>

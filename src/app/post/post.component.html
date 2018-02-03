@@ -2,7 +2,7 @@
 
   <app-post-navigation [postIDInput]="post.id" [numberPosts]="postsLength"></app-post-navigation>
 
-  <div [@changeAnimateMe]="post.id">
+  <div class="mat-typography" [@changeAnimateMe]="post.id">
 
     <h2 class="font-weight-bold mb-4">
       <i>{{ post.date | date }}</i> - {{ post.title }}</h2>
@@ -10,26 +10,39 @@
     <div [ngSwitch]="post.id">
 
       <div *ngSwitchCase="1">
-        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
-          magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
-          gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing
-          elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
-          eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
-          dolor sit amet.</p>
+        <h1>{{ interpolation.name }}</h1>
+        <pre class="pre">
+              <code class="code">
+                    {{ interpolation.code }}
+              </code>
+          </pre>
+          <h1>{{ ngFor.name }}</h1>
+        <pre class="pre">
+              <code class="code">
+                    {{ ngFor.code }}
+              </code>
+          </pre>
+          <h1>{{ class.name }}</h1>
+          <pre class="pre">
+                <code class="code">
+                      {{ class.code }}
+                </code>
+            </pre>
+            <h1>{{ useHeroClass.name }}</h1>
+            <pre class="pre">
+                  <code class="code">
+                        {{ useHeroClass.code }}
+                  </code>
+              </pre>
+              <h1>{{ ngIf.name }}</h1>
+            <pre class="pre">
+                  <code class="code">
+                        {{ ngIf.code }}
+                  </code>
+              </pre>
 
-        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
-          magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
-          gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing
-          elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
-          eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
-          dolor sit amet.</p>
 
-        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
-          magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
-          gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing
-          elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
-          eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
-          dolor sit amet.</p>
+        <p>We are all Open Source Heroes. May the force be with you! Use your superpowers to do good.</p>
       </div>
       <div *ngSwitchCase="2">
         <p>consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
