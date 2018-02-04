@@ -546,29 +546,294 @@ templateExpressionOperators = {
   `
 };
 
-p21 = {
-  name: '',
-  code: ``
+allHooksParent = {
+  name: 'All Lifecycle Hooks Parent',
+  code: `
+  import { Component } from '@angular/core';
+  import { LoggerService } from '../logger.service';
+
+  @Component({
+    selector: 'app-peek-a-boo-parent',
+    template: \`
+            <div class="parent">
+                <h2>Peek-A-Boo</h2>
+                <button (click)="toggleChild()">
+                  {{ hasChild ? 'Destroy' : 'Create' }} PeekABooComponent
+                </button>
+                <button (click)="updateHero()" [hidden]="!hasChild">Update Hero</button>
+                <app-peek-a-boo *ngIf="hasChild" [name]="heroName">
+                </app-peek-a-boo>
+                <h4>-- Lifecycle Hook Log --</h4>
+                <div *ngFor="let message of hookLog">
+                {{ message }}
+                </div>
+            </div>
+    \`,
+    styles: ['.parent { background: moccasin; }'],
+    providers: [LoggerService]
+  })
+  export class PeekABooParentComponent {
+    hasChild = false;
+    hookLog: string[];
+    heroName = 'Flash';
+
+    constructor(private logger: LoggerService) {
+      this.hookLog = logger.logs;
+     }
+
+     toggleChild() {
+       this.hasChild = !this.hasChild;
+       if (this.hasChild) {
+         this.heroName = 'Flash';
+         this.logger.clear();
+       }
+       this.updateLog();
+     }
+
+     updateHero() {
+       this.heroName += '!';
+       this.updateLog();
+     }
+
+     updateLog() {
+      this.logger.tick();
+      this.hookLog = this.logger.logs;
+     }
+
+  }
+
+  `
 };
 
-p22 = {
-  name: '',
-  code: ``
+allHooksChild = {
+  name: 'All Lifecycle Hooks Child',
+  code: `
+  import { Component, Input } from '@angular/core';
+  import { AfterContentChecked,
+           AfterContentInit,
+           AfterViewChecked,
+           AfterViewInit,
+           DoCheck,
+           OnChanges,
+           OnDestroy,
+           OnInit,
+           SimpleChanges } from '@angular/core';
+
+  import { LoggerService } from '../logger.service';
+
+  let nextId = 1;
+
+  export class PeekABoo implements OnInit {
+
+  constructor(private logger: LoggerService) { }
+
+  ngOnInit() {
+    this.logIt('OnInit');
+  }
+
+  logIt(message: string) {
+    this.logger.log(\`#\${nextId++} \${message}\`);
+  }
+
+}
+
+  @Component({
+  selector: 'app-peek-a-boo',
+  template: '<p>Now you see my hero, {{ name }}</p>',
+  styles: ['p {background: LightYellow; padding: 8px;}']
+    })
+  export class PeekABooComponent extends PeekABoo
+                               implements OnChanges, OnInit, DoCheck, AfterContentInit,
+                                          AfterContentChecked, AfterViewInit, AfterViewChecked,
+                                          OnDestroy {
+  @Input() name: string;
+
+  private verb = 'initialized';
+
+  constructor(logger: LoggerService) {
+    super(logger);
+    const is = this.name ? 'is' : 'is not';
+    this.logIt(\`name \${is} known at construction\`);
+  }
+
+  // only called for if there is an @input variable set by parent
+  ngOnChanges(changes: SimpleChanges) {
+      const changesMessages: string[] = [];
+      for (const propertyName in changes) {
+        if (propertyName === 'name') {
+          const name = changes['name'].currentValue;
+          changesMessages.push(\`name \${this.verb} to "\${name}"\`);
+        } else {
+          changesMessages.push(propertyName + ' ' + this.verb);
+        }
+      }
+      this.logIt(\`OnChanges: \${changesMessages.join('; ')}\`);
+      this.verb = 'changed';
+  }
+
+  // called in every change detection cycle anywhere on the page
+  ngDoCheck() {
+    this.logIt('DoCheck');
+  }
+
+  ngAfterContentInit() {
+    this.logIt('AfterContentInit');
+  }
+
+  // called in every change detection cycle anywhere on the page
+  ngAfterContentChecked() {
+    this.logIt('AfterContentChecked');
+  }
+
+  ngAfterViewInit() {
+    this.logIt('AfterViewInit');
+  }
+
+  // called in every change detection cycle anywhere on the page
+  ngAfterViewChecked() {
+    this.logIt('AfterViewChecked');
+  }
+
+  ngOnDestroy() {
+    this.logIt('OnDestroy');
+  }
+
+}
+
+  `
 };
 
-p23 = {
-  name: '',
-  code: ``
+loggerService = {
+  name: 'Logger Service',
+  code: `
+  import { Injectable } from '@angular/core';
+
+  @Injectable()
+  export class LoggerService {
+    logs: string[] = [];
+    previousMessage = '';
+    previousMessageCount = 1;
+
+    log(message: string) {
+      if (message === this.previousMessage) {
+        this.logs[this.logs.length - 1] = message + \` (\${this.previousMessageCount += 1}x)\`;
+      } else {
+        this.previousMessage = message;
+        this.previousMessageCount = 1;
+        this.logs.push(message);
+      }
+    }
+
+    clear() {
+      this.logs = [];
+    }
+
+    tick() {
+      this.tick_then(() => { });
+    }
+
+    tick_then(fn: () => any) { setTimeout(fn, 0); }
+
+  }
+
+  `
 };
 
-p24 = {
-  name: '',
-  code: ``
+spyDirective = {
+  name: 'Spy Directive',
+  code: `
+  import { Directive, OnInit, OnDestroy } from '@angular/core';
+
+  import { LoggerService } from '../logger.service';
+
+  let nextId = 1;
+
+  @Directive({
+  selector: '[appISpy]'
+  })
+  export class SpyDirective implements OnInit, OnDestroy {
+
+  private logIt(message: string) {
+    this.logger.log(\`Spy #\${nextId++} \${message}\`);
+  }
+
+  constructor(private logger: LoggerService) { }
+
+  ngOnInit() {
+    this.logIt('onInit');
+  }
+
+  ngOnDestroy() {
+    this.logIt('onDestroy');
+  }
+
+}
+
+  `
 };
 
-p25 = {
-  name: '',
-  code: ``
+spyComponent = {
+  name: 'Spy Component',
+  code: `
+  import { Component } from '@angular/core';
+
+  import { LoggerService } from '../logger.service';
+
+  @Component({
+    selector: 'app-spy',
+    template: \`
+              <div class="parent">
+                    <h2>Spy Directive</h2>
+
+                    <input [(ngModel)]="newName" (keyup.enter)="addHero()">
+                    <button (click)="addHero()">Add Hero</button>
+                    <button (click)="reset()">Reset Heroes</button>
+
+                    <p></p>
+                    <div *ngFor="let hero of heroes" appISpy class="heroes">
+                        {{ hero }}
+                        <span (click)="removeHero(hero)">x</span>
+                    </div>
+                    <h4>-- Spy Lifecycle Hook Log --</h4>
+                    <div *ngFor="let message of logger.logs">
+                        {{ message }}
+                    </div>
+              </div>
+    \`,
+    styles: [
+             '.parent { background: khaki; }',
+             '.heroes { background: LightYellow; padding: 0 8px; }'
+  ],
+  providers: [ LoggerService ]
+  })
+  export class SpyComponent {
+    newName = 'Mickey';
+    heroes: string[] = ['Wonderwoman', 'Superman'];
+
+    constructor(public logger: LoggerService) { }
+
+    addHero() {
+      if (this.newName.trim()) {
+        this.heroes.push(this.newName.trim());
+        this.newName = '';
+        this.logger.tick();
+      }
+    }
+
+    removeHero(hero: string) {
+      this.heroes.splice(this.heroes.indexOf(hero), 1);
+      this.logger.tick();
+    }
+
+    reset() {
+      this.logger.log('-- reset --');
+      this.heroes = [];
+      this.logger.tick();
+    }
+
+  }
+
+  `
 };
 
 p26 = {
