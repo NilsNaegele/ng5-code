@@ -222,7 +222,6 @@
           </p>
         </div>
 
-
       <div *ngSwitchCase="3">
           <h1>{{ allHooksParent.name }}</h1>
           <pre class="pre">
@@ -254,64 +253,34 @@
                   {{ spyComponent.code }}
                 </code>
           </pre>
-          <h1></h1>
+          <h1>{{ onChangesComponent.name }}</h1>
           <pre class="pre">
                 <code class="code">
-
+                    {{ onChangesComponent.code }}
                 </code>
           </pre>
-          <h1></h1>
+          <h1>{{ doCheckComponent.name }}</h1>
           <pre class="pre">
                 <code class="code">
-
+                    {{ doCheckComponent.code }}
                 </code>
           </pre>
-          <h1></h1>
+          <h1>{{ afterViewComponent.name }}</h1>
           <pre class="pre">
                 <code class="code">
-
+                    {{ afterViewComponent.code }}
                 </code>
           </pre>
-          <h1></h1>
+          <h1>{{ afterContentComponent.name }}</h1>
           <pre class="pre">
                 <code class="code">
-
+                    {{ afterContentComponent.code }}
                 </code>
           </pre>
-          <h1></h1>
+          <h1>{{ counterComponent.name }}</h1>
           <pre class="pre">
                 <code class="code">
-
-                </code>
-          </pre>
-          <h1></h1>
-          <pre class="pre">
-                <code class="code">
-
-                </code>
-          </pre>
-          <h1></h1>
-          <pre class="pre">
-                <code class="code">
-
-                </code>
-          </pre>
-          <h1></h1>
-          <pre class="pre">
-                <code class="code">
-
-                </code>
-          </pre>
-          <h1></h1>
-          <pre class="pre">
-                <code class="code">
-
-                </code>
-          </pre>
-          <h1></h1>
-          <pre class="pre">
-                <code class="code">
-
+                  {{ counterComponent.code }}
                 </code>
           </pre>
 
@@ -328,6 +297,112 @@
         We are all equal. All humans are created equal. Equality includes everyone ...
       </p>
     </div>
+
+    <div *ngSwitchCase="4">
+        <h1>{{ inputBinding.name }}</h1>
+        <pre class="pre">
+              <code class="code">
+                {{ inputBinding.code }}
+              </code>
+        </pre>
+        <h1>{{ inputWithSetterBinding.name }}</h1>
+        <pre class="pre">
+              <code class="code">
+                {{ inputWithSetterBinding.code }}
+              </code>
+        </pre>
+        <h1>{{ inputInterceptionWithNgOnChanges.name }}</h1>
+        <pre class="pre">
+              <code class="code">
+                {{ inputInterceptionWithNgOnChanges.code }}
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+        <h1></h1>
+        <pre class="pre">
+              <code class="code">
+
+              </code>
+        </pre>
+
+
+    <h1>Reference Materials</h1>
+    <ul>
+        <li *ngFor="let reference of references">
+            <a href="{{ reference.link }}" target="_blank">{{ reference.name }}</a>
+          </li>
+    </ul>
+    <p>
+        Copyright 2017-2018 Google Inc. All Rights Reserved.
+        Use of this source code is governed by an MIT-style license that
+        can be found in the LICENSE file at https://angular.io/license
+    </p>
+  </div>
 
 
   </div>
