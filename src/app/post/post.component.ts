@@ -1518,29 +1518,471 @@ inputInterceptionWithNgOnChanges = {
   `
 };
 
-p34 = {
-  name: '',
-  code: ``
+parentListensForChildEvents = {
+  name: 'Parent Listens For Child Events',
+  code: `
+  import { Component, Input, Output, EventEmitter } from '@angular/core';
+
+  @Component({
+    selector: 'app-voter',
+    template: \`
+            <h4>{{ name }}</h4>
+            <button (click)="vote(true)" [disabled]="voted">Agree</button>
+            <button (click)="vote(false)" [disabled]="voted">Disagree</button>
+    \`,
+  })
+  export class VoterComponent {
+    @Input() name: string;
+    @Output() onVoted = new EventEmitter<boolean>();
+
+    voted = false;
+
+    vote(agreed: boolean) {
+      this.onVoted.emit(agreed);
+      this.voted = true;
+    }
+
+  }
+
+  /******************************************************/
+
+  import { Component } from '@angular/core';
+
+  @Component({
+  selector: 'app-vote-taker',
+  template: \`
+            <h2>Should mankind colonize the Universe?</h2>
+            <h3>Agree: {{ agreed }}, Disagree: {{ disagreed }}</h3>
+            <app-voter *ngFor="let voter of voters"
+                        [name]="voter"
+                        (onVoted)="onVoted($event)">
+            </app-voter>
+    \`,
+  })
+  export class VoteTakerComponent {
+      agreed = 0;
+      disagreed = 0;
+      voters = ['Flash', 'Wonderwoman', 'Superman'];
+
+      onVoted(agreed: boolean) {
+        agreed ? this.agreed++ : this.disagreed++;
+      }
+
+  }
+  `
 };
 
-p35 = {
-  name: '',
-  code: ``
+parentInteractsWitChildViaLocalVariable = {
+  name: 'Parent Interacts With Child Via Local Variable',
+  code: `
+  import { Component, OnInit, OnDestroy } from '@angular/core';
+
+  @Component({
+    selector: 'app-countdown-timer',
+    template: \`
+          <p>{{ message }}</p>
+    \`,
+  })
+  export class CountdownTimerComponent implements OnInit, OnDestroy {
+
+    intervalId = 0;
+    message = '';
+    seconds = 11;
+
+    ngOnInit() {
+      this.start();
+    }
+
+    ngOnDestroy() {
+      this.clearTimer();
+    }
+
+    clearTimer() {
+      clearInterval(this.intervalId);
+    }
+
+    start() {
+      this.countDown();
+    }
+
+    stop() {
+      this.clearTimer();
+      this.message = \`Holding at T-\${this.seconds} seconds\`;
+    }
+
+    private countDown() {
+      this.clearTimer();
+      this.intervalId = window.setInterval(() => {
+        this.seconds -= 1;
+        if (this.seconds === 0) {
+          this.message = 'Blast Off!';
+        } else {
+          if (this.seconds < 0) {
+            this.seconds = 10;
+          }
+          this.message = \`T-\${this.seconds} seconds and counting ...\`;
+        }
+      }, 1000);
+    }
+
+  }
+
+  /******************************************************/
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+  selector: 'app-countdown-parent-lv',
+  template: \`
+        <h3>Countdown to Liftoff (via local variable)</h3>
+        <button (click)="timer.start()">Start</button>
+        <button (click)="timer.stop()">Stop</button>
+        <div class="seconds">{{ timer.seconds }}</div>
+        <app-countdown-timer #timer></app-countdown-timer>
+  \`,
+  styleUrls: ['../../assets/demo.css']
+  })
+  export class CountdownLocalVarParentComponent { }
+
+
+  `
 };
 
-p36 = {
-  name: '',
-  code: ``
+parentCallsAtViewChild = {
+  name: 'Parent Calls An @ViewChild',
+  code: `
+  import { Component } from '@angular/core';
+  import { AfterViewInit, ViewChild } from '@angular/core';
+
+  import { CountdownTimerComponent } from './../countdown-timer/countdown-timer.component';
+
+  @Component({
+    selector: 'app-countdown-parent-vc',
+    template: \`
+      <h3>Countdown to Liftoff (via ViewChild)</h3>
+      <button (click)="start()">Start</button>
+      <button (click)="stop()">Stop</button>
+      <div class="seconds">{{ seconds() }}</div>
+      <app-countdown-timer></app-countdown-timer>
+      \`
+    ,
+    styleUrls: ['../../assets/demo.css']
+  })
+  export class CountdownViewChildParentComponent implements AfterViewInit {
+    @ViewChild(CountdownTimerComponent)
+               private timerComponent: CountdownTimerComponent;
+
+    seconds() {
+      return 0;
+    }
+
+    ngAfterViewInit() {
+      setTimeout(() => this.seconds = () => this.timerComponent.seconds, 0);
+    }
+
+    start() {
+      this.timerComponent.start();
+    }
+
+    stop() {
+      this.timerComponent.stop();
+    }
+
+  }
+
+
+  `
 };
 
-p37 = {
-  name: '',
-  code: ``
+parentChildrenCommunicateViaService = {
+  name: 'Parent And Children Communicate Via A Shared Service',
+  code: `
+  import { Injectable } from '@angular/core';
+
+  import { Subject } from 'rxjs/Subject';
+
+  @Injectable()
+  export class MissionService {
+
+    // observable string sources
+    private missionAnnouncedSource = new Subject<string>();
+    private missionConfirmedSource = new Subject<string>();
+
+    // observable string streams
+    missionAnnounced$ = this.missionAnnouncedSource.asObservable();
+    missionConfirmed$ = this.missionConfirmedSource.asObservable();
+
+    // service message commands
+    announceMission(mission: string) {
+      this.missionAnnouncedSource.next(mission);
+    }
+
+    confirmMission(technology: string) {
+      this.missionConfirmedSource.next(technology);
+    }
+
+  }
+
+
+  import { Component } from '@angular/core';
+
+  import { MissionService } from '../mission.service';
+
+  @Component({
+    selector: 'app-mission-control',
+    template: \`
+              <h2>Mission Control</h2>
+              <button (click)="announce()">Announce Mission</button>
+              <app-technology *ngFor="let technology of technologies"
+                              [technology]="technology">
+              </app-technology>
+              <h3>History</h3>
+              <ul>
+                  <li *ngFor="let event of history">{{ event }}</li>
+              </ul>
+    \`,
+    providers: [MissionService]
+  })
+  export class MissionControlComponent {
+    technologies = ['Angular CLI',
+                    'Angular',
+                    'Angular Material',
+                    'Firebase',
+                    'Google Cloud Platform'];
+    history: string[] = [];
+
+    missions = ['Reach N° 1 position in our domains!',
+                'Build new Features, Fix all Bugs!',
+                'Have Fun, Build awesome Technologies, Grow our Communities!'];
+    nextMission = 0;
+
+    constructor(private missionService: MissionService) {
+                missionService.missionConfirmed$.subscribe(
+                  technology => {
+                      this.history.push(\`\${technology} confirmed the mission.\`);
+                  });
+    }
+
+    announce() {
+      const mission = this.missions[this.nextMission++];
+      this.missionService.announceMission(mission);
+      this.history.push(\`Mission "\${mission}" announced.\`);
+      if (this.nextMission >= this.missions.length) {
+        this.nextMission = 0;
+      }
+    }
+
+  }
+
+
+  /******************************************************/
+
+  import { MissionService } from './../mission.service';
+  import { Component, Input, OnDestroy } from '@angular/core';
+
+  import { Subscription } from 'rxjs/Subscription';
+
+  @Component({
+  selector: 'app-technology',
+  template: \`
+            <p>
+                {{ technology }}: <strong>{{ mission }}</strong>
+                <button (click)="confirm()"
+                        [disabled]="!announced || confirmed">
+                Confirm
+                </button>
+            </p>
+  \`,
+  })
+  export class TechnologyComponent implements OnDestroy {
+       @Input() technology: string;
+        mission = '<no mission announced>';
+        confirmed = false;
+        announced = false;
+        missionSubscription: Subscription;
+
+  constructor(private missionService: MissionService) {
+    this.missionSubscription = missionService.missionAnnounced$.subscribe(
+      mission => {
+          this.mission = mission;
+          this.announced = true;
+          this.confirmed = false;
+      });
+  }
+
+  confirm() {
+    this.confirmed = true;
+    this.missionService.confirmMission(this.technology);
+  }
+
+  ngOnDestroy() {
+    this.missionSubscription.unsubscribe();
+    }
+
+  }
+
+  `
 };
 
-p38 = {
-  name: '',
-  code: ``
+siblingComponentInteraction = {
+  name: 'Sibling Component Communication',
+  code: `
+  import { Injectable } from '@angular/core';
+
+  import { Subject } from 'rxjs/Subject';
+
+  @Injectable()
+  export class TodoService {
+
+    // observable string sources
+    private totalCount = new Subject<number>();
+    private lastUpdate = new Subject<number>();
+    private clearAll = new Subject<boolean>();
+
+
+    // observable string streams
+    totalCount$ = this.totalCount.asObservable();
+    lastUpdate$ = this.lastUpdate.asObservable();
+    clearAll$ = this.clearAll.asObservable();
+
+
+    // service message commands
+    publishTotalCount(count: number) {
+      this.totalCount.next(count);
+    }
+
+    publishLastUpdate(date: number) {
+      this.lastUpdate.next(date);
+    }
+
+    publishClearAll(clear: boolean) {
+      this.clearAll.next(clear);
+    }
+
+  }
+
+  /******************************************************/
+
+  import { TodoService } from './../todo.service';
+  import { Component, OnDestroy } from '@angular/core';
+
+  import { Subscription } from 'rxjs/Subscription';
+
+  class Todo {
+    constructor(public title: string,
+                public isCompleted: boolean,
+                public date: number) { }
+  }
+
+  @Component({
+    selector: 'app-todo',
+    template: \`
+            <h2>Todo List</h2>
+            <h3>What needs to be done?</h3>
+            <input #todoBox>
+            <button (click)="add(todoBox)">Add</button>
+            <ul>
+                  <li *ngFor="let todo of todos">{{ todo.title }}
+                    <button (click)="remove(todo)">x</button>
+                  </li>
+            </ul>
+    \`,
+  })
+  export class TodoComponent implements OnDestroy {
+    todos: Todo[] = [];
+    totalTodos = 0;
+    lastUpdate = 0;
+
+    clearAllSubscription: Subscription;
+
+    private updateCountDate(change: boolean): void {
+      change ? this.totalTodos += 1 : this.totalTodos -= 1;
+      this.todoService.publishTotalCount(this.totalTodos);
+      this.todoService.publishLastUpdate(new Date().getTime());
+    }
+
+    constructor(private todoService: TodoService) {
+      this.clearAllSubscription = this.todoService.clearAll$.subscribe(
+        clear => {
+          if (clear) {
+            this.todos.length = 0;
+            this.totalTodos = 0;
+          }
+        });
+     }
+
+     add(todo): void {
+       if (!todo.value) {
+         return;
+       }
+       this.todos.push(new Todo(todo.value, false, new Date().getTime()));
+       this.updateCountDate(true);
+       todo.value = '';
+     }
+
+     remove(todo): void {
+       this.todos.splice(this.todos.indexOf(todo), 1);
+       this.updateCountDate(false);
+     }
+
+    ngOnDestroy() {
+      this.clearAllSubscription.unsubscribe();
+    }
+
+  }
+
+  /******************************************************/
+
+  import { Component, OnDestroy } from '@angular/core';
+
+  import { TodoService } from './../todo.service';
+
+  import { Subscription } from 'rxjs/Subscription';
+
+  @Component({
+    selector: 'app-dashboard',
+    template: \`
+          <h2>Dashboard</h2>
+          <p><strong>Last Update: </strong>{{ lastUpdate | date:'medium' }}</p>
+          <p><strong>Total Todos: </strong> {{ totalCount }}</p>
+          <button (click)="clearAll()">Clear All</button>
+    \`,
+    styleUrls: ['./dashboard.component.css']
+  })
+  export class DashboardComponent implements OnDestroy {
+    lastUpdate = null;
+    totalCount = 0;
+
+    totalCountSubscription: Subscription;
+    lastUpdateSubscription: Subscription;
+
+    constructor(private todoService: TodoService) {
+      this.totalCountSubscription = this.todoService.totalCount$.subscribe(
+        count => {
+          this.totalCount = count;
+        });
+        this.lastUpdateSubscription = this.todoService.lastUpdate$.subscribe(
+          lastUpdate => {
+            this.lastUpdate = lastUpdate;
+          });
+    }
+
+    clearAll() {
+      this.lastUpdate = null;
+      this.totalCount = 0;
+      this.todoService.publishClearAll(true);
+    }
+
+    ngOnDestroy() {
+      this.totalCountSubscription.unsubscribe();
+      this.lastUpdateSubscription.unsubscribe();
+    }
+
+  }
+
+
+  `
 };
 
 p39 = {
