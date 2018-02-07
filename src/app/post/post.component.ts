@@ -2196,29 +2196,212 @@ viewEncapsulation = {
   `
 };
 
-p47 = {
-  name: '',
-  code: ``
+anchorDirective = {
+  name: 'Anchor Directive',
+  code: `
+  import { Directive, ViewContainerRef } from '@angular/core';
+
+  @Directive({
+    selector: '[appAdHost]'
+  })
+  export class AdDirective {
+
+    constructor(public viewContainerRef: ViewContainerRef) { }
+
+  }
+
+
+  `
 };
 
-p48 = {
-  name: '',
-  code: ``
+loadingComponents = {
+  name: 'Loading Components',
+  code: `
+  import { Component,
+    Input,
+    AfterViewInit,
+    ViewChild,
+    ChangeDetectorRef,
+    ComponentFactoryResolver,
+    OnDestroy } from '@angular/core';
+
+  import { AdDirective } from '../ad.directive';
+  import { AdComponent } from '../ad.component';
+  import { AdItem } from '../ad-item';
+
+  @Component({
+    selector: 'app-ad-banner',
+    template: \`
+       <div class="ad-banner">
+             <h3>Advertisements</h3>
+             <ng-template appAdHost></ng-template>
+       </div>
+\`
+  })
+  export class AdBannerComponent implements AfterViewInit, OnDestroy  {
+      @Input() ads: AdItem[];
+      currentAddIndex: number = -1;
+      @ViewChild(AdDirective) adHost: AdDirective;
+      subscription: any;
+      interval: any;
+
+      constructor(private componentFactoryResolver: ComponentFactoryResolver,
+      private cdr: ChangeDetectorRef) { }
+
+      ngAfterViewInit() {
+        this.loadComponent();
+        this.getAds();
+        this.cdr.detectChanges();
+      }
+
+    loadComponent() {
+    this.currentAddIndex = (this.currentAddIndex + 1) % this.ads.length;
+    const adItem = this.ads[this.currentAddIndex];
+
+    const componentFactory =
+              this.componentFactoryResolver.resolveComponentFactory(adItem.component);
+    const viewContainerRef = this.adHost.viewContainerRef;
+    viewContainerRef.clear();
+
+    const componentRef = viewContainerRef.createComponent(componentFactory);
+    (<AdComponent>componentRef.instance).data = adItem.data;
+
+    }
+
+    getAds() {
+        this.interval = setInterval(() => {
+        this.loadComponent();
+    }, 3000);
+  }
+
+    ngOnDestroy() {
+      clearInterval(this.interval);
+    }
+  }
+
+  `
 };
 
-p49 = {
-  name: '',
-  code: ``
+selectorReferences = {
+  name: 'Selector References',
+  code: `
+  import { NgModule } from '@angular/core';
+  import { CommonModule } from '@angular/common';
+
+  import { AdDirective } from './ad.directive';
+  import { AdBannerComponent } from './ad-banner/ad-banner.component';
+  import { TechnologyAdComponent } from './technology-ad/technology-ad.component';
+  import { TechnologyProfileComponent }
+         from './technology-profile/technology-profile.component';
+
+  import { AdService } from './ad.service';
+
+  @NgModule({
+    imports: [
+      CommonModule
+    ],
+    declarations: [AdDirective,
+                  AdBannerComponent,
+                  TechnologyAdComponent,
+                  TechnologyProfileComponent],
+    providers: [ AdService ],
+    entryComponents: [ TechnologyAdComponent, TechnologyProfileComponent ],
+    exports: [ AdBannerComponent ]
+  })
+  export class DynamicComponentModule { }
+  `
 };
 
-p50 = {
-  name: '',
-  code: ``
+adComponentInterface = {
+  name: 'Ad Component Interface and Implementing Components',
+  code: `
+  export interface AdComponent {
+    data: any;
+  }
+
+  /******************************************************/
+
+  import { Type } from '@angular/core';
+
+  export class AdItem {
+    constructor(public component: Type<any>, public data: any) { }
+
+  }
+
+  /******************************************************/
+
+  import { Component, Input } from '@angular/core';
+
+  import { AdComponent } from './../ad.component';
+
+  @Component({
+      selector: 'app-technology-ad',
+      template: \`
+          <div class="technology-ad">
+                <h4>{{ data.headline }}</h4>
+                {{ data.body }}
+          </div>
+  \`,
+  })
+  export class TechnologyAdComponent implements AdComponent {
+        @Input() data: any;
+
+  }
+
+  /******************************************************/
+
+  import { Component, Input } from '@angular/core';
+
+import { AdComponent } from '../ad.component';
+
+@Component({
+  selector: 'app-technology-profile',
+  template: \`
+        <div class="technology-profile">
+            <h3>Featured Technology Profile</h3>
+            <h4>{{ data.name }}</h4>
+
+            <p>{{ data.feature }}</p>
+
+            <strong>Build an awesome app with this technology today!</strong>
+        </div>
+    \`,
+  })
+  export class TechnologyProfileComponent implements AdComponent {
+    @Input() data: any;
+  }
+  `
 };
 
-p51 = {
-  name: '',
-  code: ``
+adService = {
+  name: 'Ad Service',
+  code: `
+  import { Injectable } from '@angular/core';
+
+  import { AdItem } from './ad-item';
+  import { TechnologyProfileComponent }
+  from './technology-profile/technology-profile.component';
+  import { TechnologyAdComponent } from './technology-ad/technology-ad.component';
+
+  @Injectable()
+  export class AdService {
+
+    getAds() {
+      return [
+            new AdItem(TechnologyProfileComponent,
+              { name: 'Angular CLI', feature: 'Create your dream app'}),
+            new AdItem(TechnologyProfileComponent,
+              { name: 'Angular', feature: 'One Platform. Mobile && desktop'}),
+            new AdItem(TechnologyProfileComponent,
+              { name: 'Angular Material', feature: 'Material Design CSS Framework'}),
+            new AdItem(TechnologyAdComponent,
+              { headline: 'Angular 5.2.3 released', body: 'Get the newest version now!'}),
+            new AdItem(TechnologyAdComponent,
+              { headline: 'Angular CLI 1.6.7 available', body: 'Try this command line tool.'})
+      ];
+    }
+  }
+  `
 };
 
 p52 = {
