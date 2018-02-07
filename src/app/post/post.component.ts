@@ -1985,22 +1985,293 @@ siblingComponentInteraction = {
   `
 };
 
-p39 = {
+componentStylesInComponentMetadata = {
+  name: 'Component Styles In Component Metadata',
+  code: `
+  import { Component, HostBinding } from '@angular/core';
+
+  import { Hero } from '../hero';
+
+  @Component({
+    selector: 'app-hero-app',
+    template: \`
+          <h1>Tour of Heroes</h1>
+          <app-hero-app-main [hero]="hero"></app-hero-app-main>
+    \`,
+    styles: ['h1 { font-weight: normal; }']
+  })
+  export class HeroAppComponent {
+    hero = new Hero(
+      'Flash',
+      ['Polymer Princess', 'Superman', 'Spiderman']
+    );
+
+    @HostBinding('class') get themeClass() {
+      return 'theme-light';
+    }
+
+  }
+
+  `
+};
+
+hostSelector = {
+  name: 'Host Selector',
+  code: `
+  :host {
+    display: block;
+    border: 1px solid black;
+  }
+
+  :host(.active) {
+    border-width: 3px;
+  }
+
+  :host-context(.theme-light) h2 {
+    background-color: #eef;
+  }
+
+  :host /deep/ h3 {
+    font-style: italic;
+  }
+
+  `
+};
+
+cssInline = {
+  name: 'CSS Inline Revisited',
+  code: `
+  import { Component, HostBinding } from '@angular/core';
+
+  import { Hero } from '../hero';
+
+  @Component({
+    selector: 'app-hero-app',
+    template: \`
+          <h1>Tour of Heroes</h1>
+          <app-hero-app-main [hero]="hero"></app-hero-app-main>
+    \`,
+    styles: ['h1 { font-weight: normal; }']
+  })
+  export class HeroAppComponent {
+    hero = new Hero(
+      'Flash',
+      ['Polymer Princess', 'Superman', 'Spiderman']
+    );
+
+    @HostBinding('class') get themeClass() {
+      return 'theme-light';
+    }
+
+  }
+
+  `
+};
+
+cssExternalFile = {
+  name: 'CSS (SCSS, LESS, Stylus) External File',
+  code: `
+  import { Component, HostBinding } from '@angular/core';
+
+  import { Hero } from '../hero';
+
+
+  @Component({
+    selector: 'app-hero-app',
+    template: \`
+          <h1>Tour of Heroes</h1>
+          <app-hero-app-main [hero]="hero"></app-hero-app-main>
+    \`,
+    styles: ['./hero-app.component.css']
+  })
+  export class HeroAppComponent {
+    hero = new Hero(
+      'Flash',
+      ['Polymer Princess', 'Superman', 'Spiderman']
+    );
+
+    @HostBinding('class') get themeClass() {
+      return 'theme-light';
+    }
+
+  }
+
+
+  h1 {
+    font-weight: normal;
+  }
+
+  `
+};
+
+templateInlineStyles = {
+  name: 'Template Inline Styles',
+  code: `
+  import { Component, Input } from '@angular/core';
+
+  import { Hero } from '../hero';
+
+  @Component({
+    selector: 'app-hero-controls',
+    template: \`
+        <style>
+            button {
+              background-color: white;
+              border: 1px solid #777;
+            }
+        </style>
+        <h3>Controls</h3>
+        <button (click)="activate()">Activate</button>
+    \`,
+  })
+  export class HeroControlsComponent {
+    @Input() hero: Hero;
+
+    activate() {
+      this.hero.active = true;
+    }
+
+  }
+
+  `
+};
+
+templateLinkTags = {
+  name: 'Template Link Tags',
+  code: `
+  import { Component, Input } from '@angular/core';
+
+  import { Hero } from '../hero';
+
+  @Component({
+    selector: 'app-hero-team',
+    template: \`
+          <!-- we must use a relative URL so that the AOT compiler can find the stylesheet -->
+          <link rel="../../assets/hero-team.component.css">
+          <h3>Team</h3>
+          <ul>
+            <li *ngFor="let member of hero.team">
+                {{ member }}
+            </li>
+          </ul>
+    \`,
+  })
+  export class HeroTeamComponent {
+    @Input() hero: Hero;
+
+  }
+
+  `
+};
+
+cssAImports = {
+  name: 'CSS @imports',
+  code: `
+  /* the AOT compiler needs the ./ to show that this is local */
+  /* @import './hero-detail.box.css'; */
+
+  `
+};
+
+viewEncapsulation = {
+  name: 'View Encapsulation',
+  code: `
+  import { Component, ViewEncapsulation } from '@angular/core';
+
+  @Component({
+    selector: 'app-quest-summary',
+    templateUrl: './quest-summary.component.html',
+    styleUrls: ['./quest-summary.component.css'],
+    encapsulation: ViewEncapsulation.Native
+  })
+  export class QuestSummaryComponent {
+    // careful: few browsers support shadow DOM encapsulation at this time
+
+  }
+
+  <p>
+        Carmen, it's all about you ... my baby ...
+  </p>
+
+  `
+};
+
+p47 = {
   name: '',
   code: ``
 };
 
-p40 = {
+p48 = {
   name: '',
   code: ``
 };
 
-p41 = {
+p49 = {
   name: '',
   code: ``
 };
 
-p42 = {
+p50 = {
+  name: '',
+  code: ``
+};
+
+p51 = {
+  name: '',
+  code: ``
+};
+
+p52 = {
+  name: '',
+  code: ``
+};
+
+p53 = {
+  name: '',
+  code: ``
+};
+
+p54 = {
+  name: '',
+  code: ``
+};
+
+p55 = {
+  name: '',
+  code: ``
+};
+
+p56 = {
+  name: '',
+  code: ``
+};
+
+p57 = {
+  name: '',
+  code: ``
+};
+
+p58 = {
+  name: '',
+  code: ``
+};
+
+p59 = {
+  name: '',
+  code: ``
+};
+
+p60 = {
+  name: '',
+  code: ``
+};
+
+p61 = {
+  name: '',
+  code: ``
+};
+
+p62 = {
   name: '',
   code: ``
 };
