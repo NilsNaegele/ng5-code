@@ -30,6 +30,11 @@
       "id": 6,
       "title": "Angular Dynamic Components",
       "date": "02/06/2018"
+    },
+    {
+      "id": 7,
+      "title": "Angular Attribute Directives",
+      "date": "02/07/2018"
     }
 	]
 }

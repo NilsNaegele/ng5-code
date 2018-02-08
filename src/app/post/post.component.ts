@@ -2404,14 +2404,75 @@ adService = {
   `
 };
 
-p52 = {
-  name: '',
-  code: ``
+attributeDirective = {
+  name: 'Attribute Directive',
+  code: `
+  import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+
+  @Directive({
+    selector: '[appHighlight]'
+  })
+  export class HighlightDirective {
+    @Input() defaultColor: string;
+    @Input() appHighlight: string;
+
+    constructor(private el: ElementRef) { }
+
+    @HostListener('mouseenter') onmouseenter() {
+      this.highlight(this.appHighlight || this.defaultColor || 'red');
+    }
+
+    @HostListener('mouseleave') onmouseleave() {
+      this.highlight(null);
+    }
+
+    private highlight(color: string) {
+      this.el.nativeElement.style.backgroundColor = color;
+    }
+
+  }
+
+
+  `
 };
 
-p53 = {
-  name: '',
-  code: ``
+hostComponent = {
+  name: 'Host Component',
+  code: `
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css']
+  })
+  export class AppComponent {
+   color: string;
+
+  }
+
+  /******************************************************/
+
+  <h1>My first Attribute Directive</h1>
+
+    <h4>Pick a highlight color</h4>
+  <div>
+    <input type="radio" name="colors" (click)="color='lightgreen'">Green
+    <input type="radio" name="colors" (click)="color='yellow'">Yellow
+    <input type="radio" name="colors" (click)="color='cyan'">Cyan
+  </div>
+  <p [appHighlight]="color">Highlight me!</p>
+  <p [appHighlight]="color" defaultColor="violet">
+    Highlight me too!
+  </p>
+  <hr>
+  <p><i>Mouse over following lines to see fixed highlights</i></p>
+
+  <p [appHighlight]="'yellow'">Highlighted in yellow</p>
+  <p appHighlight="red">Highlighted in red</p>
+
+  `
 };
 
 p54 = {
