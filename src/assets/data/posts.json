@@ -35,6 +35,11 @@
       "id": 7,
       "title": "Angular Attribute Directives",
       "date": "02/07/2018"
+    },
+    {
+      "id": 8,
+      "title": "Angular Pipes",
+      "date": "02/08/2018"
     }
 	]
 }

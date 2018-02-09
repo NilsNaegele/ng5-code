@@ -2475,47 +2475,469 @@ hostComponent = {
   `
 };
 
-p54 = {
+birthdayPipe = {
+  name: 'Birthday Pipe',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-hero-birthday1',
+    template: \`
+              <p>The hero's birthday is {{ birthday | date }}</p>
+              <p>The hero's birthday is {{ birthday | date:"dd/MM/yy" }}</p>
+    \`
+  })
+  export class HeroBirthday1Component {
+
+    birthday = new Date(1971, 6, 13);
+
+  }
+
+  `
+};
+
+parameterizePipe = {
+  name: 'Parameterizing A Pipe',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-hero-birthday2',
+    template: \`
+          <p>The hero's birthday is {{ birthday | date:format }}</p>
+          <button (click)="toggleFormat()">Toggle Format</button>
+    \`,
+  })
+  export class HeroBirthday2Component {
+        birthday = new Date(1971, 6, 13);
+        toggle = true;
+
+        get format() { return this.toggle ? 'shortDate' : 'fullDate'; }
+
+        toggleFormat() {
+          this.toggle = !this.toggle;
+        }
+
+  }
+
+  `
+};
+
+chainingPipes = {
+  name: 'Chaining Pipes',
+  code: `
+  <app-hero-birthday1></app-hero-birthday1>
+
+  <hr>
+
+  <app-hero-birthday2></app-hero-birthday2>
+
+  <hr>
+
+  <p>
+      The chained hero's birthday is
+      {{ birthday | date | uppercase }}
+  </p>
+  <p>
+    The chained hero's birthday is
+    {{ birthday | date:'fullDate' | uppercase }}
+  </p>
+  <p>
+    The chained hero's birthday is
+    {{ ( birthday | date:'fullDate' ) | uppercase }}
+  </p>
+
+  <hr>
+
+  <app-power-booster></app-power-booster>
+
+  <hr>
+
+  <app-power-boost-calculator></app-power-boost-calculator>
+
+  <hr>
+
+  <app-flying-heroes></app-flying-heroes>
+
+  <hr>
+
+  <app-flying-heroes-impure></app-flying-heroes-impure>
+
+  <hr>
+
+  <app-hero-async-message></app-hero-async-message>
+
+  <hr>
+
+  <app-hero-list></app-hero-list>
+
+
+  `
+};
+
+customPipe = {
+  name: 'Custom Pipe',
+  code: `
+  import { Pipe, PipeTransform } from '@angular/core';
+
+  @Pipe({
+    name: 'exponentialStrength'
+  })
+  export class ExponentialStrengthPipe implements PipeTransform {
+
+    transform(value: number, exponent: string): number {
+      const exp = parseFloat(exponent);
+      return Math.pow(value, isNaN(exp) ? 1 : exp);
+    }
+
+  }
+
+  `
+};
+
+powerBooster = {
+  name: 'Power Booster',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-power-booster',
+    template: \`
+            <h2>Power Booster</h2>
+            <p>Super power boost: {{ 2 | exponentialStrength: 10 }}</p>
+    \`
+  })
+  export class PowerBoosterComponent { }
+
+  `
+};
+
+powerBoostCalculator = {
+  name: 'Power Boost Calculator',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-power-boost-calculator',
+    template: \`
+        <h2>Power Boost Calculator</h2>
+        <div>Normal power: <input [(ngModel)]="power"></div>
+        <div>Boost factor: <input [(ngModel)]="factor"></div>
+        <p>
+            Super Hero Power: {{power | exponentialStrength: factor }}
+        </p>
+    \`,
+  })
+  export class PowerBoostCalculatorComponent {
+        power = 2;
+        factor = 8;
+  }
+
+  `
+};
+
+flyingHeroesPipe = {
+  name: 'Impure And Pure Pipes',
+  code: `
+  import { Pipe, PipeTransform } from '@angular/core';
+
+  import { Flyer } from './heroes';
+
+  @Pipe({
+    name: 'flyingHeroes'
+  })
+  export class FlyingHeroesPipe implements PipeTransform {
+
+    transform(allHeroes: Flyer[]): Flyer[] {
+      return allHeroes.filter(hero => hero.canFly);
+    }
+
+  }
+
+  @Pipe({
+    name: 'flyingHeroesImpure',
+    pure: false
+  })
+  export class FlyingHeroesImpurePipe extends FlyingHeroesPipe { }
+
+
+  /******************************************************/
+
+  export interface Flyer { canFly: boolean; }
+
+  export const HEROES = [
+    { name: 'Flash', canFly: true },
+    { name: 'Wonderwoman', canFly: true },
+    { name: 'Bombasto', canFly: false },
+    { name: 'Spiderman', canFly: false }
+  ];
+
+
+  `
+};
+
+componentPipes = {
+  name: 'Component Pipes',
+  code: `
+  import { Component } from '@angular/core';
+
+  import { HEROES } from '../heroes';
+
+  @Component({
+    selector: 'app-flying-heroes',
+    template: \`
+      <h2>{{ title }}</h2>
+      <p>
+        New hero:
+            <input type="text" #box
+            (keyup.enter)="addHero(box.value); box.value='';"
+            placeholder="hero name">
+        <input id="can-fly" type="checkbox" [(ngModel)]="canFly"> can fly
+      </p>
+
+      <p>
+      <input id="mutate" type="checkbox" [(ngModel)]="mutate"> Mutate array
+      <button (click)="reset()">Reset</button>
+      </p>
+
+      <h4>Heroes who fly (piped)</h4>
+      <div id="flyer">
+        <div *ngFor="let hero of heroes | flyingHeroes">
+            {{ hero.name }}
+        </div>
+      </div>
+
+      <h4>All Heroes (no pipe)</h4>
+      <div id="all">
+          <div *ngFor="let hero of heroes">
+                {{ hero.name }}
+          </div>
+      </div>
+    \`,
+    styles: ['#flyers, #all { font-style: italic; }']
+  })
+  export class FlyingHeroesComponent {
+    title = 'Flying Heroes (pure pipe)';
+    heroes: any[] = [];
+    canFly = true;
+    mutate = true;
+
+    constructor() {
+      this.reset();
+    }
+
+    addHero(name: string) {
+      name = name.trim();
+      if (!name) {
+        return;
+      }
+      const hero = { name, canFly: this.canFly };
+      if (this.mutate) {
+        // pure pipe won't update because heroes array reference is unchanged
+        // impure pipe will
+        this.heroes.push(hero);
+      } else {
+        // pipe updates because heroes array is a new object
+        this.heroes = this.heroes.concat(hero);
+      }
+    }
+
+    reset() {
+      this.heroes = HEROES.slice();
+    }
+
+  }
+
+  /////////// Identical except for impure pipe /////////////
+  @Component({
+    selector: 'app-flying-heroes-impure',
+    template: \`
+    <h2>{{ title }}</h2>
+    <p>
+      New hero:
+          <input type="text" #box
+          (keyup.enter)="addHero(box.value); box.value='';"
+          placeholder="hero name">
+      <input id="can-fly" type="checkbox" [(ngModel)]="canFly"> can fly
+    </p>
+
+    <p>
+    <input id="mutate" type="checkbox" [(ngModel)]="mutate"> Mutate array
+    <button (click)="reset()">Reset</button>
+    </p>
+
+    <h4>Heroes who fly (piped)</h4>
+    <div id="flyer">
+      <div *ngFor="let hero of heroes | flyingHeroesImpure">
+          {{ hero.name }}
+      </div>
+    </div>
+
+    <h4>All Heroes (no pipe)</h4>
+    <div id="all">
+        <div *ngFor="let hero of heroes">
+              {{ hero.name }}
+        </div>
+    </div>
+  \`,
+  styles: ['#flyers, #all { font-style: italic; }']
+  })
+  export class FlyingHeroesImpureComponent extends FlyingHeroesComponent {
+    title = 'Flying Heroes (impure pipe)';
+  }
+
+
+  `
+};
+
+impureAsyncPipe = {
+  name: 'Impure Async Pipe',
+  code: `
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/interval';
+  import 'rxjs/add/operator/map';
+  import 'rxjs/add/operator/take';
+
+  @Component({
+    selector: 'app-hero-async-message',
+    template: \`
+          <h2>Async Hero Message and AsyncPipe</h2>
+          <p>Message: {{ message$ | async }}</p>
+          <button (click)="resend()">Resend</button>
+    \`
+  })
+  export class HeroAsyncMessageComponent {
+         message$: Observable<string>;
+
+         private messages = [
+            'You are my hero!',
+            'You are the best hero!',
+            'Will you be my hero?',
+            'I will save you, my polymer princess.'
+         ];
+
+         constructor() {
+           this.resend();
+         }
+
+         resend() {
+           this.message$ = Observable.interval(1000)
+                           .map(i => this.messages[i])
+                           .take(this.messages.length);
+         }
+
+  }
+
+  `
+};
+
+impureCachingPipe = {
+  name: 'Impure Caching Pipe',
+  code: `
+  import { Pipe, PipeTransform } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+
+  @Pipe({
+    name: 'fetch',
+    pure: false
+  })
+  export class FetchJsonPipe implements PipeTransform {
+    private cachedData: any = null;
+    private cachedUrl = '';
+
+    constructor(private http: HttpClient) {}
+
+    transform(url: string): any {
+      if (url !== this.cachedUrl) {
+        this.cachedData = null;
+        this.cachedUrl = url;
+        this.http.get<any>(url).subscribe(result => this.cachedData = result);
+      }
+      return this.cachedData;
+    }
+
+  }
+
+
+  `
+};
+
+heroListComponent = {
+  name: 'Hero List Component',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-hero-list',
+    template: \`
+          <h2>Heroes from JSON File</h2>
+          <div *ngFor="let hero of ('assets/heroes.json' | fetch)">
+                {{ hero.name }}
+          </div>
+
+          <p>Heroes as JSON:
+              {{ 'assets/heroes.json' | fetch | json }}
+          </p>
+
+    \`,
+  })
+  export class HeroListComponent { }
+
+  /******************************************************/
+
+  [
+    {"name": "Igor", "canFly": true},
+    {"name": "Misko", "canFly": false},
+    {"name": "Hans", "canFly": true},
+    {"name": "Stephen", "canFly": false},
+    {"name": "Martin", "canFly": true},
+    {"name": "Alex", "canFly": false},
+    {"name": "Rob", "canFly": true},
+    {"name": "Carmen", "canFly": false},
+    {"name": "Nils", "canFly": true}
+  ]
+
+  `
+};
+
+p65 = {
   name: '',
   code: ``
 };
 
-p55 = {
+p66 = {
   name: '',
   code: ``
 };
 
-p56 = {
+p67 = {
   name: '',
   code: ``
 };
 
-p57 = {
+p68 = {
   name: '',
   code: ``
 };
 
-p58 = {
+p69 = {
   name: '',
   code: ``
 };
 
-p59 = {
+p70 = {
   name: '',
   code: ``
 };
 
-p60 = {
+p71 = {
   name: '',
   code: ``
 };
 
-p61 = {
-  name: '',
-  code: ``
-};
-
-p62 = {
+p72 = {
   name: '',
   code: ``
 };
