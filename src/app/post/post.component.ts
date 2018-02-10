@@ -2902,42 +2902,831 @@ heroListComponent = {
   `
 };
 
-p65 = {
+technologyService = {
+  name: 'Technology Service',
+  code: `
+  import { Injectable } from '@angular/core';
+
+  export class Technology {
+
+    constructor(public name: string, public state = 'inactive') { }
+
+    toggleState() {
+      this.state = this.state === 'active' ? 'inactive' : 'active';
+    }
+
+  }
+
+  const ALL_TECHNOLOGIES = [
+        'Angular CLI 1.7',
+        'Angular 5',
+        'Angular Material 5',
+        'Bootstrap 4',
+        'TypeScript 2.7',
+        'JavaScript',
+        'EcmaScript 2015',
+        'EcmaScript 2016',
+        'EcmaScript 2017',
+        'Linux',
+        'Firebase',
+        'Google Cloud Platform'
+  ].map(name => new Technology(name));
+
+  @Injectable()
+  export class TechnologyService {
+
+    technologies: Technology[] = [];
+
+    canAdd() {
+      return this.technologies.length < ALL_TECHNOLOGIES.length;
+    }
+
+    canRemove() {
+      return this.technologies.length > 0;
+    }
+
+    addActive(active = true) {
+      const technology = ALL_TECHNOLOGIES[this.technologies.length];
+      technology.state = active ? 'active' : 'inactive';
+      this.technologies.push(technology);
+    }
+
+    addInactive() {
+      this.addActive(false);
+    }
+
+    remove() {
+      this.technologies.length -= 1;
+    }
+
+
+  }
+
+  `
+};
+
+animationsModule = {
+  name: 'Animations Module',
+  code: `
+  import { NgModule } from '@angular/core';
+  import { CommonModule } from '@angular/common';
+
+  import { TechnologyTeamComponent } from './technology-team/technology-team.component';
+  import { TechnologyListBasicComponent }
+  from './technology-list-basic/technology-list-basic.component';
+  import { TechnologyListEnterLeaveComponent }
+  from './technology-list-enter-leave/technology-list-enter-leave.component';
+  import { TechnologyListEnterLeaveStatesComponent }
+  from './technology-list-enter-leave-states/technology-list-enter-leave-states.component';
+  import { TechnologyListAutoComponent }
+  from './technology-list-auto/technology-list-auto.component';
+  import { TechnologyListTimingsComponent }
+  from './technology-list-timings/technology-list-timings.component';
+  import { TechnologyListMultistepComponent }
+  from './technology-list-multistep/technology-list-multistep.component';
+  import { TechnologyListGroupsComponent }
+  from './technology-list-groups/technology-list-groups.component';
+  import { TechnologyListInlineStylesComponent }
+  from './technology-list-inline-styles/technology-list-inline-styles.component';
+  import { TechnologyListCombinedTransitionsComponent }
+  from './technology-list-combined-transitions/technology-list-combined-transitions.component';
+  import { TechnologyListTwowayComponent }
+  from './technology-list-twoway/technology-list-twoway.component';
+
+  @NgModule({
+    imports: [
+      CommonModule
+    ],
+    declarations: [TechnologyTeamComponent,
+                   TechnologyListBasicComponent,
+                   TechnologyListEnterLeaveComponent,
+                   TechnologyListEnterLeaveStatesComponent,
+                   TechnologyListAutoComponent,
+                   TechnologyListTimingsComponent,
+                   TechnologyListMultistepComponent,
+                   TechnologyListGroupsComponent,
+                   TechnologyListInlineStylesComponent,
+                   TechnologyListCombinedTransitionsComponent,
+                   TechnologyListTwowayComponent],
+    exports: [ TechnologyTeamComponent ]
+  })
+  export class AnimationsModule { }
+
+
+  `
+};
+
+globalCSS = {
+  name: 'Global CSS',
+  code: `
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  li {
+    display: block;
+    width: 190px;
+    line-height: 50px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    background-color: #f8bbd0;
+    color: #fff;
+    border-radius: 5px;
+    margin: 10px;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .active {
+    background-color: #ec407a;
+    color: #fff;
+    transform: scale(1.3);
+  }
+
+  .inactive {
+    background-color: #f8bbd0;
+    color: #fff;
+    transform: scale(1);
+  }
+
+  `
+};
+
+technologyTeam = {
+  name: 'Technology Team Component',
+  code: `
+  import { Component } from '@angular/core';
+
+  import { TechnologyService, Technology } from '../technology.service';
+
+  @Component({
+    selector: 'app-technology-team',
+    template: \`
+                <div class="buttons">
+                <button [disabled]="!technologyService.canAdd()"
+                        (click)="technologyService.addInactive()">
+                        Add inactive technology
+                </button>
+                <button [disabled]="!technologyService.canAdd()"
+                        (click)="technologyService.addActive()">
+                        Add active technology
+                </button>
+                <button [disabled]="!technologyService.canRemove()"
+                        (click)="technologyService.remove()">
+                        Remove technology
+                </button>
+                </div>
+                <div class="columns">
+                    <div class="column">
+                        <h4>Basic State</h4>
+                          <app-technology-list-basic [technologies]="technologies">
+                          </app-technology-list-basic>
+                    </div>
+                    <div class="column">
+                        <h4>Enter & Leave</h4>
+                          <app-technology-list-enter-leave [technologies]="technologies">
+                          </app-technology-list-enter-leave>
+                    </div>
+                    <div class="column">
+                          <h4>Styles In Transitions</h4>
+                          <app-technology-list-inline-styles [technologies]="technologies">
+                          </app-technology-list-inline-styles>
+                    </div>
+            <div class="column">
+                <h4>Combined Transitions</h4>
+                  <app-technology-list-combined-transitions [technologies]="technologies">
+                  </app-technology-list-combined-transitions>
+            </div>
+                    <div class="column">
+                         <h4>Two-Way Transitions</h4>
+                          <app-technology-list-twoway [technologies]="technologies">
+                          </app-technology-list-twoway>
+                   </div>
+                </div>
+          <div class="columns">
+              <div class="column">
+                  <h4>Enter & Leave & States</h4>
+                    <app-technology-list-enter-leave-states [technologies]="technologies">
+                    </app-technology-list-enter-leave-states>
+              </div>
+                    <div class="column">
+                        <h4>Auto Style Calc</h4>
+                        <app-technology-list-auto [technologies]="technologies">
+                        </app-technology-list-auto>
+                    </div>
+                    <div class="column">
+                        <h4>Different Timings</h4>
+                        <app-technology-list-timings [technologies]="technologies">
+                        </app-technology-list-timings>
+                    </div>
+                    <div class="column">
+                        <h4>Multiple Keyframes</h4>
+                        <app-technology-list-multistep [technologies]="technologies">
+                        </app-technology-list-multistep>
+                    </div>
+                    <div class="column">
+                        <h4>Parallel Groups</h4>
+                        <app-technology-list-groups [technologies]="technologies">
+                        </app-technology-list-groups>
+                    </div>
+            </div>
+    \`,
+    styles: [\`
+    .buttons {
+      text-align: center;
+    }
+    button {
+      padding: 1.5em 3em;
+    }
+    .columns {
+      display: flex;
+      flex-direction: row;
+    }
+    .column {
+      flex: 1;
+      padding: 10px;
+    }
+    .column p {
+      min-height: 6em;
+    }
+    \`],
+    providers: [ TechnologyService ]
+  })
+  export class TechnologyTeamComponent {
+    technologies: Technology[];
+
+    constructor(public technologyService: TechnologyService) {
+      this.technologies = technologyService.technologies;
+    }
+
+
+  }
+
+  `
+};
+
+basicState = {
+  name: 'Basic State Component',
+  code: `
+  import { Component, Input } from '@angular/core';
+  import { trigger, state, style, animate, transition } from '@angular/animations';
+
+  import { Technology } from '../technology.service';
+
+  @Component({
+    selector: 'app-technology-list-basic',
+    template: \`
+            <ul>
+                  <li *ngFor="let technology of technologies"
+                        [@technologyState]="technology.state"
+                        (click)="technology.toggleState()">
+                        {{ technology.name }}
+                  </li>
+            </ul>
+    \`,
+    styleUrls: ['../technology-list.css'],
+    animations: [
+      trigger('technologyState', [
+        state('inactive', style({
+          backgroundColor: '#f8bbd0',
+          color: '#fff',
+          transform: 'scale(1)'
+        })),
+        state('active', style({
+          backgroundColor: '#ec407a',
+          color: '#fff',
+          transform: 'scale(1.3)'
+        })),
+        transition('inactive => active', animate('1000ms ease-in')),
+        transition('active => inactive', animate('1000ms ease-out'))
+      ])
+    ]
+  })
+  export class TechnologyListBasicComponent {
+
+    @Input() technologies: Technology[];
+
+  }
+
+  `
+};
+
+enterLeave = {
+  name: 'Enter Leave Component',
+  code: `
+  import { Component, Input } from '@angular/core';
+  import { trigger, state, style, animate, transition } from '@angular/animations';
+
+  import { Technology } from '../technology.service';
+
+  @Component({
+    selector: 'app-technology-list-enter-leave',
+    template: \`
+                <ul>
+                      <li *ngFor="let technology of technologies"
+                      [@flyInOut]="'in'">
+                      {{ technology.name }}
+                      </li>
+                </ul>
+    \`,
+    styleUrls: ['../technology-list.css'],
+    animations: [
+      trigger('flyInOut', [
+        state('in', style({transform: 'translateX(0)'})),
+        transition('void => *', [
+          style({transform: 'translateX(-100%)'}),
+          animate(1000)
+        ]),
+        transition('* => void', [
+          animate(1000, style({transform: 'translateX(100%)'}))
+        ])
+      ])
+    ]
+  })
+  export class TechnologyListEnterLeaveComponent {
+        @Input() technologies: Technology[];
+  }
+
+
+  `
+};
+
+stylesTransitions = {
+  name: 'Styles Transitions Component',
+  code: `
+  import { Component, Input } from '@angular/core';
+  import { trigger, style, animate, transition } from '@angular/animations';
+
+  import { Technology } from '../technology.service';
+
+  @Component({
+    selector: 'app-technology-list-inline-styles',
+    template: \`
+              <ul>
+                  <li *ngFor="let technology of technologies"
+                       [@technologyState]="technology.state"
+                       (click)="technology.toggleState()">
+                  {{ technology.name }}
+                  </li>
+              </ul>
+    \`,
+    styleUrls: ['../technology-list.css'],
+    animations: [
+      trigger('technologyState', [
+        transition('inactive => active', [
+          style({
+            backgroundColor: '#ffab91',
+            transform: 'scale(1.3)'
+          }),
+          animate('3s ease-in', style({
+            backgroundColor: '#ff3d00',
+            transform: 'scale(1)'
+          }))
+        ])
+      ])
+    ]
+  })
+  export class TechnologyListInlineStylesComponent {
+      @Input() technologies: Technology[];
+
+  }
+
+
+  `
+};
+
+combinedTransitions = {
+  name: 'Combined Transitions Component',
+  code: `
+  import { Component, Input } from '@angular/core';
+  import { trigger, style, state, animate, transition } from '@angular/animations';
+
+  import { Technology } from '../technology.service';
+
+  @Component({
+    selector: 'app-technology-list-combined-transitions',
+    template: \`
+    <ul>
+        <li *ngFor="let technology of technologies"
+             [@technologyState]="technology.state"
+             (click)="technology.toggleState()">
+        {{ technology.name }}
+        </li>
+    </ul>
+  \`,
+    styleUrls: ['../technology-list.css'],
+    animations: [
+      trigger('technologyState', [
+      state('inactive', style({
+        backgroundColor: '#ffe082',
+        transform: 'scale(1)'
+      })),
+      state('active', style({
+        backgroundColor: '#ff6f00',
+        transform: 'scale(1.5)'
+      })),
+      transition('inactive => active, active => inactive',
+      animate('3s ease-out'))
+      ])
+    ]
+  })
+  export class TechnologyListCombinedTransitionsComponent {
+    @Input() technologies: Technology[];
+
+
+  }
+
+  `
+};
+
+twoWayTransitions = {
+  name: 'Two Way Transitions Component',
+  code: `
+  import { Component, Input } from '@angular/core';
+  import { trigger, style, state, animate, transition } from '@angular/animations';
+
+  import { Technology } from '../technology.service';
+
+  @Component({
+    selector: 'app-technology-list-twoway',
+    template: \`
+    <ul>
+        <li *ngFor="let technology of technologies"
+             [@technologyState]="technology.state"
+             (click)="technology.toggleState()">
+        {{ technology.name }}
+        </li>
+    </ul>
+  \`,
+    styleUrls: ['../technology-list.css'],
+    animations: [
+      trigger('technologyState', [
+      state('inactive', style({
+        backgroundColor: '#66bb6a',
+        transform: 'scale(1)'
+      })),
+      state('active', style({
+        backgroundColor: '#2e7d32',
+        transform: 'scale(1.7)'
+      })),
+      transition('inactive <=> active',
+      animate('2s ease-out'))
+      ])
+    ]
+  })
+  export class TechnologyListTwowayComponent {
+    @Input() technologies: Technology[];
+
+  }
+
+
+  `
+};
+
+enterLeaveStates = {
+  name: 'Enter Leave States Component',
+  code: `
+  import { Component, Input } from '@angular/core';
+  import { trigger, state, style, animate, transition } from '@angular/animations';
+
+  import { Technology } from './../technology.service';
+
+  @Component({
+    selector: 'app-technology-list-enter-leave-states',
+    template: \`
+            <ul>
+                <li *ngFor="let technology of technologies"
+                     (click)="technology.toggleState()"
+                     [@technologyState]="technology.state">
+                     {{ technology.name }}
+                </li>
+            </ul>
+    \`,
+    styleUrls: ['../technology-list.css'],
+    animations: [
+      trigger('technologyState', [
+        state('inactive', style({transform: 'translateX(0) scale(1)'})),
+        state('active', style({transform: 'translateX(0) scale(1.3)'})),
+        transition('inactive => active', animate('1000ms ease-in')),
+        transition('active => inactive', animate('1000ms ease-out')),
+        transition('void => inactive', [
+          style({transform: 'translateX(-100%) scale(1)'}),
+          animate(1000)
+        ]),
+        transition('inactive => void', [
+          style({transform: 'translateX(100%) scale(1)'}),
+          animate(1000)
+        ]),
+        transition('void => inactive', [
+          style({transform: 'translateX(0) scale(0)'}),
+          animate(2000)
+        ]),
+        transition('active => void', [
+          style({transform: 'translateX(0) scale(0)'}),
+          animate(2000)
+        ])
+      ])
+    ]
+  })
+  export class TechnologyListEnterLeaveStatesComponent {
+    @Input() technologies: Technology[];
+
+  }
+
+  `
+};
+
+autoStyleCalc = {
+  name: 'Auto Style Calc Component',
+  code: `
+  import { Component, Input } from '@angular/core';
+  import { trigger, state, style, animate, transition } from '@angular/animations';
+
+  import { Technology } from '../technology.service';
+
+  @Component({
+    selector: 'app-technology-list-auto',
+    template: \`
+          <ul>
+              <li *ngFor="let technology of technologies"
+                   [@shrinkOut]="'in'">
+                    {{ technology.name }}
+              </li>
+          </ul>
+    \`,
+    styleUrls: ['../technology-list.css'],
+    animations: [
+      trigger('shrinkOut', [
+        state('in', style({height: '*'})),
+        transition('* => void', [
+          style({ height: '*' }),
+          animate(2500, style({ height: 0}))
+        ])
+      ])
+    ]
+  })
+  export class TechnologyListAutoComponent {
+      @Input() technologies: Technology[];
+
+  }
+
+  `
+};
+
+differentTimings = {
+  name: 'Different Timings Component',
+  code: `
+  import { Component, Input } from '@angular/core';
+  import { trigger, state, style, animate, transition } from '@angular/animations';
+
+  import { Technology } from '../technology.service';
+
+  @Component({
+    selector: 'app-technology-list-timings',
+    template: \`
+                <ul>
+                    <li *ngFor="let technology of technologies"
+                          [@flyInOut]="'in'" (click)="technology.toggleState()">
+                          {{ technology.name }}
+                    </li>
+                </ul>
+    \`,
+    styleUrls: ['../technology-list.css'],
+    animations: [
+      trigger('flyInOut', [
+        state('in', style({ opacity: 1, transform: 'translateX(0)'})),
+        transition('void => *', [
+          style({
+            opacity: 0,
+            transform: 'translateX(-100%)'
+          }),
+          animate('0.9s ease-in')
+        ]),
+        transition('* => void', [
+          animate('0.8s 0.6s ease-out', style({
+            opacity: 0,
+            transform: 'translateX(100%)'
+          }))
+        ])
+      ])
+    ]
+  })
+  export class TechnologyListTimingsComponent {
+          @Input() technologies: Technology[];
+
+  }
+
+  `
+};
+
+multipleKeyframes = {
+  name: 'Multiple Keyframes Component',
+  code: `
+  import { Component, Input } from '@angular/core';
+  import { trigger,
+           state,
+           animate,
+           style,
+           transition,
+           keyframes,
+           AnimationEvent } from '@angular/animations';
+
+  import { Technology } from '../technology.service';
+
+  @Component({
+    selector: 'app-technology-list-multistep',
+    template: \`
+            <ul>
+                <li *ngFor="let technology of technologies"
+                     (@flyInOut.start)="animationStarted($event)"
+                     (@flyInOut.done)="animationDone($event)"
+                     [@flyInOut]="'in'">
+                {{ technology.name }}
+                </li>
+            </ul>
+    \`,
+    styleUrls: ['../technology-list.css'],
+    animations: [
+      trigger('flyInOut', [
+        state('in', style({ transform: 'translateX(0)'})),
+        transition('void => *', [
+          animate(800, keyframes([
+            style({ opacity: 0, transform: 'translateX(-100%)', offset: 0}),
+            style({ opacity: 1, transform: 'translateX(15px)', offset: 0.3}),
+            style({ opacity: 1, transform: 'translateX(0)', offset: 1.0})
+          ]))
+        ]),
+        transition('* => void', [
+          animate(800, keyframes([
+            style({ opacity: 1, transform: 'translateX(0)', offset: 0}),
+            style({ opacity: 1, transform: 'translateX(-15px)', offset: 0.7}),
+            style({ opacity: 0, transform: 'translateX(100%)', offset: 1.0})
+          ]))
+        ])
+      ])
+    ]
+  })
+  export class TechnologyListMultistepComponent {
+    @Input() technologies: Technology[];
+
+    animationStarted(event: AnimationEvent): void {
+      console.warn('Animation started: ', event);
+    }
+
+    animationDone(event: AnimationEvent): void {
+      console.warn('Animation done: ', event);
+    }
+
+  }
+
+
+  `
+};
+
+parallelGroups = {
+  name: 'Parallel Groups Component',
+  code: `
+  import { Component, Input } from '@angular/core';
+  import { trigger,
+           state,
+           style,
+           animate,
+           transition,
+           group } from '@angular/animations';
+
+  import { Technology } from '../technology.service';
+
+  @Component({
+    selector: 'app-technology-list-groups',
+    template: \`
+              <ul>
+                  <li *ngFor="let technology of technologies"
+                       [@flyInOut]="'in'">
+                  {{ technology.name }}
+                  </li>
+              </ul>
+    \`,
+    styles: [\`
+      li {
+        padding: 0 !important;
+        text-align: center;
+      }
+    \`],
+    styleUrls: ['../technology-list.css'],
+    animations: [
+      trigger('flyInOut', [
+        state('in', style({ width: 190, transform: 'translateX(0)', opacity: 1 })),
+        transition('void => *', [
+          style({ width: 10, transform: 'translateX(50px)', opacity: 0 }),
+          group([
+            animate('0.9s 0.7s ease', style({
+              transform: 'translateX(0)',
+              width: 190
+            })),
+            animate('0.9s ease', style({
+              opacity: 1
+            }))
+          ])
+        ]),
+        transition('* => void', [
+          group([
+            animate('0.9s 0.7s ease', style({
+              transform: 'translateX(50px)',
+              width: 190
+            })),
+            animate('0.9s 0.6s ease', style({
+              opacity: 0
+            }))
+          ])
+        ])
+      ])
+    ]
+  })
+  export class TechnologyListGroupsComponent {
+    @Input() technologies: Technology[];
+
+
+  }
+
+  `
+};
+
+p79 = {
   name: '',
   code: ``
 };
 
-p66 = {
+p80 = {
   name: '',
   code: ``
 };
 
-p67 = {
+p81 = {
   name: '',
   code: ``
 };
 
-p68 = {
+p82 = {
   name: '',
   code: ``
 };
 
-p69 = {
+p83 = {
   name: '',
   code: ``
 };
 
-p70 = {
+p84 = {
   name: '',
   code: ``
 };
 
-p71 = {
+p85 = {
   name: '',
   code: ``
 };
 
-p72 = {
+p86 = {
+  name: '',
+  code: ``
+};
+
+p87 = {
+  name: '',
+  code: ``
+};
+
+p88 = {
+  name: '',
+  code: ``
+};
+
+p89 = {
+  name: '',
+  code: ``
+};
+
+p90 = {
+  name: '',
+  code: ``
+};
+
+p91 = {
+  name: '',
+  code: ``
+};
+
+p92 = {
+  name: '',
+  code: ``
+};
+p93 = {
+  name: '',
+  code: ``
+};
+p94 = {
   name: '',
   code: ``
 };

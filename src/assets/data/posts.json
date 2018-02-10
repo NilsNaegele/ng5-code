@@ -40,6 +40,11 @@
       "id": 8,
       "title": "Angular Pipes",
       "date": "02/08/2018"
+    },
+    {
+      "id": 9,
+      "title": "Angular Animations",
+      "date": "02/09/2018"
     }
 	]
 }
