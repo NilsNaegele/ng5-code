@@ -60,6 +60,16 @@
       "id": 12,
       "title": "Angular Reactive Forms",
       "date": "02/12/2018"
+    },
+    {
+      "id": 13,
+      "title": "Angular Dynamic Forms",
+      "date": "02/13/2018"
+    },
+    {
+      "id": 14,
+      "title": "Angular Form Validation",
+      "date": "02/14/2018"
     }
 	]
 }
