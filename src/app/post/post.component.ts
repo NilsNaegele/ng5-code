@@ -3653,80 +3653,1561 @@ parallelGroups = {
   `
 };
 
-p79 = {
-  name: '',
-  code: ``
+userInputEvents = {
+  name: 'Binding User Input Events',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-click-me',
+    template: \`
+              <button (click)="onClickMe()">Click me!</button>
+              {{ clickMessage }}
+    \`,
+    styleUrls: ['./click-me.component.css']
+  })
+  export class ClickMeComponent {
+    clickMessage = '';
+
+    onClickMe() {
+      this.clickMessage = 'You are my hero!';
+    }
+
+  }
+
+  /******************************************************/
+
+  import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-click-me2',
+  template: \`
+      <button (click)="onClickMe2($event)">No! .. Click me!</button>
+      {{ clickMessage }}
+  \`,
+})
+export class ClickMe2Component {
+    clickMessage = '';
+    clicks = 1;
+
+    onClickMe2(event: any) {
+      const eventMessage = event ? 'Event target is ' + event.target.tagName : '';
+      this.clickMessage = (\`Click #\${this.clicks++}. \${eventMessage}\`);
+    }
+
+}
+
+
+  `
 };
 
-p80 = {
-  name: '',
-  code: ``
+userInputEventObject = {
+  name: 'User Input $Event Object',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-key-up1',
+    template: \`
+            <input (keyup)="onKey($event)">
+            <p>{{ values }}</p>
+    \`
+  })
+  export class KeyUpComponent_v1 {
+    values = '';
+
+    // onKey(event: any) { // without type info
+    //   this.values += event.target.value + ' | ';
+    // }
+
+    onKey(event: KeyboardEvent) { // with type info
+          this.values += (<HTMLInputElement>event.target).value + ' | ';
+
+    }
+
+  }
+
+  //////////////////////////////////////////////////////////////////////////
+
+  @Component({
+    selector: 'app-key-up2',
+    template: \`
+            <input #box (keyup)="onKey(box.value)">
+            <p>{{ values }}</p>
+    \`
+  })
+  export class KeyUpComponent_v2 {
+    values = '';
+
+    onKey(value: string) {
+      this.values += value + ' | ';
+    }
+
+  }
+
+  //////////////////////////////////////////////////////////////////////////
+
+  @Component({
+    selector: 'app-key-up3',
+    template: \`
+            <input #box (keyup.enter)="onEnter(box.value)">
+            <p>{{ value }}</p>
+    \`
+  })
+  export class KeyUpComponent_v3 {
+    value = '';
+
+    onEnter(value: string) {
+      this.value = value;
+    }
+
+  }
+
+  //////////////////////////////////////////////////////////////////////////
+
+  @Component({
+    selector: 'app-key-up4',
+    template: \`
+            <input #box (keyup.enter)="update(box.value)"
+                        (blur)="update(box.value)">
+            <p>{{ value }}</p>
+    \`
+  })
+  export class KeyUpComponent_v4 {
+    value = '';
+
+    update(value: string) {
+      this.value = value;
+    }
+
+  }
+
+  `
 };
 
-p81 = {
-  name: '',
-  code: ``
+userInputTemplateReferenceVar = {
+  name: 'User Input Template Reference Variable',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-loop-back',
+    template: \`
+        <input #box (keyup)="0">
+        <p>{{ box.value }}
+    \`
+  })
+  export class LoopBackComponent { }
+
+
+  `
 };
 
-p82 = {
-  name: '',
-  code: ``
+tourOfTechnologies = {
+  name: 'Little Tour Technologies',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-little-tour',
+    template: \`
+          <input #newTechnology
+                (keyup.enter)="add(newTechnology.value)"
+                (blur)="add(newTechnology.value); newTechnology.value = '';">
+          <button (click)="add(newTechnology.value)">Add</button>
+          <ul>
+              <li *ngFor="let technology of technologies">
+                    {{ technology }}
+              </li>
+          </ul>
+
+    \`
+  })
+  export class LittleTourComponent {
+      technologies = ['Angular CLI 1.7', 'Angular 5',
+                      'Angular Material 5', 'JavaScript', 'Java'];
+
+      add(newTechnology: string): void {
+        if (newTechnology) {
+        this.technologies.push(newTechnology);
+        }
+      }
+
+  }
+
+
+  `
 };
 
-p83 = {
-  name: '',
-  code: ``
+heroFormComponent = {
+  name: 'Hero Form Component',
+  code: `
+  import { Component } from '@angular/core';
+
+  import { Hero } from '../hero';
+
+  @Component({
+    selector: 'app-hero-form',
+    templateUrl: './hero-form.component.html',
+    styleUrls: ['./hero-form.component.css']
+  })
+  export class HeroFormComponent {
+
+    powers = ['Really Smart', 'Super Flexible',
+              'Super Hot', 'Weather Changer'];
+
+    model = new Hero(18, 'Dr IQ', this.powers[0], 'Chuck Overstreet');
+
+    submitted = false;
+
+    onSubmit() {
+      this.submitted = true;
+    }
+
+    newHero() {
+      this.model = new Hero(42, '', '');
+    }
+
+    // TODO: remove this when we are done
+    get diagnostic() { return JSON.stringify(this.model); }
+
+
+  }
+
+
+  `
 };
 
-p84 = {
-  name: '',
-  code: ``
+heroFormTemplate = {
+  name: 'Hero Form Template',
+  code: `
+  <div class="container">
+  <h1>Hero Form</h1>
+  <div [hidden]="submitted">
+  <form #heroForm="ngForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Name</label>
+          <input type="text"
+                 class="form-control"
+                 id="name"
+                 [(ngModel)]="model.name"
+                 name="name"
+                 #name="ngModel"
+                 required>
+          <div [hidden]="name.valid || name.pristine" class="alert alert-danger">
+                Name is required
+          </div>
+      </div>
+
+      <div class="form-group">
+          <label for="alterEgo">Alter Ego</label>
+          <input type="text"
+                 class="form-control"
+                 [(ngModel)]="model.alterEgo"
+                 name="alterEgo"
+                 id="alterEgo">
+      </div>
+
+      <div class="form-group">
+          <label for="power">Hero Power</label>
+          <select class="form-control"
+                  id="power"
+                  [(ngModel)]="model.power"
+                  name="power"
+                  required>
+            <option *ngFor="let pow of powers" [value]="pow">
+                  {{ pow }}
+            </option>
+          </select>
+      </div>
+
+      <button type="submit" class="btn btn-success" [disabled]="!heroForm.form.valid">
+        Submit
+      </button>
+      <button type="button" class="btn btn-default"
+              (click)="newHero(); heroForm.reset();">
+        New Hero
+      </button>
+  </form>
+</div>
+<div [hidden]="!submitted">
+  <h2>You submitted the following:</h2>
+  <div class="row">
+    <div class="col-xs-3">Name</div>
+    <div class="col-xs-9 pull-left">{{ model.name }}</div>
+  </div>
+  <div class="row">
+      <div class="col-xs-3">Alter Ego</div>
+      <div class="col-xs-9 pull-left">{{ model.alterEgo }}</div>
+  </div>
+  <div class="row">
+      <div class="col-xs-3">Power</div>
+      <div class="col-xs-9 pull-left">{{ model.power }}</div>
+  </div>
+  <br>
+  <button class="btn btn-primary" (click)="submitted=false;">Edit</button>
+</div>
+
+<hr>
+<input type="text" class="form-control" id="name" required
+        [(ngModel)]="model.name" name="name">
+        {{ model.name }}
+
+<hr>
+<input type="text" class="form-control" id="name"
+       required
+       [ngModel]="model.name"
+       name="name"
+       (ngModelChange)="model.name = $event">
+       {{ model.name }}
+<hr>
+<input type="text" class="form-control" id="name"
+       required
+       [(ngModel)]="model.name"
+       name="name"
+       #spy>
+       <br>{{ spy.className }}
+
+</div>
+
+
+  `
 };
 
-p85 = {
-  name: '',
-  code: ``
+heroFormCSS = {
+  name: 'Hero Form CSS',
+  code: `
+  .ng-valid[required], .ng-valid.required {
+    border-left: 5px solid #42A948;
+  }
+
+  .ng-invalid:not(form) {
+    border-left: 5px solid #a94442;
+  }
+
+  `
 };
 
-p86 = {
-  name: '',
-  code: ``
+reactiveModule = {
+  name: 'Initial Reactive Feature Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { CommonModule } from '@angular/common';
+  import { ReactiveFormsModule } from '@angular/forms';
+
+  import { HeroDetail1Component } from './hero-detail1/hero-detail1.component';
+  import { HeroDetail2Component } from './hero-detail2/hero-detail2.component';
+  import { HeroDetail3Component } from './hero-detail3/hero-detail3.component';
+  import { HeroDetail4Component } from './hero-detail4/hero-detail4.component';
+  import { HeroDetail5Component } from './hero-detail5/hero-detail5.component';
+  import { HeroDetail6Component } from './hero-detail6/hero-detail6.component';
+  import { HeroDetail7Component } from './hero-detail7/hero-detail7.component';
+  import { HeroDetail8Component } from './hero-detail8/hero-detail8.component';
+  import { HeroDetail9Component } from './hero-detail9/hero-detail9.component';
+
+  @NgModule({
+    imports: [
+      CommonModule,
+      ReactiveFormsModule
+    ],
+    declarations: [
+                    HeroDetail1Component,
+                    HeroDetail2Component,
+                    HeroDetail3Component,
+                    HeroDetail4Component,
+                    HeroDetail5Component,
+                    HeroDetail6Component,
+                    HeroDetail7Component,
+                    HeroDetail8Component,
+                    HeroDetail9Component
+                  ],
+    exports: [
+               HeroDetail1Component,
+               HeroDetail2Component,
+               HeroDetail3Component,
+               HeroDetail4Component,
+               HeroDetail5Component,
+               HeroDetail6Component,
+               HeroDetail7Component,
+               HeroDetail8Component,
+               HeroDetail9Component
+            ]
+  })
+  export class ReactiveModule { }
+
+  `
 };
 
-p87 = {
-  name: '',
-  code: ``
+dataModel = {
+  name: 'Data Model',
+  code: `
+  export class Hero {
+    id = 0;
+    name = '';
+    addresses: Address[];
+  }
+
+  export class Address {
+    street = '';
+    city = '';
+    state = '';
+    zip = '';
+  }
+
+  export const heroes: Hero[] = [
+
+      {
+        id: 1,
+        name: 'Thor',
+        addresses: [
+          { street: '123 Kurfürstendamm', city: 'Berlin', state: 'BE', zip: '13001'},
+          { street: '123 Maximilian Straße', city: 'München', state: 'BA', zip: '88181'}
+        ]
+      },
+      {
+        id: 2,
+        name: 'Tyr',
+        addresses: [
+          { street: '123 Elbchaussee', city: 'Hamburg', state: 'HH', zip: '61636'}
+        ]
+      },
+      {
+        id: 3,
+        name: 'Freyja',
+        addresses: []
+      }
+  ];
+
+  export const states = ['BE', 'BA', 'HH', 'BW'];
+
+
+  `
 };
 
-p88 = {
-  name: '',
-  code: ``
+justFormControl = {
+  name: 'Just A Form Control',
+  code: `
+  import { Component } from '@angular/core';
+  import { FormControl } from '@angular/forms';
+
+  @Component({
+    selector: 'app-hero-detail1',
+    template: \`
+            <h2>Hero Detail</h2>
+            <h3>
+                  <i>
+                      Just a FormControl
+                  </i>
+            </h3>
+            <label class="center-block">Name:
+                  <input class="form-control" [formControl]="name">
+            </label>
+    \`
+  })
+  export class HeroDetail1Component {
+    name = new FormControl();
+
+  }
+
+  `
 };
 
-p89 = {
-  name: '',
-  code: ``
+formGroup = {
+  name: 'Form Group',
+  code: `
+  import { Component } from '@angular/core';
+  import { FormControl, FormGroup } from '@angular/forms';
+
+
+  @Component({
+    selector: 'app-hero-detail2',
+    template: \`
+              <h2>Hero Detail</h2>
+                <h3>
+                    <i>
+                        FormControl in a FormGroup
+                    </i>
+                </h3>
+              <form [formGroup]="heroForm" novalidate>
+                <div class="form-group">
+                    <label class="center-block">Name:
+                        <input class="form-control" formControlName="name">
+                    </label>
+                </div>
+              </form>
+        <p>
+            Form value: {{ heroForm.value | json }}
+        </p>
+        <p>
+            Form status: {{ heroForm.status | json }}
+        </p>
+    \`
+  })
+  export class HeroDetail2Component  {
+        heroForm = new FormGroup({
+          name: new FormControl()
+        });
+
+  }
+
+
+  `
 };
 
-p90 = {
-  name: '',
-  code: ``
+formBuilderSingleControl = {
+  name: 'Form Builder Single Control',
+  code: `
+  import { Component } from '@angular/core';
+  import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+  @Component({
+    selector: 'app-hero-detail3',
+    template: \`
+            <h2>Hero Detail</h2>
+              <h3>
+                  <i>
+                      FormGroup with a single FormControl using FormBuilder
+                  </i>
+              </h3>
+            <form [formGroup]="heroForm" novalidate>
+                  <div class="form-group">
+                      <label class="center-block">Name:
+                        <input class="form-control" formControlName="name">
+                      </label>
+                  </div>
+            </form>
+                <p>
+                    Form value: {{ heroForm.value | json }}
+                </p>
+                  <p>
+                    Form status: {{ heroForm.status | json }}
+                  </p>
+
+    \`
+  })
+  export class HeroDetail3Component  {
+          heroForm: FormGroup;
+
+          constructor(private formBuilder: FormBuilder) {
+            this.createForm();
+          }
+
+          createForm() {
+            this.heroForm = this.formBuilder.group({
+              name: ['', Validators.required ]
+            });
+          }
+
+  }
+
+  `
 };
 
-p91 = {
-  name: '',
-  code: ``
+formGroupMultipleControls = {
+  name: 'Form Group With Multiple Controls',
+  code: `
+  import { Component } from '@angular/core';
+  import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+
+  import { states } from '../data-model';
+
+  @Component({
+    selector: 'app-hero-detail4',
+    template: \`
+                    <h2>Hero Detail</h2>
+                    <h3>
+                        <i>
+                            A FormGroup with multiple FormControls
+                        </i>
+                    </h3>
+
+                    <form [formGroup]="heroForm" novalidate>
+                          <div class="form-group">
+                            <label class="center-block">Name:
+                                <input class="form-control" formControlName="name">
+                            </label>
+                          </div>
+                          <div class="form-group">
+                            <label class="center-block">Street:
+                                <input class="form-control" formControlName="street">
+                            </label>
+                          </div>
+                          <div class="form-group">
+                            <label class="center-block">City:
+                                <input class="form-control" formControlName="city">
+                            </label>
+                          </div>
+                          <div class="form-group">
+                            <label class="center-block">State:
+                                <select class="form-control" formControlName="state">
+                                      <option *ngFor="let state of states"
+                                               [value]="state">
+                                            {{ state }}
+                                      </option>
+                                </select>
+                            </label>
+                          </div>
+                          <div class="form-group">
+                            <label class="center-block">Zip Code:
+                                <input class="form-control" formControlName="zip">
+                            </label>
+                          </div>
+                          <div class="form-group radio">
+                              <h4>Super Power:</h4>
+                              <label class="center-block">
+                                  <input type="radio"
+                                  formControlName="power"
+                                  value="flight">
+                                  Flight
+                              </label>
+                              <label class="center-block">
+                                  <input type="radio"
+                                  formControlName="power"
+                                  value="x-ray vision">
+                                  X-Ray Vision
+                              </label>
+                              <label class="center-block">
+                                  <input type="radio"
+                                   formControlName="power"
+                                    value="strength">
+                                  Strength
+                              </label>
+                          </div>
+                          <div class="checkbox">
+                                  <label class="center-block">
+                                        <input type="checkbox" formControlName="sidekick">
+                                        I have a sidekick.
+                                  </label>
+                          </div>
+                    </form>
+
+                    <p>Form value: {{ heroForm.value | json }}</p>
+
+
+    \`
+  })
+  export class HeroDetail4Component {
+        heroForm: FormGroup;
+        states = states;
+
+        constructor(private formBuilder: FormBuilder) {
+          this.createForm();
+        }
+
+        createForm() {
+          this.heroForm = this.formBuilder.group({
+            name: ['', Validators.required],
+            street: '',
+            city: '',
+            state: '',
+            zip: '',
+            power: '',
+            sidekick: ''
+          });
+
+        }
+
+  }
+
+
+  `
 };
 
-p92 = {
+nestedFormBuilder = {
+  name: 'Form Builder Group',
+  code: `
+  import { Component } from '@angular/core';
+  import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+
+  import { states } from '../data-model';
+
+
+  @Component({
+    selector: 'app-hero-detail5',
+    template: \`
+    <form [formGroup]="heroForm" novalidate>
+          <div class="form-group">
+            <label class="center-block">Name:
+                <input class="form-control" formControlName="name">
+            </label>
+          </div>
+        <div formGroupName="address" class="well well-lg">
+          <h4>Secret Lair</h4>
+          <div class="form-group">
+            <label class="center-block">Street:
+                <input class="form-control" formControlName="street">
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="center-block">City:
+                <input class="form-control" formControlName="city">
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="center-block">State:
+                <select class="form-control" formControlName="state">
+                      <option *ngFor="let state of states"
+                               [value]="state">
+                            {{ state }}
+                      </option>
+                </select>
+            </label>
+          </div>
+            <div class="form-group">
+              <label class="center-block">Zip Code:
+                <input class="form-control" formControlName="zip">
+              </label>
+            </div>
+        </div>
+          <div class="form-group radio">
+              <h4>Super Power:</h4>
+              <label class="center-block">
+                  <input type="radio" formControlName="power" value="flight">
+                  Flight
+              </label>
+              <label class="center-block">
+                  <input type="radio" formControlName="power" value="x-ray vision">
+                  X-Ray Vision
+              </label>
+              <label class="center-block">
+                  <input type="radio" formControlName="power" value="strength">
+                  Strength
+              </label>
+          </div>
+          <div class="checkbox">
+                  <label class="center-block">
+                        <input type="checkbox" formControlName="sidekick">
+                        I have a sidekick.
+                  </label>
+          </div>
+    </form>
+
+        <p>Form value: {{ heroForm.value | json }}</p>
+        <h4>Extra info for the curious:</h4>
+        <p>Name value: {{ heroForm.get('name').value }}</p>
+        <p>Street value: {{ heroForm.get('address.street').value }}</p>
+
+
+    \`
+  })
+  export class HeroDetail5Component  {
+    heroForm: FormGroup;
+    states = states;
+
+
+    constructor(private formBuilder: FormBuilder) {
+      this.createForm();
+    }
+
+    createForm() {
+        this.heroForm = this.formBuilder.group({
+          name: ['', Validators.required],
+          address: this.formBuilder.group({
+            street: '',
+            city: '',
+            state: '',
+            zip: ''
+          }),
+          power: '',
+          sidekick: ''
+        });
+    }
+
+
+  }
+
+
+  `
+};
+heroService = {
+  name: 'Hero Service',
+  code: `
+  import { Injectable } from '@angular/core';
+
+  import { Hero, heroes } from './data-model';
+
+  import { Observable } from 'rxjs/Observable';
+  import { of } from 'rxjs/observable/of';
+  import 'rxjs/add/operator/delay';
+
+
+  @Injectable()
+  export class HeroService {
+    delayMs = 1000;
+
+    getHeroes(): Observable<Hero[]> {
+      return of(heroes).delay(this.delayMs);
+    }
+
+    updateHero(hero: Hero): Observable<Hero> {
+      const oldHero = heroes.find(h => h.id === hero.id);
+      const newHero = Object.assign(oldHero, hero);
+      return of(newHero).delay(this.delayMs);
+    }
+
+  }
+
+
+  `
+};
+patchValue = {
+  name: 'Patch Value',
+  code: `
+  import { Component, Input, OnChanges } from '@angular/core';
+  import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+  import { Hero, states } from '../data-model';
+
+  @Component({
+    selector: 'app-hero-detail6',
+    template: \`
+    <h2>Hero Detail</h2>
+    <h3>
+          <i>
+              PatchValue to initialize a value
+          </i>
+    </h3>
+    <form [formGroup]="heroForm" novalidate>
+    <div class="form-group">
+      <label class="center-block">Name:
+          <input class="form-control" formControlName="name">
+      </label>
+    </div>
+    <div formGroupName="address" class="well well-lg">
+      <h4>Secret Lair</h4>
+    <div class="form-group">
+      <label class="center-block">Street:
+          <input class="form-control" formControlName="street">
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="center-block">City:
+          <input class="form-control" formControlName="city">
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="center-block">State:
+          <select class="form-control" formControlName="state">
+                <option *ngFor="let state of states"
+                         [value]="state">
+                      {{ state }}
+                </option>
+          </select>
+      </label>
+    </div>
+      <div class="form-group">
+        <label class="center-block">Zip Code:
+          <input class="form-control" formControlName="zip">
+        </label>
+      </div>
+    </div>
+    <div class="form-group radio">
+        <h4>Super Power:</h4>
+        <label class="center-block">
+            <input type="radio" formControlName="power" value="flight">
+            Flight
+        </label>
+        <label class="center-block">
+            <input type="radio" formControlName="power" value="x-ray vision">
+            X-Ray Vision
+        </label>
+        <label class="center-block">
+            <input type="radio" formControlName="power" value="strength">
+            Strength
+        </label>
+    </div>
+    <div class="checkbox">
+            <label class="center-block">
+                  <input type="checkbox" formControlName="sidekick">
+                  I have a sidekick.
+            </label>
+    </div>
+  </form>
+
+  <p>Form value: {{ heroForm.value | json }}</p>
+
+  \`
+  })
+  export class HeroDetail6Component implements OnChanges {
+    @Input() hero: Hero;
+
+    heroForm: FormGroup;
+    states = states;
+
+
+    constructor(private formBuilder: FormBuilder) {
+      this.createForm();
+    }
+
+    createForm() {
+      this.heroForm = this.formBuilder.group({
+        name: ['', Validators.required ],
+        address: this.formBuilder.group({
+          street: '',
+          city: '',
+          state: '',
+          zip: ''
+        }),
+        power: '',
+        sidekick: ''
+      });
+    }
+
+    ngOnChanges() {
+      this.heroForm.reset();
+      this.heroForm.patchValue({
+        name: this.hero.name
+      });
+    }
+
+  }
+
+  /*
+  Copyright 2017-2018 Google Inc. All Rights Reserved.
+  Use of this source code is governed by an MIT-style license that
+  can be found in the LICENSE file at https://angular.io/license
+  */
+
+
+  `
+};
+appComponent = {
+  name: 'App Component Host',
+  code: `
+  import { Component, OnInit } from '@angular/core';
+
+  import { HeroService } from './reactive/hero.service';
+  import { Hero } from './reactive/data-model';
+
+  import { Observable } from 'rxjs/Observable';
+
+  @Component({
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css']
+  })
+  export class AppComponent implements OnInit {
+
+    heroes: Observable<Hero[]>;
+    selectedHero: Hero;
+
+    constructor(private heroService: HeroService) { }
+
+    getHeroes() {
+      this.heroes = this.heroService.getHeroes();
+      this.selectedHero = undefined;
+    }
+
+    select(hero: Hero) {
+      this.selectedHero = hero;
+    }
+
+    ngOnInit() {
+      this.getHeroes();
+    }
+
+  }
+
+
+  `
+};
+appComponentTemplate = {
+  name: 'App Component Template',
+  code: `
+
+          <div class="container">
+                    <h1>Reactive Forms</h1>
+                    <!-- <app-hero-detail1></app-hero-detail1>
+                    <app-hero-detail2></app-hero-detail2>
+                    <app-hero-detail3></app-hero-detail3>
+                    <app-hero-detail4></app-hero-detail4>
+                    <app-hero-detail5></app-hero-detail5> -->
+
+                <hr>
+                    <nav>
+                      <button (click)="getHeroes()" class="btn btn-primary">
+                      Refresh
+                      </button>
+                      <a *ngFor="let hero of heroes | async" (click)="select(hero)">
+                                {{ hero.name }}
+                      </a>
+                    </nav>
+              <div *ngIf="selectedHero">
+                <hr>
+                  <h2>Hero Detail</h2>
+                  <h3>Editing: {{ selectedHero.name }}</h3>
+                  <app-hero-detail6 [hero]="selectedHero"></app-hero-detail6>
+                  <!-- <app-hero-detail7 [hero]="selectedHero"></app-hero-detail7>
+                        <app-hero-detail8 [hero]="selectedHero"></app-hero-detail8> -->
+              </div>
+
+          </div>
+
+
+  `
+};
+setValue = {
+  name: 'Set Value',
+  code: `
+  import { Component, Input, OnChanges } from '@angular/core';
+  import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+  import { Hero, Address, states } from '../data-model';
+
+  @Component({
+    selector: 'app-hero-detail7',
+    template: \`
+    <h2>Hero Detail</h2>
+    <h3>
+          <i>
+              PatchValue to initialize a value
+          </i>
+    </h3>
+    <form [formGroup]="heroForm" novalidate>
+    <div class="form-group">
+      <label class="center-block">Name:
+          <input class="form-control" formControlName="name">
+      </label>
+    </div>
+    <div formGroupName="address" class="well well-lg">
+      <h4>Secret Lair</h4>
+    <div class="form-group">
+      <label class="center-block">Street:
+          <input class="form-control" formControlName="street">
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="center-block">City:
+          <input class="form-control" formControlName="city">
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="center-block">State:
+          <select class="form-control" formControlName="state">
+                <option *ngFor="let state of states"
+                         [value]="state">
+                      {{ state }}
+                </option>
+          </select>
+      </label>
+    </div>
+      <div class="form-group">
+        <label class="center-block">Zip Code:
+          <input class="form-control" formControlName="zip">
+        </label>
+      </div>
+    </div>
+    <div class="form-group radio">
+        <h4>Super Power:</h4>
+        <label class="center-block">
+            <input type="radio" formControlName="power" value="flight">
+            Flight
+        </label>
+        <label class="center-block">
+            <input type="radio" formControlName="power" value="x-ray vision">
+            X-Ray Vision
+        </label>
+        <label class="center-block">
+            <input type="radio" formControlName="power" value="strength">
+            Strength
+        </label>
+    </div>
+    <div class="checkbox">
+            <label class="center-block">
+                  <input type="checkbox" formControlName="sidekick">
+                  I have a sidekick.
+            </label>
+    </div>
+  </form>
+
+  <p>Form value: {{ heroForm.value | json }}</p>
+  <h4>Extra info for the curious:</h4>
+  <p>Name value: {{ heroForm.get('name').value }}</p>
+
+  <p>Street value: {{ heroForm.get('address.street').value }}</p>
+
+
+    \`
+  })
+  export class HeroDetail7Component implements OnChanges {
+    @Input() hero: Hero;
+
+    heroForm: FormGroup;
+    states = states;
+
+    constructor(private formBuilder: FormBuilder) {
+      this.createForm();
+     }
+
+     createForm() {
+       this.heroForm = this.formBuilder.group({
+         name: ['', Validators.required ],
+         address: this.formBuilder.group(new Address()),
+         power: '',
+         sidekick: ''
+       });
+     }
+
+    ngOnChanges() {
+      this.heroForm.reset({
+        name: this.hero.name,
+        address: this.hero.addresses[0] || new Address()
+      });
+    }
+
+    ngOnChanges1() {
+      this.heroForm.reset();
+      this.heroForm.setValue({
+        name: this.hero.name,
+        address: this.hero.addresses[0] || new Address(),
+        power: 'strength',
+        sidekick: true
+      });
+    }
+
+  }
+
+   /*
+    Copyright 2017-2018 Google Inc. All Rights Reserved.
+    Use of this source code is governed by an MIT-style license that
+    can be found in the LICENSE file at https://angular.io/license
+    */
+
+
+  `
+};
+formArrayAddGroups = {
+  name: 'Form Array Add Groups',
+  code: `
+  import { Component, Input, OnChanges } from '@angular/core';
+  import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+  import { Hero, Address, states } from '../data-model';
+
+  @Component({
+    selector: 'app-hero-detail8',
+    template: \`
+    <h3>
+          <i>
+              Using FormArray to add Groups
+          </i>
+    </h3>
+    <form [formGroup]="heroForm" novalidate>
+    <p>Form Changed: {{ heroForm.dirty }}</p>
+    <div class="form-group">
+      <label class="center-block">Name:
+          <input class="form-control" formControlName="name">
+      </label>
+    </div>
+    <div formArrayName="secretLairs" class="well well-lg">
+
+    <div *ngFor="let address of secretLairs.controls; let i = index;" [formGroupName]="i">
+    <h4>Address #{{ i + 1 }}</h4>
+
+    <div style="margin-left: 1em;">
+    <div class="form-group">
+      <label class="center-block">Street:
+          <input class="form-control" formControlName="street">
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="center-block">City:
+          <input class="form-control" formControlName="city">
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="center-block">State:
+          <select class="form-control" formControlName="state">
+                <option *ngFor="let state of states"
+                         [value]="state">
+                      {{ state }}
+                </option>
+          </select>
+      </label>
+    </div>
+      <div class="form-group">
+        <label class="center-block">Zip Code:
+          <input class="form-control" formControlName="zip">
+        </label>
+      </div>
+    </div>
+    <br>
+  </div>
+  <button (click)="addLair()" type="button">Add Secret Lair</button>
+  </div>
+    <div class="form-group radio">
+        <h4>Super Power:</h4>
+        <label class="center-block">
+            <input type="radio" formControlName="power" value="flight">
+            Flight
+        </label>
+        <label class="center-block">
+            <input type="radio" formControlName="power" value="x-ray vision">
+            X-Ray Vision
+        </label>
+        <label class="center-block">
+            <input type="radio" formControlName="power" value="strength">
+            Strength
+        </label>
+    </div>
+    <div class="checkbox">
+            <label class="center-block">
+                  <input type="checkbox" formControlName="sidekick">
+                  I have a sidekick.
+            </label>
+    </div>
+  </form>
+
+  <p>Form value: {{ heroForm.value | json }}</p>
+
+
+    \`
+  })
+  export class HeroDetail8Component implements OnChanges {
+    @Input() hero: Hero;
+
+    heroForm: FormGroup;
+    states = states;
+
+
+    constructor(private formBuilder: FormBuilder) {
+      this.createForm();
+      this.logNameChanges();
+    }
+
+    createForm() {
+      this.heroForm = this.formBuilder.group({
+        name: [ '', Validators.required ],
+        secretLairs: this.formBuilder.array([]),
+        power: '',
+        sidekick: ''
+      });
+    }
+
+    logNameChanges() {
+      // TODO ...
+    }
+
+    ngOnChanges() {
+      this.heroForm.reset({
+        name: this.hero.name
+      });
+      this.setAddresses(this.hero.addresses);
+    }
+
+    get secretLairs(): FormArray {
+      return this.heroForm.get('secretLairs') as FormArray;
+    }
+
+    setAddresses(addresses: Address[]) {
+      const addressFormGroup = addresses.map(address => this.formBuilder.group(address));
+      const addressFormArray = this.formBuilder.array(addressFormGroup);
+      this.heroForm.setControl('secretLairs', addressFormArray);
+    }
+
+    addLair() {
+      this.secretLairs.push(this.formBuilder.group(new Address()));
+    }
+
+  }
+
+
+  `
+};
+finalReactiveCode = {
+  name: 'Final Reactive Forms Component Code',
+  code: `
+  import { Component, Input, OnChanges, OnDestroy } from '@angular/core';
+  import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+  import { Hero, Address, states } from '../data-model';
+  import { HeroService } from '../hero.service';
+
+  import { Subscription } from 'rxjs/Subscription';
+
+  @Component({
+    selector: 'app-hero-detail9',
+    template: \`
+
+      <form [formGroup]="heroForm" (ngSubmit)="onSubmit()" novalidate>
+      <div style="margin-bottom: 1em;">
+          <button type="submit"
+                  [disabled]="heroForm.pristine"
+                  class="btn btn-success">
+          Save
+          </button> &nbsp;
+          <button type="reset"
+                  (click)="revert()"
+                  [disabled]="heroForm.pristine"
+                  class="btn btn-danger">
+          Revert
+          </button>
+      </div>
+  <div class="form-group">
+  <label class="center-block">Name:
+    <input class="form-control" formControlName="name">
+  </label>
+  </div>
+  <div formArrayName="secretLairs" class="well well-lg">
+  <div *ngFor="let address of secretLairs.controls; let i = index;" [formGroupName]="i">
+  <h4>Address #{{ i + 1 }}</h4>
+  <div style="margin-left: 1em;">
+  <div class="form-group">
+  <label class="center-block">Street:
+    <input class="form-control" formControlName="street">
+  </label>
+  </div>
+  <div class="form-group">
+  <label class="center-block">City:
+    <input class="form-control" formControlName="city">
+  </label>
+  </div>
+  <div class="form-group">
+  <label class="center-block">State:
+    <select class="form-control" formControlName="state">
+          <option *ngFor="let state of states"
+                   [value]="state">
+                {{ state }}
+          </option>
+    </select>
+  </label>
+  </div>
+  <div class="form-group">
+  <label class="center-block">Zip Code:
+    <input class="form-control" formControlName="zip">
+  </label>
+  </div>
+  </div>
+  <br>
+  </div>
+  <button (click)="addLair()" type="button">Add Secret Lair</button>
+  </div>
+  <div class="form-group radio">
+  <h4>Super Power:</h4>
+  <label class="center-block">
+      <input type="radio" formControlName="power" value="flight">
+      Flight
+  </label>
+  <label class="center-block">
+      <input type="radio" formControlName="power" value="x-ray vision">
+      X-Ray Vision
+  </label>
+  <label class="center-block">
+      <input type="radio" formControlName="power" value="strength">
+      Strength
+  </label>
+  </div>
+  <div class="checkbox">
+      <label class="center-block">
+            <input type="checkbox" formControlName="sidekick">
+            I have a sidekick.
+      </label>
+  </div>
+  </form>
+
+  <p>Form value: {{ heroForm.value | json }}</p>
+
+  <h4>
+        Name change log
+  </h4>
+  <div *ngFor="let change of nameChangeLog">{{ change }}</div>
+
+    \`
+  })
+  export class HeroDetail9Component implements OnChanges, OnDestroy {
+    @Input() hero: Hero;
+
+    heroForm: FormGroup;
+    nameChangeLog: string[] = [];
+    states = states;
+
+    private heroUpdateSubscription: Subscription;
+
+    constructor(private formBuilder: FormBuilder,
+                private heroService: HeroService) {
+                  this.createForm();
+                  this.logNameChanges();
+                }
+
+    createForm() {
+      this.heroForm = this.formBuilder.group({
+        name: '',
+        secretLairs: this.formBuilder.array([]),
+        power: '',
+        sidekick: ''
+      });
+    }
+
+
+
+    logNameChanges() {
+      const nameControl = this.heroForm.get('name');
+      nameControl.valueChanges.forEach(
+        (value: string) => this.nameChangeLog.push(value)
+      );
+    }
+
+    ngOnChanges() {
+      this.heroForm.reset({
+        name: this.hero.name
+      });
+      this.setAddresses(this.hero.addresses);
+    }
+
+    get secretLairs(): FormArray {
+      return this.heroForm.get('secretLairs') as FormArray;
+    }
+
+    setAddresses(addresses: Address[]) {
+      const addressFormGroup = addresses.map(address => this.formBuilder.group(address));
+      const addressFormArray = this.formBuilder.array(addressFormGroup);
+      this.heroForm.setControl('secretLairs', addressFormArray);
+    }
+
+    addLair() {
+      this.secretLairs.push(this.formBuilder.group(new Address()));
+    }
+
+    onSubmit() {
+      this.hero = this.prepareSaveHero();
+      this.heroUpdateSubscription = this.heroService.updateHero(this.hero).subscribe();
+      this.ngOnChanges();
+    }
+
+    prepareSaveHero() {
+      const formModel = this.heroForm.value;
+
+      const secretLairsDeepCopy: Address[] = formModel.secretLairs.map(
+          (address: Address) => Object.assign({}, address)
+      );
+
+      const savedHero: Hero = {
+        id: this.hero.id,
+        name: formModel.name as string,
+        addresses: secretLairsDeepCopy
+      };
+      return savedHero;
+    }
+
+    revert() {
+      this.ngOnChanges();
+    }
+
+    logNameChange() {
+      const nameControl = this.heroForm.get('name');
+      nameControl.valueChanges.forEach((value: string) => {
+            this.nameChangeLog.push(value);
+      });
+
+    }
+
+    ngOnDestroy() {
+      this.heroUpdateSubscription.unsubscribe();
+    }
+
+  }
+
+
+  `
+};
+p100 = {
   name: '',
   code: ``
 };
-p93 = {
+p101 = {
   name: '',
   code: ``
 };
-p94 = {
+p102 = {
+  name: '',
+  code: ``
+};
+p103 = {
+  name: '',
+  code: ``
+};
+p104 = {
+  name: '',
+  code: ``
+};
+p105 = {
+  name: '',
+  code: ``
+};
+p106 = {
+  name: '',
+  code: ``
+};
+p107 = {
+  name: '',
+  code: ``
+};
+p108 = {
+  name: '',
+  code: ``
+};
+p109 = {
+  name: '',
+  code: ``
+};
+p110 = {
+  name: '',
+  code: ``
+};
+p112 = {
+  name: '',
+  code: ``
+};
+p113 = {
+  name: '',
+  code: ``
+};
+p114 = {
+  name: '',
+  code: ``
+};
+p115 = {
+  name: '',
+  code: ``
+};
+p116 = {
+  name: '',
+  code: ``
+};
+p117 = {
+  name: '',
+  code: ``
+};
+p118 = {
+  name: '',
+  code: ``
+};
+p119 = {
+  name: '',
+  code: ``
+};
+p120 = {
+  name: '',
+  code: ``
+};
+p121 = {
+  name: '',
+  code: ``
+};
+p122 = {
+  name: '',
+  code: ``
+};
+p123 = {
+  name: '',
+  code: ``
+};
+p124 = {
+  name: '',
+  code: ``
+};
+p125 = {
   name: '',
   code: ``
 };
