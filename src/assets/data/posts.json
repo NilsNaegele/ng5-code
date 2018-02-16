@@ -75,6 +75,11 @@
       "id": 15,
       "title": "Angular Dependency Injection",
       "date": "02/15/2018"
+    },
+    {
+      "id": 16,
+      "title": "Angular HttpClient",
+      "date": "02/16/2018"
     }
 	]
 }

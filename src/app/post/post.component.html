@@ -1116,65 +1116,179 @@
     The Economist. Why didn't I get a PHD? My professors all recommended this to me.
 </p>
 </div>
-<!-- <div *ngSwitchCase="16">
-  <h1></h1>
+<div *ngSwitchCase="16">
+  <h1>{{ httpClientInMemoryDataService.name }}</h1>
   <pre class="pre">
         <code class="code">
-
+          {{ httpClientInMemoryDataService.code }}
         </code>
   </pre>
-  <h1></h1>
+  <h1>{{ httpClientHeroesService.name }}</h1>
   <pre class="pre">
         <code class="code">
-
+          {{ httpClientHeroesService.code }}
         </code>
   </pre>
-  <h1></h1>
+  <h1>{{ httpClientHeroesComponent.name }}</h1>
   <pre class="pre">
         <code class="code">
-
+          {{ httpClientHeroesComponent.code }}
         </code>
   </pre>
-  <h1></h1>
+  <h1>{{ httpClientHeroesComponentCSS.name }}</h1>
   <pre class="pre">
         <code class="code">
-
+          {{ httpClientHeroesComponentCSS.code }}
         </code>
   </pre>
-  <h1></h1>
+  <h1>{{ httpClientMessageService.name }}</h1>
   <pre class="pre">
         <code class="code">
-
+          {{ httpClientMessageService.code }}
         </code>
   </pre>
-  <h1></h1>
+  <h1>{{ httpClientMessageComponent.name }}</h1>
   <pre class="pre">
         <code class="code">
-
+            {{ httpClientMessageComponent.code }}
         </code>
   </pre>
-  <h1></h1>
+  <h1>{{ httpClientAssetsConfigJSON.name }}</h1>
   <pre class="pre">
         <code class="code">
-
+          {{ httpClientAssetsConfigJSON.code }}
         </code>
   </pre>
-  <h1></h1>
+  <h1>{{ httpClientAssetsTextFile.name }}</h1>
   <pre class="pre">
         <code class="code">
-
+          {{ httpClientAssetsTextFile.code }}
         </code>
   </pre>
-  <h1></h1>
+  <h1>{{ httpClientConfigService.name }}</h1>
   <pre class="pre">
         <code class="code">
-
+            {{ httpClientConfigService.code }}
         </code>
   </pre>
-  <h1></h1>
+  <h1>{{ httpClientConfigComponent.name }}</h1>
   <pre class="pre">
         <code class="code">
-
+          {{ httpClientConfigComponent.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientDownloaderService.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientDownloaderService.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientDownloaderComponent.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientDownloaderComponent.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientUploaderService.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientUploaderService.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientUploaderComponent.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientUploaderComponent.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientPackageSearchService.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientPackageSearchService.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientPackageSearchComponent.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+            {{ httpClientPackageSearchComponent.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientAuthService.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientAuthService.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientErrorHandlerService.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientErrorHandlerService.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientRequestCacheService.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientRequestCacheService.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientAuthInterceptor.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientAuthInterceptor.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientCachingInterceptor.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientCachingInterceptor.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientEnsureHttpsInterceptor.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientEnsureHttpsInterceptor.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientLoggingInterceptor.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientLoggingInterceptor.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientNoopInterceptor.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientNoopInterceptor.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientTrimNameInterceptor.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+            {{ httpClientTrimNameInterceptor.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientUploadInterceptor.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientUploadInterceptor.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientGlobalStyles.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientGlobalStyles.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientAppModule.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientAppModule.code }}
+        </code>
+  </pre>
+  <h1>{{ httpClientAppComponent.name }}</h1>
+  <pre class="pre">
+        <code class="code">
+          {{ httpClientAppComponent.code }}
         </code>
   </pre>
 <h1>Reference Materials</h1>
@@ -1184,10 +1298,13 @@
     </li>
 </ul>
 <p>
-  ABC.XYZ
+  ARBEITE HART | SEI NETT | TUE MEHR ... WORK HARD | BE KIND | DO MORE ... TRAVAILLE DUR |
+  SOIT GENTIL | FAIT PLUS ...
+  https://nilsnaegele.gitbooks.io/angular-5-love-affair/
+  https://nilsnaegele.gitbooks.io/angular-4-love-affair/content/cover-page.html
 </p>
 </div>
-<div *ngSwitchCase="15">
+<!-- <div *ngSwitchCase="17">
   <h1></h1>
   <pre class="pre">
         <code class="code">
