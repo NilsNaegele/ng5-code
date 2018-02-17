@@ -80,6 +80,11 @@
       "id": 16,
       "title": "Angular HttpClient",
       "date": "02/16/2018"
+    },
+    {
+      "id": 17,
+      "title": "Angular Routing && Navigation",
+      "date": "02/17/2018"
     }
 	]
 }

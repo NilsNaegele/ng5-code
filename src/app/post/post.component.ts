@@ -7973,78 +7973,1533 @@ httpClientAppComponent = {
 
   `
 };
-p163 = {
+routingAppRoutingModule = {
+  name: 'App Routing Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { RouterModule, Routes } from '@angular/router';
+
+  import { SelectivePreloadingStrategy } from './selective-preloading-strategy';
+  import { AuthGuard } from './auth-guard.service';
+  import { CanDeactivateGuard } from './can-deactivate-guard.service';
+
+  import { ComposeMessageComponent } from './compose-message/compose-message.component';
+  import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+
+  const appRoutes: Routes = [
+    {
+      path: 'compose',
+      component: ComposeMessageComponent,
+      outlet: 'popup'
+    },
+    {
+      path: 'admin',
+      loadChildren: 'app/admin/admin.module#AdminModule',
+      canLoad: [ AuthGuard ]
+    },
+    {
+      path: 'crisis-center',
+      loadChildren: 'app/crisis-center/crisis-center.module#CrisisCenterModule',
+      data: { preload: true }
+    },
+    {
+      path: '',
+      redirectTo: '/superheroes',
+      pathMatch: 'full'
+    },
+    {
+      path: '**',
+      component: PageNotFoundComponent
+    }
+  ];
+
+  @NgModule({
+    imports: [
+      RouterModule.forRoot(appRoutes, {
+        preloadingStrategy: SelectivePreloadingStrategy
+      }) ],
+    exports: [ RouterModule ],
+    providers: [ SelectivePreloadingStrategy, CanDeactivateGuard ]
+  })
+  export class AppRoutingModule { }
+
+  `
+};
+routingAppModule = {
+  name: 'App Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+  import { FormsModule } from '@angular/forms';
+  import { RouterModule, Routes } from '@angular/router';
+
+  import { AppRoutingModule } from './app-routing.module';
+  import { HeroesModule } from './heroes/heroes.module';
+  import { LoginRoutingModule } from './login-routing.module';
+
+  import { DialogService } from './dialog-service';
+
+  import { AppComponent } from './app.component';
+  import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+  import { ComposeMessageComponent } from './compose-message/compose-message.component';
+  import { LoginComponent } from './login/login.component';
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      PageNotFoundComponent,
+      ComposeMessageComponent,
+      LoginComponent
+    ],
+    imports: [
+      BrowserModule,
+      BrowserAnimationsModule,
+      FormsModule,
+      HeroesModule,
+      LoginRoutingModule,
+      AppRoutingModule
+    ],
+    providers: [ DialogService ],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+
+  `
+};
+routingAppComponent = {
+  name: 'App Component',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1 class="title">Angular Router</h1>
+            <nav>
+                  <a routerLink="/crisis-center" routerLinkActive="active">Crisis Center</a>
+                  <a routerLink="/superheroes" routerLinkActive="active">Heroes</a>
+                  <a routerLink="/admin" routerLinkActive="active">Admin</a>
+                  <a routerLink="/login" routerLinkActive="active">Login</a>
+                  <a [routerLink]="[{ outlets: { popup: ['compose'] } }]">Contact</a>
+            </nav>
+            <router-outlet></router-outlet>
+            <router-outlet name="popup"></router-outlet>
+    \`
+  })
+  export class AppComponent { }
+
+  `
+};
+routingAnimations = {
+  name: 'Animations',
+  code: `
+
+  import { animate, AnimationEntryMetadata, state,
+    style, transition, trigger } from '@angular/core';
+
+export const slideInDownAnimation: AnimationEntryMetadata =
+ trigger('routeAnimation', [
+   state('*',
+     style({
+       opacity: 1,
+       transform: 'translateX(0)'
+     })
+   ),
+   transition(':enter', [
+     style({
+       opacity: 0,
+       transform: 'translateX(-100%)'
+     }),
+     animate('0.2s ease-in')
+   ]),
+   transition(':leave', [
+     animate('0.5s ease-out', style({
+       opacity: 0,
+       transform: 'translateY(100%)'
+     }))
+   ])
+]);
+
+  `
+};
+routingAuthGuard = {
+  name: 'Auth Guard',
+  code: `
+
+  import { Injectable } from '@angular/core';
+
+  import { CanActivate,
+           Router,
+           ActivatedRouteSnapshot,
+           RouterStateSnapshot,
+           CanActivateChild,
+           NavigationExtras,
+           CanLoad,
+           Route} from '@angular/router';
+
+  import { AuthService } from './auth.service';
+
+  @Injectable()
+  export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
+
+    constructor(private router: Router, private authService: AuthService) { }
+
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+      const url = state.url;
+      return this.checkLogin(url);
+    }
+
+
+    canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+      return this.canActivate(route, state);
+    }
+
+    canLoad(route: Route): boolean {
+      const url = \`/\${route.path}\`;
+      return this.checkLogin(url);
+    }
+
+    checkLogin(url: string): boolean {
+      if (this.authService.isLoggedIn) {
+        return true;
+      }
+
+      this.authService.redirectUrl = url;
+
+      const sessionId = 123456789;
+
+      const navigationExtras: NavigationExtras = {
+        queryParams: { 'session_id': sessionId },
+        fragment: 'anchor'
+      };
+
+      this.router.navigate(['/login'], navigationExtras);
+      return false;
+
+    }
+  }
+
+
+  `
+};
+routingAuthService = {
+  name: 'Auth Service',
+  code: `
+
+  import { Injectable } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/of';
+  import 'rxjs/add/operator/do';
+  import 'rxjs/add/operator/delay';
+
+  @Injectable()
+  export class AuthService {
+    isLoggedIn = false;
+
+    redirectUrl: string;
+
+    login(): Observable<boolean> {
+      return Observable.of(true).delay(1000).do(value => this.isLoggedIn = true);
+    }
+
+    logout(): void {
+      this.isLoggedIn = false;
+    }
+
+  }
+
+  `
+};
+routingCanDeactivateGuard = {
+  name: 'Can Deactivate Guard Service',
+  code: `
+
+  import { Injectable } from '@angular/core';
+  import { CanDeactivate } from '@angular/router';
+
+  import { Observable } from 'rxjs/Observable';
+
+  export interface CanComponentDeactivate {
+    canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
+  }
+
+  @Injectable()
+  export class CanDeactivateGuard implements CanDeactivate<CanComponentDeactivate> {
+    canDeactivate(component: CanComponentDeactivate) {
+      return component.canDeactivate ? component.canDeactivate() : true;
+    }
+
+  }
+
+  `
+};
+routingDialogService = {
+  name: 'Dialog Service',
+  code: `
+
+  import { Injectable } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/of';
+
+
+  @Injectable()
+  export class DialogService {
+
+    confirm(message?: string): Observable<boolean> {
+      const confirmation = window.confirm(message || 'Is it OK?');
+      return Observable.of(confirmation);
+    }
+
+  }
+
+  `
+};
+routingLoginRoutingModule = {
+  name: 'Login Routing Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { RouterModule, Routes } from '@angular/router';
+
+  import { AuthGuard } from './auth-guard.service';
+  import { AuthService } from './auth.service';
+
+  import { LoginComponent } from './login/login.component';
+
+  const loginRoutes: Routes = [
+      { path: 'login', component: LoginComponent }
+  ];
+
+  @NgModule({
+    imports: [
+      RouterModule.forChild(loginRoutes)
+    ],
+    exports: [
+      RouterModule
+    ],
+    providers: [
+      AuthGuard,
+      AuthService
+    ]
+  })
+  export class LoginRoutingModule { }
+
+  `
+};
+routingSPS = {
+  name: 'Selective Preloading Strategy',
+  code: `
+
+  import { Injectable } from '@angular/core';
+  import { Route, PreloadingStrategy } from '@angular/router';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/of';
+
+
+  @Injectable()
+  export class SelectivePreloadingStrategy implements PreloadingStrategy {
+         preloadedModules: string[] = [];
+
+         preload(route: Route, load: () => Observable<any>): Observable<any> {
+           if (route.data && route.data['preload']) {
+             this.preloadedModules.push(route.path);
+             console.log('Preloaded: ' + route.path);
+             return load();
+           } else {
+             return Observable.of(null);
+           }
+         }
+
+  }
+
+  `
+};
+routingAM = {
+  name: 'Admin Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { CommonModule } from '@angular/common';
+
+  import { AdminRoutingModule } from './admin-routing.module';
+
+  import { ManageCrisesComponent } from './manage-crises/manage-crises.component';
+  import { ManageHeroesComponent } from './manage-heroes/manage-heroes.component';
+  import { AdminComponent } from './admin/admin.component';
+  import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
+
+  @NgModule({
+    imports: [
+      CommonModule,
+      AdminRoutingModule
+    ],
+    declarations: [
+      ManageCrisesComponent,
+      ManageHeroesComponent,
+      AdminComponent,
+      AdminDashboardComponent
+    ]
+  })
+  export class AdminModule { }
+
+  `
+};
+routingARM = {
+  name: 'Admin Routing Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { RouterModule, Routes } from '@angular/router';
+
+  import { AuthGuard } from '../auth-guard.service';
+
+  import { ManageCrisesComponent } from './manage-crises/manage-crises.component';
+  import { ManageHeroesComponent } from './manage-heroes/manage-heroes.component';
+  import { AdminComponent } from './admin/admin.component';
+  import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
+
+
+  const adminRoutes: Routes = [
+        {
+          path: '',
+          component: AdminComponent,
+          canActivate: [ AuthGuard ],
+          children: [
+            {
+              path: '',
+              canActivateChild: [ AuthGuard ],
+              children: [
+                { path: 'crises', component: ManageCrisesComponent },
+                { path: 'heroes', component: ManageHeroesComponent },
+                { path: '', component: AdminDashboardComponent }
+              ]
+            }
+          ]
+        }
+  ];
+
+  @NgModule({
+    imports: [
+      RouterModule.forChild(adminRoutes)
+    ],
+    exports: [ RouterModule ]
+  })
+  export class AdminRoutingModule { }
+
+
+  `
+};
+routingAC = {
+  name: 'Admin Component',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-admin-dashboard',
+    template: \`
+              <h3>ADMIN</h3>
+                <nav>
+                    <a routerLink="./" routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+                    <a routerLink="./crises" routerLinkActive="active">Manage Crises</a>
+                    <a routerLink="./heroes" routerLinkActive="active">Manage Heroes</a>
+                </nav>
+              <router-outlet></router-outlet>
+    \`
+  })
+  export class AdminComponent { }
+
+  `
+};
+routingADC = {
+  name: 'Admin Dashboard Component',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+  import { ActivatedRoute } from '@angular/router';
+
+  import { SelectivePreloadingStrategy } from '../../selective-preloading-strategy';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/operator/map';
+
+  @Component({
+    selector: 'app-admin-dashboard',
+    template: \`
+            <p>Dashboard</p>
+
+            <p>Session ID: {{ sessionId | async }}</p>
+            <a id="anchor"></a>
+            <p>Token: {{ token | async }}</p>
+
+            Preloaded Modules
+            <ul>
+                <li *ngFor="let module of modules">
+                      {{ module }}
+                </li>
+            </ul>
+    \`
+  })
+  export class AdminDashboardComponent implements OnInit {
+        sessionId: Observable<string>;
+        token: Observable<string>;
+        modules: string[];
+
+        constructor(private route: ActivatedRoute,
+                    private selectivePreloadingStrategy: SelectivePreloadingStrategy) {
+                      this.modules = selectivePreloadingStrategy.preloadedModules;
+                     }
+
+       ngOnInit() {
+         this.sessionId = this.route.queryParamMap.map(params =>
+        params.get('session_id') || 'None');
+
+        this.token = this.route.fragment.map(fragment => fragment || 'None');
+       }
+
+   }
+
+
+  `
+};
+routingMCMH = {
+  name: 'Manage Heroes/Crises Components',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-manage-crises',
+    template: \`
+          <p>Manage your crises here</p>
+    \`
+  })
+  export class ManageCrisesComponent { }
+
+********************************************************
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-manage-heroes',
+  template: \`
+        <p>Manage your heroes here</p>
+  \`
+})
+export class ManageHeroesComponent { }
+
+  `
+};
+routingCMC = {
+  name: 'Compose Message Component',
+  code: `
+
+  import { Component, HostBinding } from '@angular/core';
+  import { Router } from '@angular/router';
+
+  import { slideInDownAnimation } from '../animations';
+
+  @Component({
+    selector: 'app-compose-message',
+    template: \`
+              <h3>Contact Crisis Center</h3>
+              <div *ngIf="details">
+                {{ details }}
+              </div>
+              <div>
+                  <div>
+                        <label>Message: </label>
+                  </div>
+                  <div>
+                        <textarea [(ngModel)]="message" rows="10" cols="35"
+                                  [disabled]="sending">
+                        </textarea>
+                  </div>
+              </div>
+              <p *ngIf="!sending">
+                  <button (click)="send()">Send</button>
+                  <button (click)="cancel()">Cancel</button>
+              </p>
+    \`,
+    styles: [':host { position: relative; bottom: 10%; '],
+    animations: [ slideInDownAnimation ]
+  })
+  export class ComposeMessageComponent {
+    @HostBinding('@routeAnimation') routeAnimation = true;
+    @HostBinding('style.display') display = 'block';
+    @HostBinding('style.position') position = 'absolute';
+
+    details: string;
+    message = '';
+    sending = false;
+
+    constructor(private router: Router) { }
+
+    send() {
+      this.sending = true;
+      this.details = 'Sending Message';
+
+      setTimeout(() => {
+        this.sending = false;
+        this.closePopup();
+      }, 1000);
+    }
+
+    cancel() {
+      this.closePopup();
+    }
+
+    closePopup() {
+      this.router.navigate([{ outlets: { popup: null }}]);
+    }
+
+  }
+
+  `
+};
+routingCMCS = {
+  name: 'Crisis Service',
+  code: `
+
+  import { Injectable } from '@angular/core';
+
+  import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+  import 'rxjs/add/operator/map';
+  import 'rxjs/add/observable/of';
+
+  export class Crisis {
+    constructor(public id: number, public name: string) { }
+  }
+
+  const CRISES = [
+      new Crisis(1, 'Dragon Burning Cities'),
+      new Crisis(2, 'Sky Rains Great White Sharks'),
+      new Crisis(3, 'Giant Asteroids Heading For Earth'),
+      new Crisis(4, 'Procrastinators Meeting Delayed Again')
+  ];
+
+  @Injectable()
+  export class CrisisService {
+    static nextCrisisId = 100;
+    private crises$: BehaviorSubject<Crisis[]> = new BehaviorSubject<Crisis[]>(CRISES);
+
+    getCrises() {
+      return this.crises$;
+    }
+
+    getCrisis(id: number | string) {
+      return this.getCrises().map(crises => crises.find(crisis => crisis.id === +id));
+    }
+
+    addCrisis(name: string) {
+      name = name.trim();
+      if (name) {
+        const crisis = new Crisis(CrisisService.nextCrisisId++, name);
+        CRISES.push(crisis);
+        this.crises$.next(CRISES);
+      }
+    }
+
+  }
+
+  `
+};
+routingCMCLC = {
+  name: 'Crisis List Component',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+  import { ActivatedRoute, ParamMap } from '@angular/router';
+
+  import { CrisisService, Crisis } from './crisis.service';
+  import { Observable } from 'rxjs/Observable';
+
+  @Component({
+    selector: 'app-crisis-list',
+    template: \`
+            <ul class="items">
+                <li *ngFor="let crisis of crises$ | async"
+                     [class.selected]="crisis.id === selectedId">
+                <a [routerLink]="[crisis.id]">
+                  <span class="badge">{{ crisis.id }}</span>{{ crisis.name }}
+                </a>
+                </li>
+            </ul>
+
+            <router-outlet></router-outlet>
+    \`
+  })
+  export class CrisisListComponent implements OnInit {
+    crises$: Observable<Crisis[]>;
+    selectedId: number;
+
+    constructor(private crisisService: CrisisService,
+                private route: ActivatedRoute) { }
+
+    ngOnInit() {
+      this.crises$ = this.route.paramMap.switchMap((params: ParamMap) => {
+            this.selectedId = +params.get('id');
+            return this.crisisService.getCrises();
+      });
+    }
+
+  }
+
+  `
+};
+routingCMCDC = {
+  name: 'Crisis Detail Component',
+  code: `
+
+  import { Component, OnInit, HostBinding } from '@angular/core';
+  import { ActivatedRoute, Router } from '@angular/router';
+
+  import { Crisis } from './crisis.service';
+  import { slideInDownAnimation } from '../animations';
+  import { DialogService } from '../dialog-service';
+
+  import { Observable } from 'rxjs/Observable';
+
+  @Component({
+    selector: 'app-crisis-detail',
+    template: \`
+            <div *ngIf="crisis">
+                  <h3>"{{ editName }}"</h3>
+                <div>
+                    <label>Id: </label>{{ crisis.id }}
+                </div>
+                <div>
+                    <label>Name: </label>
+                    <input [(ngModel)]="editName" placeholder="name">
+                </div>
+                <p>
+                      <button (click)="save()">Save</button>
+                      <button (click)="cancel()">Cancel</button>
+                </p>
+            </div>
+    \`,
+    styles: ['input { width: 20em; }'],
+    animations: [ slideInDownAnimation ]
+  })
+  export class CrisisDetailComponent implements OnInit {
+    @HostBinding('@routeAnimation') routeAnimation = true;
+    @HostBinding('style.display') display = 'block';
+    @HostBinding('style.position') position = 'absolute';
+
+    crisis: Crisis;
+    editName: string;
+
+    constructor(private route: ActivatedRoute,
+                private router: Router,
+                public dialogService: DialogService) { }
+
+    ngOnInit() {
+      this.route.data.subscribe((data: { crisis: Crisis }) => {
+            this.editName = data.crisis.name;
+            this.crisis = data.crisis;
+      });
+    }
+
+    cancel() {
+      this.gotoCrises();
+    }
+
+    save() {
+      this.crisis.name = this.editName;
+      this.gotoCrises();
+    }
+
+    canDeactivate(): Observable<boolean>| boolean {
+      if (!this.crisis || this.crisis.name === this.editName) {
+        return true;
+      }
+
+      return this.dialogService.confirm('Discard changes?');
+    }
+
+    gotoCrises() {
+      const crisisId = this.crisis ? this.crisis.id : null;
+      this.router.navigate(['../', { id: crisisId, foo: 'bar'}], { relativeTo: this.route });
+    }
+
+  }
+
+  `
+};
+routingCMCDR = {
+  name: 'Crisis Detail Resolver',
+  code: `
+
+  import { Injectable } from '@angular/core';
+  import { Router, Resolve, RouterStateSnapshot,
+           ActivatedRouteSnapshot } from '@angular/router';
+
+  import { CrisisService, Crisis } from './crisis.service';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/operator/take';
+  import 'rxjs/add/operator/map';
+
+  @Injectable()
+  export class CrisisDetailResolver implements Resolve<Crisis> {
+
+    constructor(private crisisService: CrisisService,
+                private router: Router) { }
+
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Crisis> {
+      const id = route.paramMap.get('id');
+
+      return this.crisisService.getCrisis(id).take(1).map(crisis => {
+        if (crisis) {
+          return crisis;
+        } else {
+          this.router.navigate(['/crisis-center']);
+          return null;
+        }
+      });
+    }
+
+  }
+
+  `
+};
+routingCMCCM = {
+  name: 'Crisis Center Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { CommonModule } from '@angular/common';
+  import { FormsModule } from '@angular/forms';
+
+  import { CrisisCenterRoutingModule } from './crisis-center-routing.module';
+
+  import { CrisisCenterHomeComponent } from './crisis-center-home.component';
+  import { CrisisCenterComponent } from './crisis-center.component';
+  import { CrisisDetailComponent } from './crisis-detail.component';
+  import { CrisisListComponent } from './crisis-list.component';
+
+  import { CrisisService } from './crisis.service';
+
+  @NgModule({
+    imports: [
+      CommonModule,
+      FormsModule,
+      CrisisCenterRoutingModule
+    ],
+    declarations: [
+      CrisisCenterHomeComponent,
+      CrisisCenterComponent,
+      CrisisDetailComponent,
+      CrisisListComponent
+    ],
+    providers: [
+      CrisisService
+    ]
+  })
+  export class CrisisCenterModule { }
+
+  `
+};
+routingCCC = {
+  name: 'Crisis Center Component',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-crisis-center',
+    template: \`
+            <h2>CRISIS CENTER</h2>
+            <router-outlet></router-outlet>
+    \`
+  })
+  export class CrisisCenterComponent { }
+
+  `
+};
+routingCMCCRM = {
+  name: 'Crisis Center Routing Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { RouterModule, Routes } from '@angular/router';
+
+  import { CrisisCenterHomeComponent } from './crisis-center-home.component';
+  import { CrisisCenterComponent } from './crisis-center.component';
+  import { CrisisDetailComponent } from './crisis-detail.component';
+  import { CrisisListComponent } from './crisis-list.component';
+
+  import { CanDeactivateGuard } from '../can-deactivate-guard.service';
+  import { CrisisDetailResolver } from './crisis-detail-resolver.service';
+
+  const crisisCenterRoutes: Routes = [
+      {
+        path: '',
+        component: CrisisCenterComponent,
+        children: [
+          {
+            path: '',
+            component: CrisisListComponent,
+            children: [
+              {
+                path: ':id',
+                component: CrisisDetailComponent,
+                canDeactivate: [ CanDeactivateGuard ],
+                resolve: {
+                  crisis: CrisisDetailResolver
+                }
+              },
+              {
+                path: '',
+                component: CrisisCenterHomeComponent
+              }
+            ]
+          }
+        ]
+      }
+
+  ];
+
+  @NgModule({
+    imports: [
+      RouterModule.forChild(crisisCenterRoutes)
+    ],
+    exports: [
+      RouterModule
+    ],
+    providers: [
+      CrisisDetailResolver
+    ]
+  })
+  export class CrisisCenterRoutingModule { }
+
+  `
+};
+routingCMCHC = {
+  name: 'Crisis Home Component',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-crisis-center-home',
+    template: \`
+        <p>Welcome to the Crisis Center</p>
+    \`
+  })
+  export class CrisisCenterHomeComponent  { }
+
+
+  `
+};
+routingHMHM = {
+  name: 'Heroes Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { CommonModule } from '@angular/common';
+  import { FormsModule } from '@angular/forms';
+
+  import { HeroesRoutingModule } from './heroes-routing.module';
+
+  import { HeroListComponent } from './hero-list.component';
+  import { HeroDetailComponent } from './hero-detail.component';
+
+  import { HeroService } from './hero.service';
+
+  @NgModule({
+    imports: [
+      CommonModule,
+      FormsModule,
+      HeroesRoutingModule
+    ],
+    declarations: [
+      HeroListComponent,
+      HeroDetailComponent
+    ],
+    providers: [ HeroService ]
+  })
+  export class HeroesModule { }
+
+  `
+};
+routingHMHRM = {
+  name: 'Heroes Routing Module',
+  code: `
+  import { NgModule } from '@angular/core';
+  import { RouterModule, Routes } from '@angular/router';
+
+  import { HeroListComponent } from './hero-list.component';
+  import { HeroDetailComponent } from './hero-detail.component';
+
+  const heroesRoutes: Routes = [
+    { path: 'heroes', redirectTo: '/superheroes' },
+    { path: 'hero/:id', redirectTo: '/superhero/:id' },
+    { path: 'superheroes', component: HeroListComponent },
+    { path: 'superhero/:id', component: HeroDetailComponent }
+  ];
+
+  @NgModule({
+    imports: [
+      RouterModule.forChild(heroesRoutes)
+    ],
+    exports: [ RouterModule ]
+  })
+  export class HeroesRoutingModule { }
+
+  `
+};
+routingHMHS = {
+  name: 'Hero Service',
+  code: `
+
+  import { Injectable } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/operator/map';
+  import 'rxjs/add/observable/of';
+
+
+  export class Hero {
+    constructor(public id: number, public name: string) { }
+  }
+
+  const HEROES = [
+    new Hero(11, 'Flash'),
+    new Hero(12, 'Wonderwoman'),
+    new Hero(13, 'Superman'),
+    new Hero(14, 'Spiderman'),
+    new Hero(15, 'Batman'),
+    new Hero(16, 'Green Arrow')
+  ];
+
+  @Injectable()
+  export class HeroService {
+
+    getHeroes() {
+      return Observable.of(HEROES);
+    }
+
+    getHero(id: number | string) {
+      return this.getHeroes().map(heroes => heroes.find(hero => hero.id === +id));
+    }
+
+  }
+
+  `
+};
+routingHMHLC = {
+  name: 'Hero List Component',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+  import { ActivatedRoute, ParamMap } from '@angular/router';
+
+  import { HeroService, Hero } from './hero.service';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/operator/switchMap';
+
+  @Component({
+    selector: 'app-hero-list',
+    template: \`
+                <h2>HEROES</h2>
+                <ul class="items">
+                    <li *ngFor="let hero of heroes$ | async"
+                         [class.selected]="hero.id === selectedId">
+                    <a [routerLink]="['/hero', hero.id]">
+                        <span class="badge">{{ hero.id }}</span>{{ hero.name }}
+                    </a>
+                    </li>
+                </ul>
+
+              <button routerLink="/sidekicks">Go to sidekicks</button>
+    \`
+  })
+  export class HeroListComponent implements OnInit {
+
+    heroes$: Observable<Hero[]>;
+
+    private selectedId: number;
+
+    constructor(private heroService: HeroService,
+                private route: ActivatedRoute) { }
+
+    ngOnInit() {
+      this.heroes$ = this.route.paramMap
+                     .switchMap((params: ParamMap) => {
+            this.selectedId = +params.get('id');
+            return this.heroService.getHeroes();
+      });
+    }
+
+  }
+
+  `
+};
+routingHMHDC = {
+  name: 'Hero Detail Component',
+  code: `
+  import { Component, OnInit, HostBinding } from '@angular/core';
+  import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+
+  import { slideInDownAnimation } from '../animations';
+  import { HeroService, Hero } from './hero.service';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/operator/switchMap';
+
+  @Component({
+    selector: 'app-hero-detail',
+    template: \`
+          <h2>HEROES</h2>
+          <div *ngIf="hero$ | async as hero">
+              <h3>"{{ hero.name }}"</h3>
+              <div>
+                  <label>ID: </label>{{ hero.id }}
+              </div>
+              <div>
+                  <label>Name: </label>
+                  <input [(ngModel)]="hero.name" placeholder="name">
+              </div>
+              <p>
+                  <button (click)="gotoHeroes(hero)">Back</button>
+              </p>
+          </div>
+
+    \`,
+    animations: [ slideInDownAnimation ]
+  })
+  export class HeroDetailComponent implements OnInit {
+    @HostBinding('@routeAnimation') routeAnimation = true;
+    @HostBinding('style.display') display = 'block';
+    @HostBinding('style.position') position = 'absolute';
+
+    hero$: Observable<Hero>;
+
+    constructor(private route: ActivatedRoute,
+                private router: Router,
+                private heroService: HeroService) { }
+
+    ngOnInit() {
+      this.hero$ = this.route.paramMap.switchMap((params: ParamMap) =>
+            this.heroService.getHero(params.get('id')));
+    }
+
+    gotoHeroes(hero: Hero) {
+      const heroId = hero ? hero.id : null;
+      this.router.navigate(['/heroes', { id: heroId, foo: 'bar' }]);
+    }
+
+  }
+
+  `
+};
+routingLC = {
+  name: 'Login Component',
+  code: `
+
+  import { Component, OnDestroy } from '@angular/core';
+  import { Router, NavigationExtras } from '@angular/router';
+
+  import { AuthService } from '../auth.service';
+  import { Subscription } from 'rxjs/Subscription';
+
+
+  @Component({
+    selector: 'app-login',
+    template: \`
+          <h2>LOGIN</h2>
+          <p>{{ message }}</p>
+          <p>
+              <button (click)="login()" *ngIf="!authService.isLoggedIn">Login</button>
+              <button (click)="logout()" *ngIf="authService.isLoggedIn">Logout</button>
+          </p>
+    \`
+  })
+  export class LoginComponent implements OnDestroy {
+    message: string;
+    authSubscription: Subscription;
+
+    constructor(public authService: AuthService, private router: Router) {
+      this.setMessage();
+     }
+
+     setMessage() {
+       this.message = 'Logged ' + (this.authService.isLoggedIn ? 'in' : 'out');
+     }
+
+     login() {
+       this.message = 'Trying to log in ...';
+       this.authSubscription = this.authService.login().subscribe(() => {
+         this.setMessage();
+         if (this.authService.isLoggedIn) {
+           const redirect = this.authService.redirectUrl ?
+           this.authService.redirectUrl : '/admin';
+           const navigationExtras: NavigationExtras = {
+             queryParamsHandling: 'preserve',
+             preserveFragment: true
+           };
+           this.router.navigate([redirect], navigationExtras);
+         }
+       });
+     }
+
+     logout() {
+       this.authService.logout();
+       this.setMessage();
+     }
+
+     ngOnDestroy() {
+       if (this.authSubscription !== undefined) {
+       this.authSubscription.unsubscribe();
+       }
+     }
+
+  }
+
+  `
+};
+routingPNFC = {
+  name: 'Page Not Found Component',
+  code: `
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-page-not-found',
+    template: \`
+            <h2>Page Not Found</h2>
+    \`
+  })
+  export class PageNotFoundComponent { }
+
+  `
+};
+routingRMAS = {
+  name: 'App Styles',
+  code: `
+  /* items class */
+  .items {
+    margin: 0 0 2em 0;
+    list-style-type: none;
+    padding: 0;
+    width: 24em;
+  }
+  .items li {
+    cursor: pointer;
+    position: relative;
+    left: 0;
+    background-color: #EEE;
+    margin: .5em;
+    padding: .3em 0;
+    height: 1.6em;
+    border-radius: 4px;
+  }
+  .items li a {
+    display: block;
+    text-decoration: none;
+  }
+  .items li:hover {
+    color: #607D8B;
+    background-color: #DDD;
+    left: .1em;
+  }
+  .items li.selected {
+    background-color: #CFD8DC;
+    color: white;
+  }
+  .items li.selected:hover {
+    background-color: #BBD8DC;
+  }
+  .items .text {
+    position: relative;
+    top: -3px;
+  }
+  .items .badge {
+    display: inline-block;
+    font-size: small;
+    color: white;
+    padding: 0.8em 0.7em 0 0.7em;
+    background-color: #607D8B;
+    line-height: 1em;
+    position: relative;
+    left: -1px;
+    top: -4px;
+    height: 1.8em;
+    margin-right: .8em;
+    border-radius: 4px 0 0 4px;
+  }
+
+  `
+};
+routingRMMS = {
+  name: 'Master Styles',
+  code: `
+
+  h1 {
+    color: #369;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 250%;
+  }
+  h2, h3 {
+    color: #444;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: lighter;
+  }
+  body {
+    margin: 2em;
+  }
+  body, input[text], button {
+    color: #888;
+    font-family: Cambria, Georgia;
+  }
+  a {
+    cursor: pointer;
+    cursor: hand;
+  }
+  button {
+    font-family: Arial;
+    background-color: #eee;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    cursor: hand;
+  }
+  button:hover {
+    background-color: #cfd8dc;
+  }
+  button:disabled {
+    background-color: #eee;
+    color: #aaa;
+    cursor: auto;
+  }
+
+  /* Navigation link styles */
+  nav a {
+    padding: 5px 10px;
+    text-decoration: none;
+    margin-right: 10px;
+    margin-top: 10px;
+    display: inline-block;
+    background-color: #eee;
+    border-radius: 4px;
+  }
+  nav a:visited, a:link {
+    color: #607D8B;
+  }
+  nav a:hover {
+    color: #039be5;
+    background-color: #CFD8DC;
+  }
+  nav a.active {
+    color: #039be5;
+  }
+
+  /* everywhere else */
+  * {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+
+  `
+};
+routingp196 = {
   name: '',
   code: ``
 };
-p164 = {
+routingp197 = {
   name: '',
   code: ``
 };
-p165 = {
+routingp198 = {
   name: '',
   code: ``
 };
-p166 = {
+routingp199 = {
   name: '',
   code: ``
 };
-p167 = {
+routingp200 = {
   name: '',
   code: ``
 };
-p168 = {
+p201 = {
   name: '',
   code: ``
 };
-p169 = {
+p202 = {
   name: '',
   code: ``
 };
-p170 = {
+p203 = {
   name: '',
   code: ``
 };
-p171 = {
+p204 = {
   name: '',
   code: ``
 };
-p172 = {
+p205 = {
   name: '',
   code: ``
 };
-p173 = {
+p206 = {
   name: '',
   code: ``
 };
-p174 = {
+p207 = {
   name: '',
   code: ``
 };
-p175 = {
+p208 = {
   name: '',
   code: ``
 };
-p176 = {
+p209 = {
   name: '',
   code: ``
 };
-p177 = {
+p210 = {
   name: '',
   code: ``
 };
-p178 = {
+p211 = {
   name: '',
   code: ``
 };
-p179 = {
+p212 = {
   name: '',
   code: ``
 };
-p180 = {
+p213 = {
   name: '',
   code: ``
 };
+p214 = {
+  name: '',
+  code: ``
+};
+p215 = {
+  name: '',
+  code: ``
+};
+p216 = {
+  name: '',
+  code: ``
+};
+p217 = {
+  name: '',
+  code: ``
+};
+p218 = {
+  name: '',
+  code: ``
+};
+p219 = {
+  name: '',
+  code: ``
+};
+p220 = {
+  name: '',
+  code: ``
+};
+p221 = {
+  name: '',
+  code: ``
+};
+p222 = {
+  name: '',
+  code: ``
+};
+p223 = {
+  name: '',
+  code: ``
+};
+p224 = {
+  name: '',
+  code: ``
+};
+p225 = {
+  name: '',
+  code: ``
+};
+p226 = {
+  name: '',
+  code: ``
+};
+p227 = {
+  name: '',
+  code: ``
+};
+p228 = {
+  name: '',
+  code: ``
+};
+p229 = {
+  name: '',
+  code: ``
+};
+p230 = {
+  name: '',
+  code: ``
+};
+p231 = {
+  name: '',
+  code: ``
+};
+p232 = {
+  name: '',
+  code: ``
+};
+p233 = {
+  name: '',
+  code: ``
+};
+p234 = {
+  name: '',
+  code: ``
+};
+p235 = {
+  name: '',
+  code: ``
+};
+p236 = {
+  name: '',
+  code: ``
+};
+p237 = {
+  name: '',
+  code: ``
+};
+p238 = {
+  name: '',
+  code: ``
+};
+p239 = {
+  name: '',
+  code: ``
+};
+p240 = {
+  name: '',
+  code: ``
+};
+p241 = {
+  name: '',
+  code: ``
+};
+p242 = {
+  name: '',
+  code: ``
+};
+
 
   goToTop() {
     document.body.scrollTop = document.documentElement.scrollTop = 0;
