@@ -85,6 +85,16 @@
       "id": 17,
       "title": "Angular Routing && Navigation",
       "date": "02/17/2018"
+    },
+    {
+      "id": 18,
+      "title": "Angular Quick Reference",
+      "date": "02/18/2018"
+    },
+    {
+      "id": 19,
+      "title": "Angular Testing",
+      "date": "02/19/2018"
     }
 	]
 }
