@@ -10794,143 +10794,767 @@ testingp228 = {
 
   `
 };
-testingp229 = {
+tsp229 = {
+  name: 'Constant-Named Properties',
+  code: `
+
+  const Foo = 'Foo';
+  const Bar = 'Bar';
+
+  let x = {
+    [Foo]: 100,
+    [Bar]: 'hello world'
+  };
+
+  let a = x[Foo]; // type number
+  let b = x[Bar]; // type string
+
+  `
+};
+tsp230 = {
+  name: 'Strict Class Initialization',
+  code: `
+
+  export class TypescriptComponent {
+
+    foo: number;
+    bar = 'hello world';
+    baz: boolean;
+
+    constructor() {
+      this.foo = 42;
+    }
+
+  }
+
+  `
+};
+tsp231 = {
+  name: 'Fixed Length Tuples',
+  code: `
+
+  interface NumberStringTuple extends Array<number | string> {
+    0: number;
+    1: string;
+    length: 2;
+}
+
+  `
+};
+tsp232 = {
+  name: 'Optional Catch Clause Variables',
+  code: `
+
+  let input = '...';
+  try {
+    JSON.parse(input);
+  }
+  catch {
+    console.log('invalid JSON ' + input);
+  }
+
+  `
+};
+tsp233 = {
+  name: 'String Enums',
+  code: `
+
+  enum Colors {
+    Red = 'RED',
+    Blue = 'BLUE',
+    Green = 'GREEN'
+  }
+
+  `
+};
+tsp234 = {
+  name: 'Improved Inference For Generics',
+  code: `
+
+  function arrayMap<T, U>(f: (x: T) => U): (a: T[]) => U[] {
+    return a => a.map(f);
+  }
+
+  const lengths: (a: string[]) => number[] = arrayMap(s => s.length);
+
+  `
+};
+tsp235 = {
+  name: 'Weak Type Detection',
+  code: `
+
+  interface Options {
+    data?: string;
+    timeout?: number;
+    maxRetries?: number;
+  }
+
+  `
+};
+tsp236 = {
+  name: 'Support For Mix-In Classes',
+  code: `
+
+  class Point {
+    constructor(public x: number, public y: number) { }
+  }
+
+  class Person {
+    constructor(public name: string) { }
+  }
+
+  type Constructor<T> = new(...args: any[]) => T;
+
+  function Tagged<T extends Constructor<{}>>(Base: T) {
+    return class extends Base {
+      _tag: string;
+      constructor(...args: any[]) {
+        super(...args);
+        this._tag = '';
+      }
+    };
+  }
+
+  const TaggedPoint = Tagged(Point);
+
+  let point = new TaggedPoint(100, 200);
+  point._tag = 'hello world';
+
+  class Customer extends Tagged(Person) {
+    accountBalance: number;
+  }
+
+  let customer = new Customer('John');
+  customer._tag = 'test';
+  customer.accountBalance = 1000000;
+
+
+  `
+};
+tsp237 = {
+  name: 'Object Type',
+  code: `
+
+  declare function create(obj: object | null): void;
+
+  create({ property: 100 });
+  create(null);
+
+  `
+};
+tsp238 = {
+  name: 'Keyof',
+  code: `
+
+  interface Person {
+    name: string;
+    age: number;
+    location: string;
+  }
+
+  type Key1 = keyof Person;
+  type Key2 = keyof Person[];
+  type Key3 = keyof { [x: string]: Person };
+
+  `
+};
+tsp239 = {
+  name: 'Mapped Types',
+  code: `
+
+  interface Person {
+    name: string;
+    age: number;
+    location: string;
+  }
+
+  interface PartialPerson {
+    name?: string;
+    age?: number;
+    location?: string;
+  }
+
+  type Partial<T> = {
+        [P in keyof T]?: T[P];
+  };
+
+  type PP = Partial<Person>;
+
+  `
+};
+tsp240 = {
+  name: 'Tagged Union Types',
+  code: `
+
+  interface Square {
+    kind: 'square';
+    size: number;
+  }
+
+  interface Rectangle {
+    kind: 'rectangle';
+    width: number;
+    height: number;
+  }
+
+  interface Circle {
+    kind: 'circle';
+    radius: number;
+  }
+
+  type Shape = Square | Rectangle | Circle;
+
+  function area(shape: Shape) {
+    switch (shape.kind) {
+      case 'square':
+          return shape.size * shape.size;
+      case 'rectangle':
+          return shape.height * shape.width;
+      case 'circle':
+          return Math.PI * shape.radius * shape.radius;
+    }
+  }
+
+  function test1(shape: Shape) {
+    if (shape.kind === 'square') {
+      shape;
+    } else {
+      shape;
+    }
+  }
+
+  function test2(shape: Shape) {
+    if (shape.kind === 'rectangle' || shape.kind === 'circle') {
+      return;
+    }
+    shape;
+  }
+
+  `
+};
+tsp241 = {
+  name: 'Type Parameters As Constraints',
+  code: `
+
+  function assign<T extends U, U>(target: T, source: U): T {
+    for (let id in source) {
+      target[id] = source[id];
+    }
+    return target;
+  }
+
+  `
+};
+tsp242 = {
+  name: 'Async Await Support',
+  code: `
+
+  async function logDelayed(elements: string[]) {
+    for (const element of elements) {
+      await delay(200);
+      console.log(element);
+    }
+  }
+
+  async function delay(ms: number) {
+    return new Promise<void>(resolve => {
+            setTimeout(resolve, ms);
+    });
+  }
+
+  logDelayed(['Hi', 'Baby', 'Beautiful', 'Asynchronous', 'Planet']).then(() => {
+    console.log();
+    console.log('Logged every element');
+  });
+
+  `
+};
+tsp243 = {
+  name: 'This Typing',
+  code: `
+
+  class BasicCalculator {
+
+    public constructor(protected value: number = 0) { }
+
+    public currentValue(): number {
+      return this.value;
+    }
+
+    public add(operand: number) {
+      this.value += operand;
+      return this;
+    }
+
+    public subtract(operand: number) {
+      this.value -= operand;
+      return this;
+    }
+
+    public multiply(operand: number) {
+      this.value *= operand;
+      return this;
+    }
+
+    public divide(operand: number) {
+      this.value /= operand;
+      return this;
+    }
+
+  }
+
+  class ScientificCalculator extends BasicCalculator {
+
+    public constructor(value = 0) {
+      super(value);
+    }
+
+    public square() {
+      this.value = this.value ** 2;
+      return this;
+    }
+
+    public sin() {
+      this.value = Math.sin(this.value);
+      return this;
+    }
+
+    public cos() {
+      this.value = Math.cos(this.value);
+      return this;
+    }
+
+  }
+
+  let value = new BasicCalculator(10).add(100).subtract(20).multiply(5)
+                                     .divide(9).currentValue();
+  let value1 = new ScientificCalculator(100).add(1000).sin().currentValue();
+
+  `
+};
+tsp244 = {
+  name: 'Abstract Classes/Methods Support',
+  code: `
+
+  abstract class Base {
+    abstract getLaid(): string;
+    getAGirlFriend() { return 'you sexy string ...'; }
+
+  }
+
+  class Derived extends Base {
+    getLaid() {
+      return 'super sex ... () => get married.';
+    }
+
+  }
+
+    const x: Base = new Derived();
+    console.log(x.getLaid());
+    console.log(x.getAGirlFriend());
+  `
+};
+tsp245 = {
+  name: 'Generic Type Aliases',
+  code: `
+
+  type Lazy<T> = T | (() => T);
+
+  let s: Lazy<string>;
+  s = 'eager';
+  s = () => 'lazy';
+
+  interface Tuple<A, B> {
+      a: A;
+      b: B;
+
+  }
+
+  type Pair<T> = Tuple<T, T>;
+
+  `
+};
+tsp246 = {
+  name: 'Support For ES6 Generators',
+  code: `
+
+  function *g(): Iterable<string> {
+    for (let i = 1; i < 4; i++) {
+      yield 'hi baby ' + i;
+    }
+  }
+
+  `
+};
+tsp247 = {
+  name: 'Decorators',
+  code: `
+
+  class C {
+    @readonly
+    @enumerable(false)
+    method() { }
+  }
+
+  function readonly(target, key, descriptor) {
+    descriptor.writable = false;
+  }
+
+  function enumerable(value) {
+    return function(target, key, descriptor) {
+      descriptor.enumerable = value;
+    };
+  }
+
+  `
+};
+tsp248 = {
+  name: 'Union Types',
+  code: `
+
+  interface RunOptions {
+    program: string;
+    terminal: string[] | string | (() => string);
+  }
+
+  private options: RunOptions;
+
+  this.options.terminal = 'hello world';
+  this.options.terminal = ['hello', 'world'];
+  this.options.terminal = () => 'hello world';
+
+
+  function formatTerminal(c: string | string[]) {
+    if (typeof c === 'string') {
+      return c.trim();
+    } else {
+      return c.join(',');
+    }
+  }
+
+  class Dog {
+    woof() {}
+  }
+
+  class Cat {
+    meow() {}
+  }
+
+  let pet: Dog | Cat;
+
+  if (pet instanceof Dog) {
+    pet.woof();
+  } else {
+    pet.meow();
+  }
+
+  type PrimitiveArray = Array<string | number | boolean>;
+  type MyNumber = number;
+  type callback = () => void;
+
+  `
+};
+tsp249 = {
+  name: 'Protected, Tuple Types',
+  code: `
+
+  class Female {
+    protected protectHer() { }
+  }
+
+  class MyWife extends Female {
+    public takeHerToTheMovies() {
+      this.protectHer();
+    }
+  }
+
+  let x: [string, number];
+  x = ['hello', 100];
+
+  const t = new MyWife();
+  t.takeHerToTheMovies();
+
+  `
+};
+tsp250 = {
+  name: 'Basic Types',
+  code: `
+
+  let isDone: boolean = false;
+  let decimal: number = 42;
+  let hex: number = 0xf00d;
+  let binary: number = 0b1010;
+  let octal: number = 0o744;
+
+  let color: string = 'red';
+
+  let fullName: string = 'Nils-Holger Nägele';
+  let age: number = 46;
+  let sentence: string = \`Hello, my name is \${ fullName }.
+  I'll be \${ age + 1 } years in 6 months.
+  \`;
+
+  let list: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
+
+  let list1: Array<number> = [9, 10, 11, 12, 13, 14, 15, 16];
+
+  let y: [string, number];
+  y = ['hi', 42];
+  console.log(y[0].substr(1));
+
+  enum Color { Red, Green, Blue }
+  let c: Color = Color.Red;
+  let colorName: string = Color[0];
+  console.log(colorName);
+
+  let notSure: any = 6;
+  notSure = 'she takes any and wants many ...';
+  notSure = false;
+
+  let list3: any[] = [1, true, 'free'];
+
+  let someValue: any = 'this is a string';
+  let strLength: number = (<string>someValue).length;
+  let strLength1: number = (someValue as string).length;
+
+  function greetUser(): void {
+    console.log('welcome in the pleasure dome ...');
+  }
+
+  function error(message: string): never {
+    throw new Error(message);
+  }
+
+  function infiniteLoop(): never {
+    while (true) {
+
+    }
+  }
+
+
+  `
+};
+tsp251 = {
+  name: 'Variable Declarations',
+  code: `
+
+  let hello = 'Hello';
+  console.log(theCityThatNeverSleepsAndProducesWorldBestSoftware());
+
+  for (let i = 1; i <= 1024; i++) {
+    setTimeout(() =>  console.log(i), 100 * i);
+  }
+
+  const eternalLife = 1000;
+
+  const input = [1, 2, 3, 4, 5];
+  const [first, second, third, fourth, fifth] = input;
+  console.log(third);
+  console.log(fourth);
+  f([100, 200]);
+
+  let [firstEntry, ...rest] = [1, 2, 3, 4, 5];
+  console.log(firstEntry);
+  console.log(rest);
+
+  const o = {
+      a: 'foo',
+      b: 42,
+      c: 'bar'
+  };
+  const { a, b } = o;
+
+  const winner = [1, 2];
+  const firstLooser = [3, 4];
+
+  const bothPlus = [0, ...winner, ...firstLooser, 5];
+
+  const theCityThatNeverSleepsAndProducesWorldBestSoftware = () => {
+    let getCity;
+    if (true) {
+      let city = 'Seattle';
+      getCity = () =>  city;
+    }
+    return getCity();
+  };
+
+  const f = ([first, second]: [ number, number]) => {
+    console.log(first);
+    console.log(second);
+  };
+
+  const keepWholeObject = (wholeObject: { a: string, b?: number }) => {
+    const { a, b = 1001 } = wholeObject;
+  };
+
+  `
+};
+tsp252 = {
+  name: 'Interfaces',
+  code: `
+
+  class Control {
+    private state: any;
+  }
+
+  interface SelectableControl extends Control {
+    select(): void;
+  }
+
+  class Button extends Control implements SelectableControl {
+    select() { }
+  }
+
+  class Textbox extends Control {
+    select() { }
+  }
+
+  class Location { }
+
+  interface Counter {
+    (start: number): string;
+    interval: number;
+    reset(): void;
+  }
+
+  function getCounter(): Counter {
+    let counter = <Counter>function (start: number) { };
+    counter.interval = 123;
+    counter.reset = () => { };
+    return counter;
+  }
+
+  let c = getCounter();
+  c(10);
+  c.reset();
+  c.interval = 10.0;
+
+  interface Shape {
+    color: string;
+  }
+
+  interface PenStroke {
+    penWidth: number;
+  }
+
+  interface Square extends Shape, PenStroke {
+    sideLength: number;
+  }
+
+  let square = <Square>{};
+  square.color = 'red';
+  square.sideLength = 10;
+  square.penWidth = 6.0;
+
+  interface ClockConstructor {
+    new (hour: number, minute: number, second: number): ClockInterface;
+  }
+
+  interface ClockInterface {
+    tick();
+  }
+
+  const createClock = (ctor: ClockConstructor,
+                       hour: number,
+                       minute: number,
+                       second: number): ClockInterface => {
+    return new ctor(hour, minute, second);
+  };
+
+  class DigitalClock implements ClockInterface {
+    constructor(h: number, m: number, s: number) { }
+    tick() {
+      console.log('beep beep');
+    }
+  }
+
+  class AnalogClock implements ClockInterface {
+    constructor(h: number, m: number, s: number) { }
+    tick() {
+      console.log('tick tock');
+    }
+  }
+
+  let digital = createClock(DigitalClock, 7, 15, 0);
+  let analog = createClock(AnalogClock, 12, 55, 59);
+
+  interface SearchFunc {
+    search?: string;
+    (source: string, subString: string): boolean;
+  }
+
+  const mySearch: SearchFunc = (src: string, sub: string) => {
+                  let result = src.search(sub);
+                  return result > -1;
+  };
+
+
+  interface SquareConfig {
+    color?: string;
+    width?: number;
+  }
+
+  const createSquare = (config: SquareConfig): { color: string, area: number } => {
+    let color = config.color ? config.color : 'red';
+    let area = config.width ? Math.pow(config.width, 2) : 100;
+    return { color, area };
+  };
+
+  let mySquare = createSquare({ color: 'green', width: 10 });
+
+
+  interface Point {
+    readonly x: number;
+    readonly y: number;
+  }
+
+  let p1: Point = { x: 8, y: 16 };
+
+
+
+  `
+};
+tsp253 = {
   name: '',
   code: ``
 };
-testingp230 = {
+tsp254 = {
   name: '',
   code: ``
 };
-testingp231 = {
+tsp255 = {
   name: '',
   code: ``
 };
-testingp232 = {
+tsp256 = {
   name: '',
   code: ``
 };
-testingp233 = {
+tsp257 = {
   name: '',
   code: ``
 };
-testingp234 = {
+tsp258 = {
   name: '',
   code: ``
 };
-testingp235 = {
+tsp259 = {
   name: '',
   code: ``
 };
-testingp236 = {
+tsp260 = {
   name: '',
   code: ``
 };
-testingp237 = {
+tsp261 = {
   name: '',
   code: ``
 };
-p238 = {
+tsp262 = {
   name: '',
   code: ``
 };
-p239 = {
-  name: '',
-  code: ``
-};
-p240 = {
-  name: '',
-  code: ``
-};
-p241 = {
-  name: '',
-  code: ``
-};
-p242 = {
-  name: '',
-  code: ``
-};
-p243 = {
-  name: '',
-  code: ``
-};
-p244 = {
-  name: '',
-  code: ``
-};
-p245 = {
-  name: '',
-  code: ``
-};
-p246 = {
-  name: '',
-  code: ``
-};
-p247 = {
-  name: '',
-  code: ``
-};
-p248 = {
-  name: '',
-  code: ``
-};
-p249 = {
-  name: '',
-  code: ``
-};
-p250 = {
-  name: '',
-  code: ``
-};
-p251 = {
-  name: '',
-  code: ``
-};
-p252 = {
-  name: '',
-  code: ``
-};
-p253 = {
-  name: '',
-  code: ``
-};
-p254 = {
-  name: '',
-  code: ``
-};
-p255 = {
-  name: '',
-  code: ``
-};
-p256 = {
-  name: '',
-  code: ``
-};
-p257 = {
-  name: '',
-  code: ``
-};
-p258 = {
-  name: '',
-  code: ``
-};
-p259 = {
-  name: '',
-  code: ``
-};
-p260 = {
-  name: '',
-  code: ``
-};
-p261 = {
-  name: '',
-  code: ``
-};
-p262 = {
-  name: '',
-  code: ``
-};
-p263 = {
+tsp263 = {
   name: '',
   code: ``
 };
