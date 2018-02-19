@@ -11339,7 +11339,7 @@ tsp251 = {
   code: `
 
   let hello = 'Hello';
-  console.log(theCityThatNeverSleepsAndProducesWorldBestSoftware());
+  console.log(theCityThatNeverSleepsAndProducesWorldsBestSoftware());
 
   for (let i = 1; i <= 1024; i++) {
     setTimeout(() =>  console.log(i), 100 * i);
@@ -11369,7 +11369,7 @@ tsp251 = {
 
   const bothPlus = [0, ...winner, ...firstLooser, 5];
 
-  const theCityThatNeverSleepsAndProducesWorldBestSoftware = () => {
+  const theCityThatNeverSleepsAndProducesWorldsBestSoftware = () => {
     let getCity;
     if (true) {
       let city = 'Seattle';
@@ -11510,33 +11510,596 @@ tsp252 = {
 
   let p1: Point = { x: 8, y: 16 };
 
+  `
+};
+tsp253 = {
+  name: 'Classes',
+  code: `
+  class Point {
+    a: number;
+    b: number;
+
+  }
+
+  interface Point3D extends Point {
+    c: number;
+  }
+
+  let point3D: Point3D = { a: 1, b: 2, c: 3 };
+
+  class Greeter {
+    greeting: string;
+    constructor(message: string) {
+      this.greeting = message;
+    }
+    greet() {
+      return 'Hello ' + this.greeting;
+    }
+  }
+
+  let greeter: Greeter;
+  greeter = new Greeter('World');
+  console.log(greeter.greet());
+
+  abstract class Department {
+    constructor(public name: string) { }
+
+    printName(): void {
+      console.log('Department name is: ' + this.name);
+    }
+
+    abstract printMeeting(): void;
+
+  }
+
+  class EngineeringDepartment extends Department {
+
+    constructor() {
+      super('Software Engineering');
+     }
+
+     printMeeting() {
+     console.log('The Engineering Department meets each Morning at 4:00 AM');
+     }
+
+     generateCharts(): void {
+       console.log('Generating Velocity and Burndown charts ...');
+     }
+  }
+
+  let department: Department;
+  department = new EngineeringDepartment();
+  department.printName();
+  department.printMeeting();
+
+  class Grid {
+
+    static origin = { x: 0, y: 0 };
+
+    constructor(public scale: number) {
+
+    }
+
+    calculateDistanceFromOrigin(point: { x: number; y: number; }) {
+      let xDist = (point.x - Grid.origin.x);
+      let yDist = (point.y - Grid.origin.y);
+      return Math.sqrt(xDist * xDist + yDist * yDist) / this.scale;
+    }
+
+  }
+
+  let grid1 = new Grid(1.0);
+  let grid2 = new Grid(5.0);
+  console.log(grid1.calculateDistanceFromOrigin({x: 10, y: 10}));
+  console.log(grid2.calculateDistanceFromOrigin({x: 10, y: 10}));
+
+  const passcode = 'secret_passcode';
+
+  class Employee {
+    private _fullName: string;
+
+    get fullName(): string {
+      return this._fullName;
+    }
+
+    set fullName(newName: string) {
+      if (passcode && passcode === 'secret_passcode') {
+        this._fullName = newName;
+      } else {
+        console.log('Error: Unauthorized update of employee!');
+      }
+    }
+
+  }
+
+  let employee = new Employee();
+  employee.fullName = 'John Blow';
+  if (employee.fullName) {
+    console.log(employee.fullName);
+  }
+
+
+  class Animal {
+    name: string;
+    constructor(theName: string) {
+      this.name = theName;
+    }
+    move(distanceInMeters: number = 0) {
+      console.log(\`\${this.name} moved \${distanceInMeters}m.\`);
+    }
+  }
+
+  class Snake extends Animal {
+    constructor(name: string) {
+      super(name);
+    }
+    move(distanceInMeters = 10) {
+      console.log('Slithering ...');
+      super.move(distanceInMeters);
+    }
+  }
+
+  class WorkStallion extends Animal {
+    constructor(name: string) {
+      super(name);
+    }
+    move(distanceInMeters = 150) {
+      console.log('Galloping ...');
+      super.move(distanceInMeters);
+    }
+
+  }
+
+  let nils = new Snake('Nils the Cobra');
+  let wally = new WorkStallion('Wally the Racer');
+
+  nils.move();
+  wally.move(200);
+
+  `
+};
+tsp254 = {
+  name: 'Functions',
+  code: `
+
+  function add(x: number, y: number): number {
+    return x + y;
+  }
+
+  let myAdd = (x: number, y: number): number => x + y;
+
+  let z = 100;
+
+  function addToZ(x, y) {
+    return x + y + z;
+  }
+
+  function buildName(firstName: string, lastName: string): string {
+    return firstName + ' ' + lastName;
+  }
+
+  let result1 = buildName('Mary', 'Fox');
+
+  const buildName1 = (firstName: string, lastName?: string): string =>  {
+              return lastName ? firstName + ' ' + lastName : firstName;
+  };
+
+  const buildName2 = (firstName: string, lastName = 'Blow'): string => firstName + lastName;
+
+  const buildName3 = (firstName = 'Will', lastName: string): string => firstName + lastName;
+
+  function buildName4(firstName: string, ...restOfNames: string[]) {
+    return firstName + ' ' + restOfNames.join(' ');
+  }
+
+  let employeeNames = buildName4('Joseph', 'Samuel', 'Lucas', 'Alice');
+
+  let buildNameFun: (fname: string, ...rest: string[]) => string = buildName4;
+
+  let deck = {
+          suits: ['hearts', 'spades', 'clubs', 'diamonds'],
+          cards: Array(52),
+          createCardPicker: function() {
+            return () => {
+              let pickedCard = Math.floor(Math.random() * 52);
+              let pickedSuit = Math.floor(pickedCard / 13);
+              return { suit: this.suits[pickedSuit], card: pickedCard % 13 };
+            };
+          }
+  };
+
+  let cardPicker = deck.createCardPicker();
+  let pickedCard = cardPicker();
+  console.log('card: ' + pickedCard.card + ' of ' + pickedCard.suit);
+
+  interface Card {
+    suit: string;
+    card: number;
+  }
+
+  interface Deck {
+    suits: string[];
+    cards: number[];
+    createCardSelector(this: Deck): () => Card;
+  }
+
+  const decker: Deck = {
+            suits: ['hearts', 'spades', 'clubs', 'diamonds'],
+            cards: Array(52),
+            createCardSelector: function(this: Deck) {
+              return () => {
+                let selectedCard = Math.floor(Math.random() * 52);
+                let selectedSuit = Math.floor(selectedCard / 13);
+
+                return { suit: this.suits[selectedSuit], card: selectedCard % 13 };
+              };
+            }
+  };
+
+  let cardSelector = decker.createCardSelector();
+  let selectedCard = cardSelector();
+
+  console.log('card: ' + selectedCard.card + ' of ' + selectedCard.suit);
+
+  `
+};
+tsp255 = {
+  name: 'Generics',
+  code: `
+
+  class BeeKeeper {
+    hasMask: boolean;
+  }
+
+  class ZooKeeper {
+    nameTag: string;
+  }
+
+  class Animal {
+    numberLegs: number;
+  }
+
+  class Bee extends Animal {
+    keeper: BeeKeeper;
+  }
+
+  class Giraffe extends Animal {
+    keeper: ZooKeeper;
+  }
+
+  const createInstance = <A extends Animal>(c: new () => A): A => new c();
+
+  createInstance(Giraffe).keeper.nameTag;
+  createInstance(Bee).keeper.hasMask;
+
+  const getProperty = <T, K extends keyof T>(obj: T, key: K) => obj[key];
+
+
+  let x = { a: 10, b: 20, c: 30, d: 40 };
+
+  console.log(getProperty(x, 'c'));
+
+  interface LengthWise {
+    length: number;
+  }
+
+  function loggingIdentity<T extends LengthWise>(arg: T): T {
+    console.log(arg.length);
+    return arg;
+  }
+
+  console.log(loggingIdentity({length: 10, value: 3}));
+
+  class GenericNumber<T> {
+      zeroValue: T;
+      add: (x: T, y: T) => T;
+  }
+
+
+  let myGenericNumber = new GenericNumber<number>();
+  myGenericNumber.zeroValue = 0;
+  myGenericNumber.add = (a, b) => a + b;
+
+  console.log(myGenericNumber.add(myGenericNumber.zeroValue, 42));
+
+  interface GenericIdentityFn<T> {
+    search?: T;
+    (arg: T): T;
+  }
+
+  const identity = <T>(arg: T): T => arg;
+
+  let myIdentity: GenericIdentityFn<number> = identity;
+
+  console.log(identity<string>('herString'));
+  console.log(identity<number>(42));
+  console.log(identity<boolean>(true));
+  console.log(identity<any>('she wants many ...'));
 
 
   `
 };
-tsp253 = {
-  name: '',
-  code: ``
-};
-tsp254 = {
-  name: '',
-  code: ``
-};
-tsp255 = {
-  name: '',
-  code: ``
-};
 tsp256 = {
-  name: '',
-  code: ``
+  name: 'Enums',
+  code: `
+
+  const enum Directions { North, South, East, West }
+
+  let directions = [ Directions.North, Directions.South, Directions.East, Directions.West ];
+
+  enum E {
+    X, Y, Z
+  }
+
+  const f = (obj: { X: number }) => obj.X;
+
+  console.log(f(E));
+
+  enum ShapeKind {
+    Circle,
+    Square
+  }
+
+  interface Circle {
+    kind: ShapeKind.Circle;
+    radius: number;
+  }
+
+  interface Square {
+    kind: ShapeKind.Square;
+    sideLength: number;
+  }
+
+  let c: Circle = {
+    kind: ShapeKind.Circle,
+    radius: 15
+  };
+
+  enum FileAccess {
+    None,
+    Read = 1 << 1,
+    Write = 1 << 2,
+    ReadWrite = Read | Write,
+    G = 'ABC'.length
+  }
+
+  console.log(FileAccess.Write + '' + FileAccess.Read);
+
+  enum Direction {
+    Up = 'UP',
+    Down = 'DOWN',
+    Left = 'LEFT',
+    Right = 'RIGHT'
+  }
+
+  console.log(Direction.Right);
+
+  `
 };
 tsp257 = {
-  name: '',
-  code: ``
+  name: 'Iterators and Generators',
+  code: `
+
+  let someArray = [1, 'string', true];
+
+  for (let entry of someArray) {
+    console.log(entry);
+  }
+
+  for (let entry in someArray) {
+    if (someArray.hasOwnProperty(entry)) {
+    console.log(entry);
+    }
+  }
+
+  let pets = new Set(['Dog', 'Cat', 'Rabbit']);
+  pets['species'] = 'mammals';
+
+  for (let pet in pets) {
+    if (pets.hasOwnProperty(pet)) {
+    console.log(pet);
+    }
+  }
+
+  let numbers = [1, 13, 33, 71, 100];
+  for (let num of numbers) {
+    console.log(num);
+  }
+
+
+  `
 };
 tsp258 = {
-  name: '',
-  code: ``
+  name: 'Decorators',
+  code: `
+
+  import 'reflect-metadata';
+
+  function c() {
+    console.log('c(): evaluated');
+    return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
+      console.log('c(): called');
+    };
+  }
+
+  function p() {
+    console.log('p(): evaluated');
+    return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
+      console.log('p(): called');
+    };
+  }
+
+  class C {
+      @c()
+      @p()
+      method() { }
+  }
+
+
+  @sealed
+  class Greeter {
+    greeting: string;
+    constructor(message: string) {
+      this.greeting = message;
+    }
+    @enumerable(false)
+    greet() {
+      return 'Hey, ' + this.greeting;
+    }
+  }
+
+  function enumerable(value: boolean) {
+    return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+      descriptor.enumerable = value;
+    };
+  }
+
+  function sealed(constructor: Function) {
+    Object.seal(constructor);
+    Object.seal(constructor.prototype);
+  }
+
+  console.log(new Greeter('Marie').greet());
+
+  function classDecorator<T extends { new(...args: any[]): {}}>(constructor: T) {
+    return class extends constructor {
+      newProperty = 'new property';
+      hello = 'override';
+    };
+  }
+
+  @classDecorator
+  class Greeter1 {
+    property = 'property';
+    hello: string;
+    constructor(msg: string) {
+      this.hello = msg;
+    }
+  }
+
+  console.log(new Greeter1('world'));
+
+
+  class Point {
+        private _x: number;
+        private _y: number;
+
+        constructor(x: number, y: number) {
+          this._x = x;
+          this._y = y;
+        }
+
+        @configurable(false)
+        get x() { return this._x; }
+
+        @configurable(false)
+        get y() { return this._y; }
+  }
+
+  function configurable(value: boolean) {
+    return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+      descriptor.configurable = value;
+    };
+  }
+
+  console.log(new Point(1, 10).x);
+
+  class Greeter2 {
+    @format('Hello, %s')
+    greeting: string;
+
+    constructor(message: string) {
+      this.greeting = message;
+    }
+
+    greet() {
+      let formatString = getFormat(this, 'greeting');
+      return formatString.replace('%s', this.greeting);
+    }
+  }
+
+  const formatMetadataKey = Symbol('format');
+
+  function format(formatString: string) {
+    return Reflect.metadata(formatMetadataKey, formatString);
+  }
+  function getFormat(target: any, propertyKey: string) {
+    return Reflect.getMetadata(formatMetadataKey, target, propertyKey);
+  }
+
+  class Greeter3 {
+    greeting: string;
+    constructor(message: string) {
+      this.greeting = message;
+    }
+    @validate
+    greet(@required name: string) {
+      return 'Hey, ' + name + ', ' + this.greeting;
+    }
+  }
+
+  const requireMetadataKey = Symbol('required');
+
+  function required(target: Object, propertyKey: string | symbol, parameterIndex: number) {
+    let existingRequiredParameters: number[] = Reflect.getOwnMetadata(requireMetadataKey,
+    target, propertyKey) || [];
+    existingRequiredParameters.push(parameterIndex);
+    Reflect.defineMetadata(requireMetadataKey, existingRequiredParameters,
+      target, propertyKey);
+  }
+
+  function validate(target: any, propertyName: string,
+                    descriptor: TypedPropertyDescriptor<Function>) {
+                      let method = descriptor.value;
+                      descriptor.value = function() {
+                        let requiredParameters: number[] =
+                                                Reflect.getOwnMetadata(requireMetadataKey,
+                        target, propertyName);
+                        if (requiredParameters) {
+                            for (let parameterIndex of requiredParameters) {
+                              if (parameterIndex >= arguments.length ||
+                                arguments[parameterIndex] === undefined) {
+                                  throw new Error('Missing required argument.');
+                                }
+                            }
+                        }
+                        return method.apply(this, arguments);
+                      };
+                    }
+  console.log(new Greeter3('what\'s up?').greet('Nils-Holger'));
+
+  class Point1 {
+    x: number;
+    y: number;
+  }
+
+  class Line {
+    private _p0: Point;
+    private _p1: Point;
+
+    @validate1
+    set p0(value: Point) { this._p0 = value; }
+    get p0() { return this._p0; }
+
+    @validate1
+    set p1(value: Point) { this._p1 = value; }
+    get p1() { return this._p1; }
+
+  }
+
+  function validate1<T>(target: any, propertyKey: string,
+    descriptor: TypedPropertyDescriptor<T>) {
+    let set = descriptor.set;
+    descriptor.set = function(value: T) {
+      let type = Reflect.getMetadata('design:type', target, propertyKey);
+      if (!(value instanceof type)) {
+        throw new TypeError('Invalid type.');
+      }
+      set(value);
+    };
+  }
+
+  `
 };
 tsp259 = {
   name: '',
