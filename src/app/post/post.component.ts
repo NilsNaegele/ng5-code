@@ -12101,171 +12101,1020 @@ tsp258 = {
 
   `
 };
-tsp259 = {
+apip259 = {
+  name: 'Currency Pipe',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>Currency Pipe</h1>
+
+            <p>A: {{ a | currency }}</p>
+
+            <p>A: {{ a | currency:'EUR' }}</p>
+
+            <p>A: {{ a | currency:'EUR':'code' }}</p>
+
+            <p>B: {{ b | currency:'EUR':'symbol':'4.2-2' }}</p>
+
+            <p>B: {{ b | currency:'EUR':'symbol-narrow':'4.2-2' }}</p>
+
+            <p>B: {{ b | currency:'EUR':'symbol':'4.2-2':'de' }}</p>
+
+    \`
+  })
+  export class ApiComponent {
+
+    a: number = 0.259;
+    b: number = 1.3495;
+
+  }
+
+  `
+};
+apip260 = {
+  name: 'JSON Pipe',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>JSON Pipe</h1>
+
+              <div>
+                <p>Without JSON pipe:</p>
+                <pre>{{ object }}</pre>
+                <p>With JSON pipe:</p>
+                <pre>{{ object | json }}</pre>
+              </div>
+
+    \`
+  })
+  export class ApiComponent {
+
+    object: Object = { foo: 'bar', baz: 'qux',
+                       nested: { xyz: 33, numbers: [1, 2, 3, 4, 5, 6]}};
+
+  }
+
+  `
+};
+apip261 = {
+  name: 'Lower/UpperCase Pipe',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>Lower/Uppercase Pipe</h1>
+             <div>
+                <label>Name: </label><input #name (keyup)="change(name.value)" type="text">
+                <p>In lowercase: <pre>'{{ value | lowercase }}'</pre>
+                <p>In uppercase: <pre>'{{ value | uppercase }}'</pre>
+            </div>
+    \`
+  })
+  export class ApiComponent {
+
+    value = 'Hi baby';
+    change(value: string) {
+      this.value = value;
+    }
+
+  }
+
+  `
+};
+apip262 = {
+  name: 'NgForOf Directive',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/from';
+
+  @Directive({
+    selector: '[ngFor][ngForOf]'
+  })
+  class NgForOf<T> implements DoCheck, OnChanges {
+    ngForOf: NgIterable<T>
+    ngForTrackBy: TrackByFunction<T>
+    set ngForTemplate: TemplateRef<NgForOfContext<T>>
+    ngOnChanges(changes: SimpleChanges): void
+    ngDoCheck(): void
+  }
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>NgForOf Directive</h1>
+             <div>
+                    <ul>
+                        <li *ngFor="let user of userObservable | async as users;
+                                    index as i; first as isFirst;">
+                            {{ i + 1 }}/{{ users.length}}.{{ user }}
+                            <span *ngIf="isFirst">default</span>
+                        </li>
+                    </ul>
+                    <ul>
+                          <li *ngFor="let item of items; index as i; trackBy: trackByFn">
+                                 {{ i }} {{ item }}
+                          </li>
+                    </ul>
+
+                    <div *ngFor="let hero of heroes; let i = index; let odd = odd;
+                    trackBy: trackById;" [class.odd]="odd">
+                      ({{ i }}) {{ hero.name }}
+                    </div>
+
+                    <ng-template ngFor let-hero [ngForOf]="heroes" let-i="index"
+                    let-odd="odd" [ngForTrackBy]="trackById">
+                      <div [class.odd]="odd">
+                          ({{ i }}) {{ hero.name }}
+                      </div>
+                    </ng-template>
+
+            </div>
+    \`
+  })
+  export class ApiComponent {
+
+    private names = ['Flash', 'Wonderwoman', 'Superman', 'Spiderman', 'Green Arrow'];
+    heroes = [{ name: 'Nils' }, { name: 'Carmen' }, { name: 'Igor' }, { name: 'Misko'},
+    { name: 'Hans' }, { name: 'Alex' }, { name: 'Rob' },
+    { name: 'Stephen' }, { name: 'Tobias'}];
+    items = ['Computer', 'Mobile Device', 'Watch', 'Chromebook'];
+
+    userObservable: Observable<string[]>;
+
+
+    constructor() {
+      this.userObservable = Observable.from([this.names]);
+    }
+
+    trackByFn(idx: number, item: any) {
+      console.log(idx, item);
+    }
+
+    trackById(id: number, hero: any) {
+      console.log(id, hero);
+    }
+
+  }
+
+  `
+};
+apip263 = {
+  name: 'NgPlural Directive',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { NgPlural } from '@angular/common';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>NgPlural Directive</h1>
+            <div [ngPlural]="value">
+                  <ng-template ngPluralCase="0">there is nothing</ng-template>
+                  <ng-template ngPluralCase="1">there is one</ng-template>
+                  <ng-template ngPluralCase="2">there are a couple</ng-template>
+            </div>
+    \`
+  })
+  export class ApiComponent {
+
+        values = [0, 1, 2];
+        value = this.values[2];
+
+  }
+
+  `
+};
+apip264 = {
+  name: 'NgSwitch Directive',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>NgSwitch Directive</h1>
+              <ng-container [ngSwitch]="hero?.emotion">
+                  <div *ngSwitchCase="'happy'">{{ hero.name }} is {{ hero.emotion}}.</div>
+                  <div *ngSwitchCase="'angry'">{{ hero.name }} is {{ hero.emotion}}.</div>
+                  <div *ngSwitchCase="'indifferent'">{{ hero.name }} is {{ hero.emotion}}.
+                  </div>
+                  <div *ngSwitchDefault>no emotions.</div>
+              <ng-container>
+
+    \`
+  })
+  export class ApiComponent {
+
+        hero = { name: 'Flash', emotion: 'indifferent' };
+
+  }
+
+  `
+};
+apip265 = {
+  name: 'Async Pipe',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import { Subscriber } from 'rxjs/Subscriber';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>Async Pipe</h1>
+                <div>
+                    <code>observable | async</code>:
+                    Time: {{ time | async }}
+
+                </div>
+              <div>
+                  <code>promise | async</code>:
+                  <button (click)="clicked()">
+                      {{ arrived ? 'Reset' : 'Resolve' }}
+                  </button>
+                  <span>Wait for it ... {{ greeting | async }}</span>
+              </div>
+    \`
+  })
+  export class ApiComponent {
+      time = new Observable<string>((observer: Subscriber<string>) => {
+          setInterval(() => observer.next(new Date().toString()), 1000);
+      });
+
+
+      greeting: Promise<string> | null = null;
+      arrived: boolean = false;
+
+      private resolve: Function | null = null;
+
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.arrived = false;
+        this.greeting = new Promise<string>((resolve, reject) => { this.resolve = resolve; });
+      }
+
+      clicked() {
+        if (this.arrived) {
+          this.reset();
+        } else {
+          this.resolve !('hi baby!!!');
+          this.arrived = true;
+        }
+      }
+
+
+  }
+
+
+
+  `
+};
+apip266 = {
+  name: 'Date Pipe',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>Date Pipe</h1>
+
+            <p>Today is {{ today | date }}</p>
+            <p>Or if you prefer, {{ today | date:'fullDate' }}</p>
+            <p>The time is {{ today | date:'shortTime' }}</p>
+            <p>The full date/time is {{ today | date:'full' }}</p>
+            <p>The full date/time in german is: {{ today | date:'full':'':'de' }}</p>
+            <p>The custom date is {{ today | date:'dd-MM-yyyy HH:mm:ss a z':'+0100' }}</p>
+            <p>The custom date with fixed timezone is
+            {{ fixedTimezone | date:'dd-MM-yyyy HH:mm:ss a z':'+0100' }}</p>
+    \`
+  })
+  export class ApiComponent {
+    today = Date.now();
+    fixedTimezone = '2018-02-20T11:35:42+0100';
+
+  }
+
+
+  `
+};
+apip267 = {
+  name: 'NgClass Directive',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>NgClass Directive</h1>
+            <div [ngClass]="currentClasses">
+                This div is initially saveable, unchanged and special.
+            </div>
+
+    \`,
+    styles: [\`.saveable { font-size: 150%; }
+              .modified { background-color: yellow; }
+              .special { color: red; }
+            \`]
+  })
+  export class ApiComponent {
+        currentClasses: {};
+        canSave = true;
+        isUnchanged = true;
+        isSpecial = true;
+
+        constructor() {
+          this.setCurrentClasses();
+        }
+
+        setCurrentClasses() {
+          this.currentClasses = {
+            'saveable': this.canSave,
+            'modified': !this.isUnchanged,
+            'special': this.isSpecial
+          };
+        }
+
+  }
+
+  `
+};
+apip268 = {
+  name: 'Percent Pipe',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>Percent Pipe</h1>
+            <p>A: {{ a | percent }}</p>
+            <p>B: {{ b | percent:'4.3-5' }}</p>
+            <p>B: {{ b | percent:'4.3-5':'de' }}</p>
+    \`
+  })
+  export class ApiComponent {
+        a: number = 0.259;
+        b: number = 1.3495;
+
+  }
+
+  `
+};
+apip269 = {
+  name: 'Decimal Pipe',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>Decimal Pipe</h1>
+            <p>e (no formatting): {{ e | number }}</p>
+            <p>e (3.1-5): {{ e | number:'3.1-5' }}</p>
+            <p>e (4.5-5): {{ e | number:'4.5-5' }}</p>
+            <p>e (german): {{ e | number:'4.5-5':'de' }}</p>
+
+            <p>pi (no formatting): {{ pi | number }}</p>
+            <p>pi (3.1-5): {{ pi | number:'3.1-5' }}</p>
+            <p>pi (3.5-5): {{ pi | number:'3.5-5' }}</p>
+
+    \`
+  })
+  export class ApiComponent {
+        pi: number = 3.14;
+        e: number = 2.718281828459045;
+
+  }
+
+  `
+};
+apip270 = {
+  name: 'NgIf Directive',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>NgIf Directive</h1>
+            <button (click)="show = !show">{{ show ? 'hide' : 'show' }}</button>
+            show = {{ show }}
+            <br>
+            <div *ngIf="show; else elseBlock">Text to show</div>
+            <ng-template #elseBlock>Alternate text while primary text is hidden</ng-template>
+    \`
+  })
+  export class ApiComponent {
+          show: boolean = true;
+
+  }
+
+*****************************************************************
+
+import { Component, ViewChild, TemplateRef, OnInit } from '@angular/core';
+
+
+@Component({
+  selector: 'app-ng-api',
+  template: \`
+          <h1>NgIf Directive</h1>
+          <button (click)="show = !show">{{ show ? 'hide' : 'show' }}</button>
+          <button (click)="switchPrimary()">Switch Primary</button>
+          show = {{ show }}
+          <br>
+          <div *ngIf="show; then thenBlock; else elseBlock">this is ignored</div>
+          <ng-template #primaryBlock>Primary text to show</ng-template>
+          <ng-template #secondaryBlock>Secondary text to show</ng-template>
+          <ng-template #elseBlock>Alternate text while primary text is hidden</ng-template>
+  \`
+})
+export class ApiComponent implements OnInit {
+        thenBlock: TemplateRef<any> | null = null;
+        show: boolean = true;
+
+        @ViewChild('primaryBlock')
+        primaryBlock: TemplateRef<any> | null = null;
+        @ViewChild('secondaryBlock')
+        secondaryBlock: TemplateRef<any> | null = null;
+
+        switchPrimary() {
+          this.thenBlock = this.thenBlock === this.primaryBlock ?
+                           this.secondaryBlock : this.primaryBlock;
+        }
+
+        ngOnInit() {
+          this.thenBlock = this.primaryBlock;
+        }
+
+}
+
+*****************************************************************
+
+import { Component } from '@angular/core';
+
+import { Subject } from 'rxjs/Subject';
+
+@Component({
+  selector: 'app-ng-api',
+  template: \`
+          <h1>NgIf Directive</h1>
+          <button (click)="nextUser()">Next User</button>
+          <br>
+          <div *ngIf="userObservable | async as user; else loading;">
+              Hello {{ user.last }}, {{ user.first }}!
+          </div>
+          <ng-template #loading let-user>Waiting ...
+                                (user is {{ user | json }} )</ng-template>
+  \`
+})
+export class ApiComponent {
+        userObservable = new Subject<{first: string, last: string}>();
+        first = ['Nils', 'Carmen', 'Igor', 'Misko', 'Angular'];
+        firstIndex = 0;
+        last = ['Nägele', 'Popoviciu', 'Minar', 'Hevery', '5'];
+        lastIndex = 0;
+
+        nextUser() {
+          let first = this.first[this.firstIndex++];
+          if (this.firstIndex >= this.first.length) {
+            this.firstIndex = 0;
+          }
+          let last = this.last[this.lastIndex++];
+          if (this.lastIndex >= this.last.length) {
+            this.lastIndex = 0;
+          }
+          this.userObservable.next({first, last});
+        }
+
+}
+
+  `
+};
+apip271 = {
+  name: 'NgStyle Directive',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>NgStyle Directive</h1>
+
+            <div [style.font-size]="isSpecial ? 'x-large' : 'smaller'">
+                  This div is x-large.
+            </div>
+
+            <div [ngStyle]="currentStyles">
+                  This div is initially italic, normal weight and x-large (24px).
+            </div>
+
+
+    \`
+  })
+  export class ApiComponent {
+        isSpecial = true;
+        canSave = true;
+        isUnchanged = true;
+
+        currentStyles = {
+              'font-style': this.canSave ? 'italic' : 'normal',
+              'font-weight': !this.isUnchanged ? 'bold' : 'normal',
+              'font-size': this.isSpecial ? '24px' : '12px'
+        };
+
+  }
+
+  `
+};
+apip272 = {
+  name: 'ViewChildren Decorator',
+  code: `
+
+    import { Component, Directive, Input,
+    QueryList, ViewChildren, AfterViewInit } from '@angular/core';
+
+
+    @Directive({
+        selector: 'app-pane'
+    })
+    export class PaneDirective {
+    @Input() id: string;
+  }
+
+
+    @Component({
+        selector: 'app-ng-api',
+        template: \`
+                      <h1>ViewChildren Decorator</h1>
+                      <app-pane id="1"></app-pane>
+                      <app-pane id="2"></app-pane>
+                      <app-pane id="3" *ngIf="shouldShow"></app-pane>
+                      <button (click)="show()">Show 3</button>
+                      <div>panes: {{ serializedPanes }}</div>
+
+              \`
+          })
+          export class ApiComponent implements AfterViewInit {
+          @ViewChildren(PaneDirective) panes: QueryList<PaneDirective>;
+          serializedPanes: string = '';
+
+          shouldShow = false;
+
+          show() {
+              this.shouldShow = true;
+          }
+
+          ngAfterViewInit() {
+          this.calculateSerializedPanes();
+          this.panes.changes.subscribe((r) => { this.calculateSerializedPanes(); });
+          }
+
+          calculateSerializedPanes() {
+          setTimeout(() =>
+                { this.serializedPanes = this.panes.map(p => p.id).join(', '); }, 0);
+          }
+
+      }
+
+
+  `
+};
+apip273 = {
+  name: 'ContentChild Decorator',
+  code: `
+
+  import { Component, Directive, Input, ContentChild } from '@angular/core';
+
+
+  @Directive({
+    selector: 'app-pane'
+  })
+  export class PaneDirective {
+    @Input() id: string;
+  }
+
+  @Component({
+    selector: 'app-tab',
+    template: \`
+            <div>pane: {{ pane?.id }}</div>
+    \`
+  })
+  export class TabComponent {
+    @ContentChild(PaneDirective) pane: PaneDirective;
+  }
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>ContentChild Decorator</h1>
+            <app-tab>
+              <app-pane id="1" *ngIf="shouldShow"></app-pane>
+              <app-pane id="2" *ngIf="!shouldShow"></app-pane>
+            </app-tab>
+
+            <button (click)="toggle()">Toggle</button>
+    \`
+  })
+  export class ApiComponent {
+          shouldShow = true;
+
+          toggle() {
+            this.shouldShow = !this.shouldShow;
+          }
+
+  }
+
+  `
+};
+apip274 = {
+  name: 'Directive Decorator',
+  code: `
+
+  import { Component, Input } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-bank-account',
+    template: \`
+            Bank Name: {{ bankName }}
+            Account ID: {{ id }}
+    \`
+  })
+  export class BankAccountComponent {
+    @Input('bank-name') bankName: string;
+    @Input('account-id') id: string;
+
+  }
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>Directive Decorator</h1>
+            <app-bank-account bank-name='ABC' account-id="123"></app-bank-account>
+    \`
+  })
+  export class ApiComponent { }
+
+  *****************************************************************
+
+  import { Component, Directive, Output, EventEmitter } from '@angular/core';
+
+
+  @Directive({
+    selector: 'app-interval-dir'
+  })
+  export class IntervalDirective {
+    @Output() everySecond = new EventEmitter();
+    @Output('everyFiveSeconds') five5Seconds = new EventEmitter();
+
+    constructor() {
+      setInterval(() => this.everySecond.emit('event'), 1000);
+      setInterval(() => this.five5Seconds.emit('event'), 5000);
+    }
+
+  }
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>Directive Decorator</h1>
+            <app-interval-dir (everySecond)="everySecond()"
+            (everyFiveSeconds)="everyFiveSeconds()">
+            </app-interval-dir>
+    \`
+  })
+  export class ApiComponent {
+
+    everySecond() {
+      console.log('second');
+    }
+
+    everyFiveSeconds() {
+      console.log('five seconds');
+    }
+
+  }
+
+  *****************************************************************
+
+  import { Component, Directive } from '@angular/core';
+
+
+  @Directive({
+    selector: 'button[counting]',
+    host: {
+    '(click)': 'onClick($event.target)'
+    }
+  })
+  export class CountClicksDirective {
+      numberOfClicks = 0;
+
+      onClick(btn) {
+        console.log('button', btn, 'number of clicks: ', this.numberOfClicks++);
+      }
+
+  }
+
+
+@Component({
+  selector: 'app-ng-api',
+  template: \`
+          <h1>Directive Decorator</h1>
+          <button counting>Increment</button>
+  \`
+})
+export class ApiComponent {
+
+}
+
+*****************************************************************
+
+import { Component, Directive } from '@angular/core';
+import { NgModel } from '@angular/forms';
+
+
+@Directive({
+  selector: '[ngModel]',
+  host: {
+    '[class.valid]': 'valid',
+    '[class.invalid]' : 'invalid'
+  }
+})
+export class NgModelStatusDirective {
+
+  constructor(public control: NgModel) { }
+
+  get valid() { return this.control.valid; }
+  get invalid() { return this.control.invalid; }
+
+}
+
+
+@Component({
+  selector: 'app-ng-api',
+  template: \`
+          <h1>Directive Decorator</h1>
+          <input [(ngModel)]="prop">
+  \`
+})
+export class ApiComponent {
+    prop: any;
+}
+
+
+*****************************************************************
+
+import { Component, Directive } from '@angular/core';
+
+
+@Directive({
+  selector: '[my-button]',
+  host: {
+    'role': 'button'
+  }
+})
+export class MyButtonDirective {
+
+}
+
+
+@Component({
+  selector: 'app-ng-api',
+  template: \`
+          <h1>Directive Decorator</h1>
+          <div my-button>My Button</div>
+  \`
+})
+export class ApiComponent {
+
+}
+
+
+*****************************************************************
+
+import { Component, Directive, ElementRef, HostListener } from '@angular/core';
+
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+      @HostListener('mouseenter') onMouseEnter() {
+        this.highlight('red');
+      }
+
+      @HostListener('mouseleave') onMouseLeave() {
+        this.highlight('yellow');
+      }
+
+      constructor(private el: ElementRef) {
+        el.nativeElement.style.color = 'white';
+        this.el.nativeElement.style.backgroundColor = 'green';
+       }
+
+       private highlight(color: string) {
+        this.el.nativeElement.style.backgroundColor = color;
+       }
+}
+
+
+@Component({
+  selector: 'app-ng-api',
+  template: \`
+          <h1>Directive Decorator</h1>
+          <p appHighlight>Highlight me!</p>
+
+  \`
+})
+export class ApiComponent {
+
+}
+
+*****************************************************************
+
+import { Component, Directive, Input,
+  TemplateRef, ViewContainerRef } from '@angular/core';
+
+
+@Directive({
+selector: '[appUnless]'
+})
+export class UnlessDirective {
+private hasView = false;
+
+@Input() set appUnless(condition: boolean) {
+if (!condition && !this.hasView) {
+this.viewContainerRef.createEmbeddedView(this.templateRef);
+this.hasView = true;
+} else if (condition && this.hasView) {
+this.viewContainerRef.clear();
+this.hasView = false;
+}
+}
+
+constructor(private templateRef: TemplateRef<any>,
+       private viewContainerRef: ViewContainerRef) { }
+
+
+
+}
+
+
+@Component({
+selector: 'app-ng-api',
+template: \`
+   <h1>Directive Decorator</h1>
+   <p *appUnless="condition">Show this sentence unless the condition is true</p>
+   <p *appUnless="!condition">This condition is true so this paragraph is not displayed</p>
+
+\`
+})
+export class ApiComponent {
+ condition = false;
+}
+
+  `
+};
+apip275 = {
   name: '',
   code: ``
 };
-tsp260 = {
+apip276 = {
   name: '',
   code: ``
 };
-tsp261 = {
+apip277 = {
   name: '',
   code: ``
 };
-tsp262 = {
+apip278 = {
   name: '',
   code: ``
 };
-tsp263 = {
+apip279 = {
   name: '',
   code: ``
 };
-p264 = {
+apip280 = {
   name: '',
   code: ``
 };
-p265 = {
+apip281 = {
   name: '',
   code: ``
 };
-p266 = {
+apip282 = {
   name: '',
   code: ``
 };
-p267 = {
+apip283 = {
   name: '',
   code: ``
 };
-p268 = {
+apip284 = {
   name: '',
   code: ``
 };
-p269 = {
+apip285 = {
   name: '',
   code: ``
 };
-p270 = {
+apip286 = {
   name: '',
   code: ``
 };
-p271 = {
+apip287 = {
   name: '',
   code: ``
 };
-p272 = {
+apip288 = {
   name: '',
   code: ``
 };
-p273 = {
+apip289 = {
   name: '',
   code: ``
 };
-p274 = {
+apip290 = {
   name: '',
   code: ``
 };
-p275 = {
+apip291 = {
   name: '',
   code: ``
 };
-p276 = {
+apip292 = {
   name: '',
   code: ``
 };
-p277 = {
+apip293 = {
   name: '',
   code: ``
 };
-p278 = {
+apip294 = {
   name: '',
   code: ``
 };
-p279 = {
+apip295 = {
   name: '',
   code: ``
 };
-p280 = {
+apip296 = {
   name: '',
   code: ``
 };
-p281 = {
+apip297 = {
   name: '',
   code: ``
 };
-p282 = {
+apip298 = {
   name: '',
   code: ``
 };
-p283 = {
+apip299 = {
   name: '',
   code: ``
 };
-p284 = {
-  name: '',
-  code: ``
-};
-p285 = {
-  name: '',
-  code: ``
-};
-p286 = {
-  name: '',
-  code: ``
-};
-p287 = {
-  name: '',
-  code: ``
-};
-p288 = {
-  name: '',
-  code: ``
-};
-p289 = {
-  name: '',
-  code: ``
-};
-p290 = {
-  name: '',
-  code: ``
-};
-p291 = {
-  name: '',
-  code: ``
-};
-p292 = {
-  name: '',
-  code: ``
-};
-p293 = {
-  name: '',
-  code: ``
-};
-p294 = {
-  name: '',
-  code: ``
-};
-p295 = {
-  name: '',
-  code: ``
-};
-p296 = {
-  name: '',
-  code: ``
-};
-p297 = {
-  name: '',
-  code: ``
-};
-p298 = {
-  name: '',
-  code: ``
-};
-p299 = {
-  name: '',
-  code: ``
-};
-p300 = {
+apip300 = {
   name: '',
   code: ``
 };
