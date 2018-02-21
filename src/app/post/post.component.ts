@@ -13845,32 +13845,360 @@ apip289 = {
   `
 };
 apip290 = {
-  name: '',
-  code: ``
+  name: 'Class Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>Class Binding</h1>
+            <div class="nice girly special">Nice girly special</div>
+
+            <div class="nice girly special" [class]="niceGirly">Nice girly</div>
+
+            <div [class.special]="isSpecial">This class binding is special</div>
+
+            <div class="special" [class.special]="!isSpecial">This one is not so special</div>
+
+            <div bind-class.special="isSpecial">This class binding is special too</div>
+
+    \`,
+    styles: [\`
+      .nice {
+        color: red;
+      }
+      .girly {
+        font-family: Brush Script MT;
+      }
+      .special {
+        font-weight: bold;
+        font-size: x-large;
+      }
+    \`]
+  })
+  export class ApiComponent {
+    niceGirly = 'nice girly';
+    isSpecial = true;
+
+  }
+
+  `
 };
 apip291 = {
-  name: '',
-  code: ``
+  name: 'Style Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>Style Binding</h1>
+            <button [style.color]="isSpecial ? 'red' : 'green'">Red</button>
+            <button [style.background-color]="canSave ? 'cyan' : 'grey'">Save Her</button>
+            <button [style.font-size.em]="isSpecial ? 3 : 1">Big</button>
+            <button [style.font-size.%]="!isSpecial ? 150 : 50">Small</button>
+
+    \`,
+    styles: [\`\`]
+  })
+  export class ApiComponent {
+    niceGirly = 'nice girly'; // gets a date
+    isSpecial = true;
+    canSave = true;
+
+  }
+
+  `
 };
 apip292 = {
-  name: '',
-  code: ``
+  name: 'Event Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Technology } from './../technology';
+
+    @Component({
+      selector: 'app-ng-api',
+      template: \`
+              <h1>Event Binding</h1>
+
+              <button (click)="onSaveHer()">Save Her</button>
+              <button on-click="onSaveHer()">Save Her</button>
+
+              <div>
+                  <div (appMyClick)="clickMessage=$event">Click with MyClick!</div>
+                  {{ clickMessage }}
+              </div>
+
+              <app-technology-detail (deleteRequest)="deleteTechnology($event)"
+                                      [technology]="currentTechnology">
+              </app-technology-detail>
+              <br>
+
+              <app-big-technology-detail (deleteRequest)="deleteTechnology($event)"
+                                          [technology]="currentTechnology">
+              </app-big-technology-detail>
+
+              <div class="parent-div" (click)="onClickMe($event)">Click me
+                  <div class="child-div">Click me too!</div>
+              </div>
+
+              <div (click)="onSave()">
+                  <button (click)="onSave($event)">Save, no propagation</button>
+              </div>
+
+              <div (click)="onSave()">
+                  <button (click)="onSave()">Save, with propagation</button>
+              </div>
+
+      \`,
+      styles: [\`\`]
+    })
+    export class ApiComponent {
+            clickMessage = '';
+            currentTechnology = new Technology(100, 'React', 'hungry', new Date(2020, 1, 1),
+                                              'https://reactjs.org/', 1000);
+            onSaveHer() {
+              alert('Save Her ...');
+            }
+
+            deleteTechnology(technology: Technology) {
+              alert(\`Delete \${technology ? technology.name : 'the technology'}.\`);
+            }
+
+            onClickMe(event: KeyboardEvent) {
+              let eventMessage = event ?
+                              ' Event target class is ' +
+                              (<HTMLElement>event.target).className : '';
+              alert('Click me.' + eventMessage);
+            }
+
+            onSave(event?: KeyboardEvent) {
+              let eventMessage = event ?
+                              ' Event target is ' +
+                              (<HTMLElement>event.target).textContent : '';
+              alert('Saved.' + eventMessage);
+              if (event) {
+                event.stopPropagation();
+              }
+            }
+
+    }
+
+  `
 };
 apip293 = {
-  name: '',
-  code: ``
+  name: 'Two-Way Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>Two-Way Binding</h1>
+            <div>
+              <app-sizer [(size)]="fontSizePx"></app-sizer>
+              <div [style.font-size.px]="fontSizePx">Resizable Text</div>
+              <label>FontSize (px): <input [(ngModel)]="fontSizePx"></label>
+            </div>
+            <h3>De-Sugared Two-Way Binding</h3>
+            <app-sizer [size]="fontSizePx"
+                       (sizeChange)="fontSizePx=$event">
+            </app-sizer>
+
+    \`
+  })
+  export class ApiComponent {
+    fontSizePx = 18;
+
+  }
+
+  `
 };
 apip294 = {
-  name: '',
-  code: ``
+  name: 'NgModel (Two-Way) Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Technology } from '../technology';
+
+    @Component({
+      selector: 'app-ng-api',
+      template: \`
+              <h1>NgModel (Two-Way) Binding</h1>
+              <h3>Result: {{ currentTechnology.name }}</h3>
+
+              <input [value]="currentTechnology.name"
+                     (input)="currentTechnology.name=$event.target.value">
+              without NgModel
+              <br>
+              <input [(ngModel)]="currentTechnology.name">
+              [(ngModel)]
+              <br>
+              <input bindon-ngModel="currentTechnology.name">
+              bindon-ngModel
+              <br>
+              <input [ngModel]="currentTechnology.name"
+                     (ngModelChange)="currentTechnology.name=$event">
+              (ngModelChange)="...name=$event"
+              <br>
+              <input [ngModel]="currentTechnology.name"
+                     (ngModelChange)="setUpperCaseName($event)">
+              (ngModelChange)="setUpperCaseName($event)"
+
+      \`
+    })
+    export class ApiComponent {
+      currentTechnology = Technology.technologies[0];
+
+      setUpperCaseName(name: string) {
+        this.currentTechnology.name = name.toUpperCase();
+      }
+
+    }
+
+  `
 };
 apip295 = {
-  name: '',
-  code: ``
+  name: 'NgClass Binding',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>NgClass Binding</h1>
+
+            <p>currentClasses is {{ currentClasses | json }}</p>
+            <div [ngClass]="currentClasses">
+                  This div is initially saveable, unchanged and special
+            </div>
+            <br>
+            <label>saveable <input type="checkbox" [(ngModel)]="canSave"></label>
+            <label>modified: <input type="checkbox" [value]="!isUnchanged"
+              (change)="isUnchanged = !isUnchanged"></label> |
+            <label>special: <input type="checkbox" [(ngModel)]="isSpecial"></label>
+            <button (click)="setCurrentClasses()">Refresh currentClasses</button>
+            <br><br>
+                <div [ngClass]="currentClasses">
+                      This div should be {{ canSave ? "" : "not"}} saveable,
+                                         {{ isUnchanged ? "unchanged" : "modified" }} and,
+                                         {{ isSpecial ? "" : "not" }}
+                                         special after clicking "Refresh".
+                </div>
+            <br><br>
+            <div [ngClass]="isSpecial ? 'special' : ''">This div is special</div>
+
+            <div class="nice girly special">Nice girly special</div>
+            <div [ngClass]="{'nice': false, 'girly': true, 'special': true }">
+                      Girly special
+            </div>
+
+    \`,
+    styles: [\`
+          .saveable {
+            color: red;
+          }
+          .girly, .modified {
+            font-family: Brush Script MT;
+          }
+          .special {
+            font-weight: bold;
+            font-size: x-large;
+          }
+          .nice {
+            color: red;
+          }
+
+    \`]
+  })
+  export class ApiComponent implements OnInit {
+    currentClasses: {};
+    canSave = true;
+    isUnchanged = true;
+    isSpecial = true;
+
+    setCurrentClasses() {
+      this.currentClasses = {
+        'saveable': this.canSave,
+        'modified': !this.isUnchanged,
+        'special': this.isSpecial
+      };
+    }
+
+    ngOnInit() {
+      this.setCurrentClasses();
+    }
+
+  }
+
+  `
 };
 apip296 = {
-  name: '',
-  code: ``
+  name: 'NgStyle Binding',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>NgStyle Binding</h1>
+
+            <div [style.font-size]="isSpecial ? 'x-large' : 'smaller'">
+                  This div is x-large or smaller.
+            </div>
+
+            <p>currentStyles is {{ currentStyles | json }}</p>
+            <div [ngStyle]="currentStyles">
+                This div is initially italic, normal weight, and extra large (24px).
+            </div>
+            <br>
+
+            <label>italic: <input type="checkbox" [(ngModel)]="canSave"></label> |
+            <label>normal: <input type="checkbox" [(ngModel)]="isUnchanged"></label> |
+            <label>x-large: <input type="checkbox" [(ngModel)]="isSpecial"></label>
+            <button (click)="setCurrentStyles()">Refresh currentStyles</button>
+            <br><br>
+            <div [ngStyle]="currentStyles">
+                  This div should be {{ canSave ? "italic" : "plain" }},
+                                     {{ isUnchanged ? "normal weight" : "bold" }} and,
+                                     {{ isSpecial ? "extra large" : "normal size" }} after
+                  clicking "Refresh".
+            </div>
+    \`
+  })
+  export class ApiComponent implements OnInit {
+    currentStyles: {};
+    canSave = true;
+    isUnchanged = true;
+    isSpecial = true;
+
+    setCurrentStyles() {
+      this.currentStyles = {
+        'font-style': this.canSave ? 'italic' : 'normal',
+        'font-weight': !this.isUnchanged ? 'bold' : 'normal',
+        'font-size': this.isSpecial ? '24px' : '12px'
+      };
+    }
+
+    ngOnInit() {
+      this.setCurrentStyles();
+    }
+
+  }
+
+  `
 };
 apip297 = {
   name: '',
