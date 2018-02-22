@@ -14201,70 +14201,1140 @@ apip296 = {
   `
 };
 apip297 = {
-  name: '',
-  code: ``
+  name: 'NgIf Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-ng-api',
+    template: \`
+            <h1>NgIf Binding</h1>
+
+            <app-technology-detail *ngIf="isActive"></app-technology-detail>
+
+            <div *ngIf="currentTechnology">Hello, {{ currentTechnology.name }}</div>
+            <div *ngIf="nullTechnology">Hello, {{ nullTechnology.name }}</div>
+
+            <ng-template [ngIf]="currentTechnology">
+                         Add {{ currentTechnology.name }} with template
+            </ng-template>
+
+            <div>Technology Detail removed from DOM (via template)
+                                   because isActive is false</div>
+            <ng-template [ngIf]="isActive">
+                <app-technology-detail></app-technology-detail>
+            </ng-template>
+
+            <div [class.hidden]="!isSpecial">Show with class</div>
+            <div [class.hidden]="isSpecial">Hide with class</div>
+
+            <app-technology-detail [class.hidden]="isSpecial"></app-technology-detail>
+
+            <div [style.display]="isSpecial ? 'block' : 'none'">Show with style</div>
+            <div [style.display]="isSpecial ? 'none' : 'block'">Hide with style</div>
+
+    \`,
+    styles: [\`
+        .hidden {
+          display: none;
+        }
+    \`]
+  })
+  export class ApiComponent {
+          isActive = false;
+          isSpecial = true;
+          nullTechnology = null;
+
+          technologies = [
+            { id: 1, name: 'Angular 5.2.5' },
+            { id: 2, name: 'Angular CLI 1.7.1' },
+            { id: 3, name: 'Angular Material 5'}
+          ];
+
+          currentTechnology = this.technologies[1];
+
+  }
+
+  `
 };
 apip298 = {
-  name: '',
-  code: ``
+  name: 'NgFor Binding',
+  code: `
+
+  import { Component, OnInit, AfterViewInit,
+           QueryList, ElementRef, ViewChildren } from '@angular/core';
+
+  import { Technology } from '../technology';
+
+  @Component({
+  selector: 'app-ng-api',
+  template: \`
+       <h1>NgFor Binding</h1>
+
+       <div class="box">
+           <div *ngFor="let technology of technologies">
+                     {{ technology.name }}
+           </div>
+       </div>
+       <br>
+       <div class="box">
+               <app-technology-detail *ngFor="let technology of technologies"
+                                 [technology]="technology">
+               </app-technology-detail>
+       </div>
+       <br>
+       <h4>*ngFor with index</h4>
+       <p>with <i>semi-colon</i> separator</p>
+       <div class ="box">
+           <div *ngFor="let technology of technologies; let i = index;">
+                   ({{ i + 1 }}) - {{ technology.name }}
+           </div>
+       </div>
+
+       <p>with <i>comma</i> separator</p>
+       <div class="box">
+           <div *ngFor="let technology of technologies, let i = index;">
+                 ({{ i + 1 }}) - {{ technology.name }}
+           </div>
+       </div>
+
+       <h4>*ngFor trackBy</h4>
+       <button (click)="resetTechnologies()">Reset Technologies</button>
+       <button (click)="changeIds()">Change Ids</button>
+       <button (click)="clearTrackByCounts()">Clear Counts</button>
+
+       <p><i>without</i> trackBy</p>
+             <div class="box">
+                   <div #noTrackBy *ngFor="let technology of technologies">
+                         ({{ technology.id }}) {{ technology.name }}
+                   </div>
+                   <div *ngIf="technologiesNoTrackByCount">
+                           Technology DOM elements change #{{ technologiesNoTrackByCount }}
+                           without trackBy
+                   </div>
+             </div>
+       <p>with trackBy</p>
+       <div class="box">
+             <div #withTrackBy *ngFor="let technology of technologies;
+                  trackBy: trackByTechnologies;">
+                         ({{ technology.id }}) {{ technology.name }}
+             </div>
+             <div *ngIf="technologiesWithTrackByCount">
+                   Technology DOM elements change #{{ technologiesWithTrackByCount }}
+                   with trackBy
+             </div>
+       </div>
+       <br>
+       <br>
+       <br>
+
+       <p>with trackBy and <i>semi-colon</i> separator</p>
+       <div class="box">
+           <div *ngFor="let technology of technologies; trackBy: trackByTechnologies;">
+                 ({{ technology.id }}) {{ technology.name }}
+           </div>
+       </div>
+
+       <p>with trackBy and <i>comma</i> separator</p>
+       <div class="box">
+           <div *ngFor="let technology of technologies, trackBy: trackByTechnologies;">
+                 ({{ technology.id }}) {{ technology.name }}
+           </div>
+       </div>
+
+       <p>with trackBy and <i>space</i> separator</p>
+       <div class="box">
+           <div *ngFor="let technology of technologies trackBy: trackByTechnologies;">
+               ({{ technology.id }}) {{ technology.name }}
+           </div>
+       </div>
+
+       <p>with <i>generic</i> trackById function</p>
+       <div class="box">
+           <div *ngFor="let technology of technologies, trackBy: trackById;">
+             ({{ technology.id }}) {{ technology.name }}
+           </div>
+       </div>
+
+\`,
+styles: [\`
+ .box {
+   border: 3px solid red;
+   padding: 6px;
+   max-width: 300px;
+ }
+\`]
+})
+export class ApiComponent implements OnInit, AfterViewInit {
+     @ViewChildren('noTrackBy') technologiesNoTrackBy: QueryList<ElementRef>;
+     @ViewChildren('withTrackBy') technologiesWithTrackBy: QueryList<ElementRef>;
+
+     technologiesNoTrackByCount = 0;
+     technologiesWithTrackByCount = 0;
+     technologiesWithTrackByCountReset = 0;
+
+     technologyIdIncrement = 1;
+
+     technologies: Technology[] = [];
+
+     resetTechnologies() {
+       this.technologies = Technology.technologies.map(technology => technology.clone());
+       this.technologiesWithTrackByCountReset = 0;
+     }
+
+     changeIds() {
+       this.resetTechnologies();
+       this.technologies.forEach(t => t.id += 10 * this.technologyIdIncrement++);
+       this.technologiesWithTrackByCountReset = -1;
+     }
+
+     clearTrackByCounts() {
+       const trackByCountReset = this.technologiesWithTrackByCountReset;
+       this.resetTechnologies();
+       this.technologiesNoTrackByCount = -1;
+       this.technologiesWithTrackByCount = trackByCountReset;
+       this.technologyIdIncrement = 1;
+     }
+
+     ngOnInit() {
+       this.technologies = Technology.technologies;
+     }
+
+     ngAfterViewInit() {
+       trackChanges(this.technologiesNoTrackBy,
+                    () => this.technologiesNoTrackByCount++);
+       trackChanges(this.technologiesWithTrackBy,
+                    () => this.technologiesWithTrackByCount++);
+     }
+
+
+     trackByTechnologies(index: number, technology: Technology):
+                         number { return technology.id; }
+
+     trackById(index: number, item: any):
+                         number { return item['id']; }
+
+}
+
+function trackChanges(views: QueryList<ElementRef>, changed: () => void) {
+      let oldRefs = views.toArray();
+      views.changes.subscribe((changes: QueryList<ElementRef>) => {
+         const changedRefs = changes.toArray();
+         const isSame = oldRefs.every((v, i) =>
+                             v.nativeElement === changedRefs[i].nativeElement);
+         if (!isSame) {
+           oldRefs = changedRefs;
+           setTimeout(changed, 0);
+         }
+      });
+  }
+
+  `
 };
 apip299 = {
-  name: '',
-  code: ``
+  name: 'NgSwitch Binding',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { Technology } from '../technology';
+
+    @Component({
+      selector: 'app-ng-api',
+      template: \`
+              <h1>NgSwitch Binding</h1>
+
+              <p>Select your favorite technology</p>
+
+              <div>
+                  <label *ngFor="let tech of technologies">
+                  <input type="radio" name="technologies" [(ngModel)]="currentTechnology"
+                         [value]="tech">{{ tech.name }}
+                  </label>
+              </div>
+
+              <div [ngSwitch]="currentTechnology.emotion">
+                  <app-awesome-technology
+                                          *ngSwitchCase="'awesome'"
+                                          [technology]="currentTechnology">
+                  </app-awesome-technology>
+                  <app-strong-technology
+                                          *ngSwitchCase="'strong'"
+                                          [technology]="currentTechnology">
+                  </app-strong-technology>
+                  <app-happy-technology
+                                          *ngSwitchCase="'happy'"
+                                          [technology]="currentTechnology">
+                  </app-happy-technology>
+                  <div *ngSwitchCase="'happy'">
+                          Are you as happy as {{ currentTechnology.name }}?
+                  </div>
+                  <app-future-technology *ngSwitchDefault [technology]="currentTechnology">
+                  </app-future-technology>
+              </div>
+
+      \`
+    })
+    export class ApiComponent implements OnInit {
+            technologies: Technology[] = [];
+            currentTechnology: Technology;
+
+            ngOnInit() {
+              this.technologies = Technology.technologies;
+              this.currentTechnology = this.technologies[0];
+            }
+
+    }
+
+
+  `
 };
 apip300 = {
-  name: '',
-  code: ``
-};
-p301 = {
-  name: '',
-  code: ``
-};
-p302 = {
-  name: '',
-  code: ``
-};
-p303 = {
-  name: '',
-  code: ``
-};
-p304 = {
-  name: '',
-  code: ``
-};
-p305 = {
-  name: '',
-  code: ``
-};
-p306 = {
-  name: '',
-  code: ``
-};
-p307 = {
-  name: '',
-  code: ``
-};
-p308 = {
-  name: '',
-  code: ``
-};
-p309 = {
-  name: '',
-  code: ``
-};
-p310 = {
-  name: '',
-  code: ``
-};
-p311 = {
-  name: '',
-  code: ``
-};
-p312 = {
-  name: '',
-  code: ``
-};
+  name: 'Template Reference Variables',
+  code: `
 
+  import { Component } from '@angular/core';
+
+  import { Technology } from './../technology';
+
+    @Component({
+      selector: 'app-ng-api',
+      template: \`
+              <h1>Template Reference Variables</h1>
+
+              <input #phone placeholder="phone number">
+
+              <button (click)="callPhone(phone.value)">Call</button>
+
+              <input ref-fax placeholder="fax number">
+              <button (click)="callFax(fax.value)">Fax</button>
+
+              <button #btn disabled [innerHTML]="'disabled by attribute: '
+                                                 +btn.disabled"></button>
+
+              <h4>Technology Form</h4>
+              <app-technology-form [technology]="currentTechnology"></app-technology-form>
+
+      \`
+    })
+    export class ApiComponent {
+      currentTechnology: Technology;
+
+      callPhone(value: string) {
+        alert(\`Calling \${value} ...\` );
+      }
+
+      callFax(value: string) {
+        alert(\`Faxing \${value} ...\`);
+      }
+
+      constructor() {
+        this.currentTechnology = Technology.technologies[0];
+      }
+
+    }
+
+  `
+};
+apip301 = {
+  name: 'Inputs && Outputs',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Technology } from './../technology';
+
+    @Component({
+      selector: 'app-ng-api',
+      template: \`
+              <h1>Inputs && Outputs</h1>
+              <img [src]="iconUrl">
+              <button (click)="onSave()">Save Her</button>
+
+              <app-technology-detail [technology]="currentTechnology"
+                                    (deleteRequest)="deleteTechnology($event)">
+              <app-technology-detail>
+
+              <div (appMyClick)="clickMessage2=$event">MyClick2</div>
+              {{ clickMessage2 }}
+      \`
+    })
+    export class ApiComponent {
+      currentTechnology: Technology;
+      iconUrl = '../../assets/ng-logo.png';
+      clickMessage2 = '';
+      onSave() {
+        alert('Save Her.');
+      }
+
+      deleteTechnology(evt) {
+        alert(\`Delete \${evt.name}.\`);
+      }
+
+      constructor() {
+        this.currentTechnology = Technology.technologies[0];
+      }
+
+    }
+
+  `
+};
+apip302 = {
+  name: 'Pipes',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Technology } from './../technology';
+
+    @Component({
+      selector: 'app-ng-api',
+      template: \`
+              <h1>Pipes</h1>
+
+              <div>Title through uppercase pipe: {{ title | uppercase }}</div>
+
+              <div>
+                    Title through a pipe chain:
+                    {{ title | uppercase | lowercase }}
+              </div>
+
+              <div>{{ currentTechnology | json }}</div>
+
+              <div>Birthdate: {{ (currentTechnology?.birthDate | date:'longDate')
+                                                               | uppercase }}</div>
+
+              <div>
+                  <label>Price: </label> {{ price | currency:'EUR':true }}
+              </div>
+
+      \`
+    })
+    export class ApiComponent {
+      title = 'Super Sex';
+      currentTechnology: Technology;
+      price = 42;
+
+      constructor() {
+        this.currentTechnology = Technology.technologies[0];
+      }
+
+    }
+
+  `
+};
+apip303 = {
+  name: 'Safe Navigation Operator ?.',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Technology } from './../technology';
+
+    @Component({
+      selector: 'app-ng-api',
+      template: \`
+              <h1>Safe Navigation Operator ?.</h1>
+
+              <div>
+                  The title is {{ title }}
+              </div>
+
+              <div>
+                  The current technologies name is {{ currentTechnology?.name }}
+              </div>
+
+              <div>
+                  The current technologies name is {{ currentTechnology.name }}
+              </div>
+
+              <div *ngIf="nullTechnology">
+                  The null technologies name is {{ nullTechnology.name }}
+              </div>
+
+              <div>
+                  The null technologies name is {{ nullTechnology && nullTechnology.name }}
+              </div>
+
+              <div>
+                The null technologies name is {{ nullTechnology?.name }}
+              </div>
+
+      \`
+    })
+    export class ApiComponent {
+      title = 'Super Code';
+      currentTechnology: Technology;
+
+      constructor() {
+        this.currentTechnology = Technology.technologies[0];
+      }
+
+      get nullTechnology(): Technology {
+        return null;
+      }
+
+    }
+
+  `
+};
+apip304 = {
+  name: 'Non-Null Assertion Operator !.',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Technology } from './../technology';
+
+    @Component({
+      selector: 'app-ng-api',
+      template: \`
+              <h1>Non-Null Assertion Operator !.</h1>
+
+              <div *ngIf="technology">
+                    The technologies name is {{ technology!.name }}
+              </div>
+
+      \`
+    })
+    export class ApiComponent {
+      technology: Technology;
+
+      constructor() {
+        this.technology = Technology.technologies[0];
+      }
+
+    }
+
+  `
+};
+apip305 = {
+  name: 'Any Type Cast Function',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Technology } from './../technology';
+
+    @Component({
+      selector: 'app-ng-api',
+      template: \`
+              <h1>Any Type Cast Function $any()</h1>
+
+              <div>
+                    <div>
+                          The technology's marker is {{ $any(technology).marker }}
+                    </div>
+              </div>
+
+              <div>
+                      <div>
+                          Undeclared member is {{ $any(this).member }}
+                      </div>
+              </div>
+
+      \`
+    })
+    export class ApiComponent {
+      technology: Technology;
+
+      constructor() {
+        this.technology = Technology.technologies[0];
+      }
+
+    }
+
+  `
+};
+apip306 = {
+  name: 'Enums In Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  export enum Color { Red, Green, Blue };
+
+    @Component({
+      selector: 'app-ng-api',
+      template: \`
+              <h1>Enumns In Binding</h1>
+
+              <p>
+                  The name of the Color.Red enum is {{ Color[Color.Red] }}.<br>
+                  The current color is {{ Color[color] }} and its number is {{ color }}.<br>
+                  <button [style.color]="Color[color]" (click)="colorToggle()">
+                      Enum Toggle
+                  </button>
+              </p>
+      \`
+    })
+    export class ApiComponent {
+      Color = Color;
+      color = Color.Red;
+
+      colorToggle() {
+        this.color = (this.color === Color.Red) ? Color.Blue : Color.Red;
+      }
+
+    }
+
+  `
+};
+apip307 = {
+  name: '',
+  code: ``
+};
+apip308 = {
+  name: '',
+  code: ``
+};
+apip309 = {
+  name: '',
+  code: ``
+};
+apip310 = {
+  name: '',
+  code: ``
+};
+apip311 = {
+  name: '',
+  code: ``
+};
+apip312 = {
+  name: '',
+  code: ``
+};
+apip313 = {
+  name: '',
+  code: ``
+};
+apip314 = {
+  name: '',
+  code: ``
+};
+apip315 = {
+  name: '',
+  code: ``
+};
+apip316 = {
+  name: '',
+  code: ``
+};
+apip317 = {
+  name: '',
+  code: ``
+};
+apip318 = {
+  name: '',
+  code: ``
+};
+apip319 = {
+  name: '',
+  code: ``
+};
+apip320 = {
+  name: '',
+  code: ``
+};
+apip321 = {
+  name: '',
+  code: ``
+};
+apip322 = {
+  name: '',
+  code: ``
+};
+apip323 = {
+  name: '',
+  code: ``
+};
+apip324 = {
+  name: '',
+  code: ``
+};
+apip325 = {
+  name: '',
+  code: ``
+};
+apip326 = {
+  name: '',
+  code: ``
+};
+apip327 = {
+  name: '',
+  code: ``
+};
+apip328 = {
+  name: '',
+  code: ``
+};
+apip329 = {
+  name: '',
+  code: ``
+};
+apip330 = {
+  name: '',
+  code: ``
+};
+apip331 = {
+  name: '',
+  code: ``
+};
+apip332 = {
+  name: '',
+  code: ``
+};
+apip333 = {
+  name: '',
+  code: ``
+};
+apip334 = {
+  name: '',
+  code: ``
+};
+apip335 = {
+  name: '',
+  code: ``
+};
+apip336 = {
+  name: '',
+  code: ``
+};
+apip337 = {
+  name: '',
+  code: ``
+};
+apip338 = {
+  name: '',
+  code: ``
+};
+apip339 = {
+  name: '',
+  code: ``
+};
+apip340 = {
+  name: '',
+  code: ``
+};
+apip341 = {
+  name: '',
+  code: ``
+};
+apip342 = {
+  name: '',
+  code: ``
+};
+apip343 = {
+  name: '',
+  code: ``
+};
+apip344 = {
+  name: '',
+  code: ``
+};
+apip345 = {
+  name: '',
+  code: ``
+};
+apip346 = {
+  name: '',
+  code: ``
+};
+apip347 = {
+  name: '',
+  code: ``
+};
+apip348 = {
+  name: '',
+  code: ``
+};
+apip349 = {
+  name: '',
+  code: ``
+};
+apip350 = {
+  name: '',
+  code: ``
+};
+apip351 = {
+  name: '',
+  code: ``
+};
+apip352 = {
+  name: '',
+  code: ``
+};
+apip353 = {
+  name: '',
+  code: ``
+};
+apip354 = {
+  name: '',
+  code: ``
+};
+apip355 = {
+  name: '',
+  code: ``
+};
+apip356 = {
+  name: '',
+  code: ``
+};
+apip357 = {
+  name: '',
+  code: ``
+};
+apip358 = {
+  name: '',
+  code: ``
+};
+apip359 = {
+  name: '',
+  code: ``
+};
+apip360 = {
+  name: '',
+  code: ``
+};
+apip361 = {
+  name: '',
+  code: ``
+};
+apip362 = {
+  name: '',
+  code: ``
+};
+apip363 = {
+  name: '',
+  code: ``
+};
+apip364 = {
+  name: '',
+  code: ``
+};
+apip365 = {
+  name: '',
+  code: ``
+};
+apip366 = {
+  name: '',
+  code: ``
+};
+apip367 = {
+  name: '',
+  code: ``
+};
+apip368 = {
+  name: '',
+  code: ``
+};
+apip369 = {
+  name: '',
+  code: ``
+};
+apip370 = {
+  name: '',
+  code: ``
+};
+apip371 = {
+  name: '',
+  code: ``
+};
+apip372 = {
+  name: '',
+  code: ``
+};
+apip373 = {
+  name: '',
+  code: ``
+};
+apip374 = {
+  name: '',
+  code: ``
+};
+apip375 = {
+  name: '',
+  code: ``
+};
+apip376 = {
+  name: '',
+  code: ``
+};
+apip377 = {
+  name: '',
+  code: ``
+};
+apip378 = {
+  name: '',
+  code: ``
+};
+apip379 = {
+  name: '',
+  code: ``
+};
+apip380 = {
+  name: '',
+  code: ``
+};
+apip381 = {
+  name: '',
+  code: ``
+};
+apip382 = {
+  name: '',
+  code: ``
+};
+apip383 = {
+  name: '',
+  code: ``
+};
+apip384 = {
+  name: '',
+  code: ``
+};
+apip385 = {
+  name: '',
+  code: ``
+};
+apip386 = {
+  name: '',
+  code: ``
+};
+apip387 = {
+  name: '',
+  code: ``
+};
+apip388 = {
+  name: '',
+  code: ``
+};
+apip389 = {
+  name: '',
+  code: ``
+};
+apip390 = {
+  name: '',
+  code: ``
+};
+apip391 = {
+  name: '',
+  code: ``
+};
+apip392 = {
+  name: '',
+  code: ``
+};
+apip393 = {
+  name: '',
+  code: ``
+};
+apip394 = {
+  name: '',
+  code: ``
+};
+apip395 = {
+  name: '',
+  code: ``
+};
+apip396 = {
+  name: '',
+  code: ``
+};
+apip397 = {
+  name: '',
+  code: ``
+};
+apip398 = {
+  name: '',
+  code: ``
+};
+apip399 = {
+  name: '',
+  code: ``
+};
+apip400 = {
+  name: '',
+  code: ``
+};
+apip401 = {
+  name: '',
+  code: ``
+};
+apip402 = {
+  name: '',
+  code: ``
+};
+apip403 = {
+  name: '',
+  code: ``
+};
+apip404 = {
+  name: '',
+  code: ``
+};
+apip405 = {
+  name: '',
+  code: ``
+};
+apip406 = {
+  name: '',
+  code: ``
+};
+apip407 = {
+  name: '',
+  code: ``
+};
+apip408 = {
+  name: '',
+  code: ``
+};
+apip409 = {
+  name: '',
+  code: ``
+};
+apip410 = {
+  name: '',
+  code: ``
+};
+apip411 = {
+  name: '',
+  code: ``
+};
+apip412 = {
+  name: '',
+  code: ``
+};
+apip413 = {
+  name: '',
+  code: ``
+};
+apip414 = {
+  name: '',
+  code: ``
+};
+apip415 = {
+  name: '',
+  code: ``
+};
+apip416 = {
+  name: '',
+  code: ``
+};
+apip417 = {
+  name: '',
+  code: ``
+};
+apip418 = {
+  name: '',
+  code: ``
+};
+apip419 = {
+  name: '',
+  code: ``
+};
+apip420 = {
+  name: '',
+  code: ``
+};
+apip421 = {
+  name: '',
+  code: ``
+};
+apip422 = {
+  name: '',
+  code: ``
+};
+apip423 = {
+  name: '',
+  code: ``
+};
+apip424 = {
+  name: '',
+  code: ``
+};
+apip425 = {
+  name: '',
+  code: ``
+};
+apip426 = {
+  name: '',
+  code: ``
+};
+apip427 = {
+  name: '',
+  code: ``
+};
+apip428 = {
+  name: '',
+  code: ``
+};
+apip429 = {
+  name: '',
+  code: ``
+};
+apip430 = {
+  name: '',
+  code: ``
+};
+apip431 = {
+  name: '',
+  code: ``
+};
+apip432 = {
+  name: '',
+  code: ``
+};
+apip433 = {
+  name: '',
+  code: ``
+};
+apip434 = {
+  name: '',
+  code: ``
+};
+apip435 = {
+  name: '',
+  code: ``
+};
+apip436 = {
+  name: '',
+  code: ``
+};
+apip437 = {
+  name: '',
+  code: ``
+};
+apip438 = {
+  name: '',
+  code: ``
+};
+apip439 = {
+  name: '',
+  code: ``
+};
+apip440 = {
+  name: '',
+  code: ``
+};
+apip441 = {
+  name: '',
+  code: ``
+};
+apip442 = {
+  name: '',
+  code: ``
+};
+apip443 = {
+  name: '',
+  code: ``
+};
+apip444 = {
+  name: '',
+  code: ``
+};
 
   goToTop() {
     document.body.scrollTop = document.documentElement.scrollTop = 0;
