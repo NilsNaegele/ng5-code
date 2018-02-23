@@ -14760,7 +14760,7 @@ apip306 = {
     @Component({
       selector: 'app-ng-api',
       template: \`
-              <h1>Enumns In Binding</h1>
+              <h1>Enums In Binding</h1>
 
               <p>
                   The name of the Color.Red enum is {{ Color[Color.Red] }}.<br>
@@ -14784,112 +14784,1055 @@ apip306 = {
   `
 };
 apip307 = {
-  name: '',
-  code: ``
+  name: 'Package JSON',
+  code: `
+
+  {
+    "name": "ng5-tour-of-heroes",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {
+      "ng": "ng",
+      "start": "ng serve",
+      "build": "ng build",
+      "test": "ng test",
+      "lint": "ng lint",
+      "e2e": "ng e2e"
+    },
+    "private": true,
+    "dependencies": {
+      "@angular/animations": "^5.2.6",
+      "@angular/common": "^5.2.6",
+      "@angular/compiler": "^5.2.6",
+      "@angular/core": "^5.2.6",
+      "@angular/forms": "^5.2.6",
+      "@angular/http": "^5.2.6",
+      "@angular/platform-browser": "^5.2.6",
+      "@angular/platform-browser-dynamic": "^5.2.6",
+      "@angular/platform-server": "^5.2.6",
+      "@angular/router": "^5.2.6",
+      "angular-in-memory-web-api": "^0.5.3",
+      "core-js": "^2.4.1",
+      "rxjs": "^5.5.6",
+      "zone.js": "^0.8.14"
+    },
+    "devDependencies": {
+      "@angular/cli": "^1.7.1",
+      "@angular/compiler-cli": "^5.2.6",
+      "@angular/language-service": "^4.2.4",
+      "@types/jasmine": "~2.5.53",
+      "@types/jasminewd2": "~2.0.2",
+      "@types/node": "~6.0.60",
+      "codelyzer": "~3.1.1",
+      "jasmine-core": "~2.6.2",
+      "jasmine-spec-reporter": "~4.1.0",
+      "karma": "~1.7.0",
+      "karma-chrome-launcher": "~2.1.1",
+      "karma-cli": "~1.0.1",
+      "karma-coverage-istanbul-reporter": "^1.2.1",
+      "karma-jasmine": "~1.1.0",
+      "karma-jasmine-html-reporter": "^0.2.2",
+      "protractor": "~5.1.2",
+      "ts-node": "~3.2.0",
+      "tslint": "~5.3.2",
+      "typescript": "^2.6.2"
+    }
+  }
+
+  `
 };
 apip308 = {
-  name: '',
-  code: ``
+  name: 'Index HTML',
+  code: `
+
+  <!doctype html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>ng5-tour-of-heroes</title>
+    <base href="/">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+  </head>
+  <body>
+    <app-root>launch my baby ...</app-root>
+  </body>
+  </html>
+
+  `
 };
 apip309 = {
-  name: '',
-  code: ``
+  name: 'Main TS',
+  code: `
+
+  import { enableProdMode } from '@angular/core';
+  import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+
+  import { AppModule } from './app/app.module';
+  import { environment } from './environments/environment';
+
+  if (environment.production) {
+  enableProdMode();
+  }
+
+  platformBrowserDynamic().bootstrapModule(AppModule);
+
+  `
 };
 apip310 = {
-  name: '',
-  code: ``
+  name: 'Global STYLES',
+  code: `
+
+  /* Application-wide Styles */
+  h1 {
+    color: #369;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 250%;
+  }
+
+  h2, h3 {
+    color: #444;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: lighter;
+  }
+
+  body {
+    margin: 2em;
+  }
+
+  body, input[text], button {
+    color: #888;
+    font-family: Cambria, Georgia;
+  }
+
+  a {
+    cursor: pointer;
+    cursor: hand;
+  }
+
+  button {
+    font-family: Arial;
+    background-color: #eee;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    cursor: hand;
+  }
+
+  button:hover {
+    background-color: #cfd8dc;
+  }
+
+  button:disabled {
+    background-color: #eee;
+    color: #aaa;
+    cursor: auto;
+  }
+
+  nav a {
+    padding: 5px 10px;
+    text-decoration: none;
+    margin-right: 10px;
+    margin-top: 10px;
+    display: inline-block;
+    background-color: #eee;
+    border-radius: 5px;
+  }
+
+  nav a:visited, a:link {
+    color: #607D8B;
+  }
+
+  nav a:hover {
+    color: #039be5;
+    background-color: #CFD8DC;
+  }
+
+  nav a.active {
+    color: #039be5;
+  }
+
+  /* everywhere else*/
+  * {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  `
 };
 apip311 = {
-  name: '',
-  code: ``
+  name: 'App Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { FormsModule } from '@angular/forms';
+  import { HttpClientModule } from '@angular/common/http';
+
+  import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+  import { InMemoryDataService } from './in-memory-data.service';
+
+  import { AppRoutingModule } from './app-routing.module';
+
+  import { AppComponent } from './app.component';
+  import { HeroesComponent } from './heroes/heroes.component';
+  import { HeroDetailComponent } from './hero-detail/hero-detail.component';
+  import { MessagesComponent } from './messages/messages.component';
+  import { DashboardComponent } from './dashboard/dashboard.component';
+  import { HeroSearchComponent } from './hero-search/hero-search.component';
+
+  import { HeroService } from './hero.service';
+  import { MessageService } from './message.service';
+
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      HeroesComponent,
+      HeroDetailComponent,
+      MessagesComponent,
+      DashboardComponent,
+      HeroSearchComponent
+    ],
+    imports: [
+      BrowserModule,
+      FormsModule,
+      HttpClientModule,
+      HttpClientInMemoryWebApiModule.forRoot(
+        InMemoryDataService, { dataEncapsulation: false }
+      ),
+      AppRoutingModule
+    ],
+    providers: [ HeroService, MessageService ],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  `
 };
 apip312 = {
-  name: '',
-  code: ``
+  name: 'App Routing Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { RouterModule, Routes } from '@angular/router';
+
+  import { HeroesComponent } from './heroes/heroes.component';
+  import { HeroDetailComponent } from './hero-detail/hero-detail.component';
+  import { DashboardComponent } from './dashboard/dashboard.component';
+
+  const routes: Routes = [
+    { path: '', redirectTo: '/dashboard', pathMatch: 'full'},
+    { path: 'dashboard', component: DashboardComponent },
+    { path: 'detail/:id', component: HeroDetailComponent },
+    { path: 'heroes', component: HeroesComponent }
+  ];
+
+  @NgModule({
+    imports: [ RouterModule.forRoot(routes)],
+    exports: [ RouterModule ]
+  })
+  export class AppRoutingModule { }
+
+
+  `
 };
 apip313 = {
-  name: '',
-  code: ``
+  name: 'App Component',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css']
+  })
+  export class AppComponent {
+    title = 'Tour Of Heroes';
+  }
+
+
+  `
 };
 apip314 = {
-  name: '',
-  code: ``
+  name: 'App Component HTML',
+  code: `
+
+  <h1>{{ title }}</h1>
+
+  <nav>
+    <a routerLink="/dashboard">Dashboard</a>
+    <a routerLink="/heroes">Heroes</a>
+  </nav>
+
+  <router-outlet></router-outlet>
+
+  <app-messages></app-messages>
+
+  `
 };
 apip315 = {
-  name: '',
-  code: ``
+  name: 'Message Service',
+  code: `
+
+  import { Injectable } from '@angular/core';
+
+  @Injectable()
+  export class MessageService {
+    messages: string[] = [];
+
+    add(message: string) {
+      this.messages.push(message);
+    }
+
+    clear() {
+      this.messages = [];
+    }
+
+  }
+
+  `
 };
 apip316 = {
-  name: '',
-  code: ``
+  name: 'In Memory Data Service',
+  code: `
+
+  import { InMemoryDbService } from 'angular-in-memory-web-api';
+
+  export class InMemoryDataService implements InMemoryDbService {
+    createDb() {
+      const heroes = [
+        { id: 11, name: 'Odin' },
+        { id: 12, name: 'Thor' },
+        { id: 13, name: 'Freyja' },
+        { id: 14, name: 'Frigg' },
+        { id: 15, name: 'Tyr' },
+        { id: 16, name: 'Baldur' },
+        { id: 17, name: 'Loki' },
+        { id: 18, name: 'Mani' },
+        { id: 19, name: 'Sol' },
+        { id: 20, name: 'Heimdall' }
+      ];
+        return { heroes };
+    }
+  }
+
+
+  `
 };
 apip317 = {
-  name: '',
-  code: ``
+  name: 'Hero Class',
+  code: `
+
+  export class Hero {
+    id: number;
+    name: string;
+  }
+
+
+  `
 };
 apip318 = {
-  name: '',
-  code: ``
+  name: 'Hero Service',
+  code: `
+
+  import { Injectable } from '@angular/core';
+  import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+  import { Hero } from './hero';
+  import { MessageService } from './message.service';
+
+  import { Observable } from 'rxjs/Observable';
+  import { catchError, map, tap } from 'rxjs/operators';
+  import { of } from 'rxjs/observable/of';
+
+
+  const httpOptions = {
+    headers: new HttpHeaders({'Content-Type': 'application/json'})
+  };
+
+  @Injectable()
+  export class HeroService {
+
+    private heroesUrl = 'api/heroes';
+
+    private log(message: string) {
+      this.messageService.add('Hero Service: ' + message);
+    }
+
+    constructor(private http: HttpClient, private messageService: MessageService) { }
+
+    getHeroes(): Observable<Hero[]> {
+      return this.http.get<Hero[]>(this.heroesUrl)
+                      .pipe(
+                        tap(heroes => this.log(\`fetched heroes\`)),
+                        catchError(this.handleError('getHeroes', []))
+                      );
+    }
+
+    getHero(id: number): Observable<Hero> {
+      const url = \`\${this.heroesUrl}/\${id}\`;
+      return this.http.get<Hero>(url).pipe(
+        tap(() => this.log(\`fetched hero id=\${id}\`)),
+        catchError(this.handleError<Hero>(\`getHero id=\${id}\`))
+      );
+    }
+
+
+    updateHero(hero: Hero): Observable<any> {
+      return this.http.put(this.heroesUrl, hero, httpOptions).pipe
+      (
+        tap(() => this.log(\`updated hero id=\${hero.id}\`)),
+        catchError(this.handleError<any>('updateHero'))
+      );
+    }
+
+    addHero(hero: Hero): Observable<Hero> {
+      return this.http.post<Hero>(this.heroesUrl, hero, httpOptions).pipe(
+        tap((h: Hero) => this.log(\`added hero w/id=\${h.id}\`)),
+        catchError(this.handleError<Hero>('addHero'))
+      );
+    }
+
+    deleteHero(hero: Hero | number): Observable<Hero> {
+      const id = typeof hero === 'number' ? hero : hero.id;
+      const url = \`\${this.heroesUrl}/\${id}\`;
+
+      return this.http.delete<Hero>(url, httpOptions).pipe(
+        tap(() => this.log(\`deleted hero id=\${id}\`)),
+        catchError(this.handleError<Hero>('deleteHero'))
+      );
+    }
+
+    searchHeroes(term: string): Observable<Hero[]> {
+      if (!term.trim()) {
+        return of([]);
+      }
+      return this.http.get<Hero[]>(\`api/heroes/?name=\${term}\`).pipe(
+        tap(() => this.log(\`found heroes matching "\${term}"\`)),
+        catchError(this.handleError<Hero[]>('searchHeroes', []))
+      );
+    }
+
+    private handleError<T>(operation = 'operation', result?: T) {
+            return (error: any): Observable<T> => {
+              console.error(error);
+              this.log(\`\${operation} failed: \${error.message}\`);
+              return of(result as T);
+            };
+    }
+
+  }
+
+
+  `
 };
 apip319 = {
-  name: '',
-  code: ``
+  name: 'Dashboard Component',
+  code: `
+
+  import { Component, OnInit, OnDestroy } from '@angular/core';
+
+  import { Hero } from '../hero';
+  import { HeroService } from '../hero.service';
+
+  import { Subscription } from 'rxjs/Subscription';
+
+  @Component({
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.css']
+  })
+  export class DashboardComponent implements OnInit, OnDestroy {
+    heroes: Hero[];
+    dashboardSubscription: Subscription;
+
+    constructor(private heroService: HeroService) { }
+
+    ngOnInit() {
+      this.getHeroes();
+    }
+
+    getHeroes() {
+      this.dashboardSubscription = this.heroService.getHeroes().subscribe(heroes => {
+        this.heroes = heroes.slice(1, 5);
+      });
+    }
+
+    ngOnDestroy() {
+      this.dashboardSubscription.unsubscribe();
+    }
+
+  }
+
+
+  `
 };
 apip320 = {
-  name: '',
-  code: ``
+  name: 'Dasboard Component HTML',
+  code: `
+
+  <h3>Top Heroes</h3>
+  <div class="grid grid-pad">
+    <a *ngFor="let hero of heroes" class="col-1-4" routerLink="/detail/{{hero.id}}">
+        <div class="module hero">
+            <h4>{{ hero.name }}</h4>
+        </div>
+    </a>
+  </div>
+  <app-hero-search></app-hero-search>
+
+  `
 };
 apip321 = {
-  name: '',
-  code: ``
+  name: 'Dashboard Component CSS',
+  code: `
+
+  [class*='col-'] {
+    float: left;
+    padding-right: 20px;
+    padding-bottom: 20px;
+  }
+
+  [class*='col-']:last-of-type {
+    padding-right: 0;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  *, *:after, *:before {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  h3 {
+    text-align: center;
+    margin-bottom: 0;
+  }
+
+  h4 {
+    position: relative;
+  }
+
+  .grid {
+    margin: 0;
+  }
+
+  .col-1-4 {
+    width: 25%;
+  }
+
+  .module {
+    padding: 20px;
+    text-align: center;
+    color: #eee;
+    max-height: 120px;
+    min-width: 120px;
+    background-color: #607D8B;
+    border-radius: 2px;
+  }
+
+  .module:hover {
+    background-color: #EEE;
+    cursor: pointer;
+    color: #607d8b;
+  }
+
+  .grid-pad {
+    padding: 10px 0;
+  }
+
+  .grid-pad > [class*='col-']:last-of-type {
+    padding-right: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .module {
+      font-size: 10px;
+      max-height: 75px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .grid {
+      margin: 0;
+    }
+    .module {
+      min-width: 60px;
+    }
+  }
+
+  `
 };
 apip322 = {
-  name: '',
-  code: ``
+  name: 'Hero Detail Component',
+  code: `
+
+  import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+  import { ActivatedRoute } from '@angular/router';
+  import { Location } from '@angular/common';
+
+  import { HeroService } from '../hero.service';
+  import { Hero } from '../hero';
+
+  import { Subscription } from 'rxjs/Subscription';
+
+  @Component({
+    selector: 'app-hero-detail',
+    templateUrl: './hero-detail.component.html',
+    styleUrls: ['./hero-detail.component.css']
+  })
+  export class HeroDetailComponent implements OnInit, OnDestroy {
+    @Input() hero: Hero;
+    heroSubscription: Subscription;
+
+    constructor(private route: ActivatedRoute,
+                private heroService: HeroService,
+                private location: Location) { }
+
+    ngOnInit() {
+      this.getHero();
+    }
+
+    getHero() {
+      const id = +this.route.snapshot.paramMap.get('id');
+      this.heroSubscription =
+        this.heroService.getHero(id).subscribe(hero => this.hero = hero);
+    }
+
+    save(): void {
+      this.heroSubscription =
+        this.heroService.updateHero(this.hero).subscribe(() => this.goBack());
+    }
+
+    goBack(): void {
+      this.location.back();
+    }
+
+    ngOnDestroy() {
+      this.heroSubscription.unsubscribe();
+    }
+
+  }
+
+  `
 };
 apip323 = {
-  name: '',
-  code: ``
+  name: 'Hero Detail Component HTML',
+  code: `
+
+  <div *ngIf="hero">
+  <h2>{{ hero.name | uppercase }} Details</h2>
+  <div><span>id: </span>{{ hero.id }}</div>
+  <div>
+          <label>name:
+                <input [(ngModel)]="hero.name" placeholder="name">
+          </label>
+  </div>
+</div>
+<button (click)="goBack()">go back</button>
+<button (click)="save()">save</button>
+
+  `
 };
 apip324 = {
-  name: '',
-  code: ``
+  name: 'Hero Detail Component CSS',
+  code: `
+
+  label {
+    display: inline-block;
+    width: 3em;
+    margin: .5em 0;
+    color: #607D8B;
+    font-weight: bold;
+  }
+
+  input {
+    height: 2em;
+    font-size: 1em;
+    padding-left: .4em;
+  }
+
+  button {
+    margin-top: 20px;
+    font-family: Arial;
+    background-color: #eee;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    cursor: hand;
+  }
+
+  button:hover {
+    background-color: #cfd8dc;
+  }
+
+  button:disabled {
+    background-color: #eee;
+    color: #ccc;
+    cursor: auto;
+  }
+
+
+  `
 };
 apip325 = {
-  name: '',
-  code: ``
+  name: 'Hero Search Component',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { Hero } from '../hero';
+  import { HeroService } from '../hero.service';
+
+  import { Observable } from 'rxjs/Observable';
+  import { Subject } from 'rxjs/Subject';
+  import { of } from 'rxjs/observable/of';
+
+  import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+
+  @Component({
+    selector: 'app-hero-search',
+    templateUrl: './hero-search.component.html',
+    styleUrls: ['./hero-search.component.css']
+  })
+  export class HeroSearchComponent implements OnInit {
+    heroes$: Observable<Hero[]>;
+
+    private searchTerms = new Subject<string>();
+
+    constructor(private heroService: HeroService) { }
+
+    search(term: string): void {
+      this.searchTerms.next(term);
+    }
+
+    ngOnInit() {
+      this.heroes$ = this.searchTerms.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((term: string) => this.heroService.searchHeroes(term))
+      );
+    }
+
+  }
+
+  `
 };
 apip326 = {
-  name: '',
-  code: ``
+  name: 'Hero Search Component HTML',
+  code: `
+
+  <div id="search-component">
+          <h4>Hero Search</h4>
+          <input #searchBox id="search-box" (keyup)="search(searchBox.value)">
+          <ul class="search-result">
+          <li *ngFor="let hero of heroes$ | async">
+            <a routerLink="/detail/{{ hero.id }}">
+              {{ hero.name }}
+            </a>
+          </li>
+        </ul>
+  </div>
+
+  `
 };
 apip327 = {
-  name: '',
-  code: ``
+  name: 'Hero Search Component CSS',
+  code: `
+
+  .search-result li {
+    border-bottom: 1px solid gray;
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+    width: 192px;
+    height: 16px;
+    padding: 5px;
+    background-color: white;
+    cursor: pointer;
+    list-style-type: none;
+  }
+
+  .search-result li:hover {
+    background-color: #607D8B;
+  }
+
+  .search-result li a {
+    color: #888;
+    display: block;
+    text-decoration: none;
+  }
+
+  .search-result li a:hover {
+    color: white;
+  }
+
+  .search-result li a:active {
+    color: white;
+  }
+
+  #search-box {
+    width: 200px;
+    height: 20px;
+  }
+
+  ul.search-result {
+    margin-top: 0;
+    padding-left: 0;
+  }
+
+  `
 };
 apip328 = {
-  name: '',
-  code: ``
+  name: 'Heroes Component',
+  code: `
+
+  import { Component, OnInit, OnDestroy } from '@angular/core';
+
+  import { Hero } from '../hero';
+  import { HeroService } from '../hero.service';
+
+  import { Subscription } from 'rxjs/Subscription';
+
+  @Component({
+    selector: 'app-heroes',
+    templateUrl: './heroes.component.html',
+    styleUrls: ['./heroes.component.css']
+  })
+  export class HeroesComponent implements OnInit, OnDestroy {
+    heroes: Hero[];
+    heroesSubscription: Subscription;
+
+    constructor(private heroService: HeroService) { }
+
+    ngOnInit() {
+      this.getHeroes();
+    }
+
+    getHeroes(): void {
+      this.heroesSubscription =
+            this.heroService.getHeroes().subscribe(heroes => {
+        this.heroes = heroes;
+      });
+    }
+
+    add(name: string): void {
+      name = name.trim();
+      if (!name) { return; }
+      this.heroesSubscription =
+            this.heroService.addHero({ name } as Hero).subscribe(hero => {
+        this.heroes.push(hero);
+      });
+    }
+
+    delete(hero: Hero): void {
+      this.heroes = this.heroes.filter(h => h !== hero);
+      this.heroesSubscription = this.heroService.deleteHero(hero).subscribe();
+    }
+
+    ngOnDestroy() {
+      this.heroesSubscription.unsubscribe();
+    }
+
+  }
+
+  `
 };
 apip329 = {
-  name: '',
-  code: ``
+  name: 'Heroes Component HTML',
+  code: `
+
+  <h2>My Heroes</h2>
+  <div>
+    <label>Hero name:
+      <input #heroName>
+    </label>
+    <button (click)="add(heroName.value); heroName.value = '';">
+      add
+    </button>
+  </div>
+  <ul class="heroes">
+    <li *ngFor="let hero of heroes">
+      <a routerLink="/detail/{{hero.id}}">
+        <span class="badge">{{ hero.id }}</span> {{ hero.name }}
+      </a>
+        <button class="delete" title="delete hero" (click)="delete(hero)">x</button>
+    </li>
+  </ul>
+
+  `
 };
 apip330 = {
-  name: '',
-  code: ``
+  name: 'Heroes Component CSS',
+  code: `
+
+  .heroes {
+    margin: 0 0 2em 0;
+    list-style-type: none;
+    padding: 0;
+    width: 15em;
+  }
+
+  .heroes li {
+    cursor: pointer;
+    position: relative;
+    background-color: #EEE;
+    margin: .5em;
+    padding: .3em 0;
+    height: 1.6em;
+    border-radius: 5px;
+  }
+
+
+  .heroes li:hover {
+    color: #607D8B;
+    background-color: #DDD;
+    left: .1em;
+  }
+
+  .heroes a {
+    color: #888;
+    text-decoration: none;
+    position: relative;
+    display: block;
+    width: 250px;
+  }
+
+  .heroes a:hover {
+    color: #607D8B;
+  }
+
+  .heroes .badge {
+    display: inline-block;
+    font-size: small;
+    color: white;
+    padding: 0.8em 0.7em 0 0.7em;
+    background-color: #607D8B;
+    line-height: 1em;
+    position: relative;
+    left: -1px;
+    top: -4px;
+    height: 1.8em;
+    min-width: 16px;
+    text-align: right;
+    margin-right: .8em;
+    border-radius: 4px 0 0 4px;
+  }
+
+  button {
+    background-color: #eee;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    cursor: hand;
+    font-family: Arial;
+  }
+
+  button:hover {
+    background-color: #cfd8dc;
+  }
+
+  button.delete {
+    position: relative;
+    left: 194px;
+    top: -32px;
+    background-color: grey !important;
+    color: white;
+  }
+
+  `
 };
 apip331 = {
-  name: '',
-  code: ``
+  name: 'Messages Component',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { MessageService } from '../message.service';
+
+  @Component({
+    selector: 'app-messages',
+    templateUrl: './messages.component.html',
+    styleUrls: ['./messages.component.css']
+  })
+  export class MessagesComponent {
+
+    constructor(public messageService: MessageService) { }
+
+  }
+
+
+  `
 };
 apip332 = {
-  name: '',
-  code: ``
+  name: 'Messages Component HTML',
+  code: `
+
+  <div *ngIf="messageService.messages.length">
+
+          <h2>Messages</h2>
+              <button class="clear" (click)="messageService.clear()">
+                clear
+              </button>
+
+      <div *ngFor="let message of messageService.messages">{{ message }}</div>
+
+  </div>
+
+  `
 };
 apip333 = {
-  name: '',
-  code: ``
+  name: 'Messages Component CSS',
+  code: `
+
+  h2 {
+    color: red;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: lighter;
+  }
+
+  body {
+    margin: 2em;
+  }
+
+  body, input[text], button {
+    color: crimson;
+    font-family: Cambria, Georgia;
+  }
+
+  button.clear {
+    font-family: Arial;
+    background-color: #eee;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    cursor: hand;
+  }
+
+  button:hover {
+    background-color: #cfd8dc;
+  }
+
+  button:disabled {
+    background-color: #eee;
+    color: #aaa;
+    cursor: auto;
+  }
+
+  button.clear {
+    color: #888;
+    margin-bottom: 12px;
+  }
+
+  `
 };
 apip334 = {
   name: '',

@@ -105,6 +105,11 @@
       "id": 21,
       "title": "Angular API + Template Syntax",
       "date": "02/21/2018"
+    },
+    {
+      "id": 22,
+      "title": "Angular Tour Of Heroes",
+      "date": "02/22/2018"
     }
 	]
 }
