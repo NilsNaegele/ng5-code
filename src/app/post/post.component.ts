@@ -15835,92 +15835,814 @@ apip333 = {
   `
 };
 apip334 = {
-  name: '',
-  code: ``
+  name: 'Obervable Of',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/of';
+
+  @Component({
+    selector: 'app-observable',
+    template: \`
+            <ul>
+                  <li *ngFor="let number of myNumbers$ | async">
+                          {{ number }}
+                  </li>
+            </ul>
+    \`
+  })
+  export class ObservableComponent {
+
+    myNumbers$ = Observable.of([2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]);
+
+  }
+
+  `
 };
 apip335 = {
-  name: '',
-  code: ``
+  name: 'Subject',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Subject } from 'rxjs/Subject';
+
+  @Component({
+    selector: 'app-observable',
+    template: \`
+            <button (click)="upVote(1)">
+              Up Vote
+            </button>
+    \`
+  })
+  export class ObservableComponent {
+      counter$ = new Subject<number>();
+
+      upVote(vote: number) {
+        this.counter$.next(vote);
+      }
+
+      constructor() {
+        this.counter$.subscribe(value => {
+          console.log(value);
+        });
+      }
+
+  }
+
+  `
 };
 apip336 = {
-  name: '',
-  code: ``
+  name: 'Range Pipe Filter Map Subscribe',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import { range } from 'rxjs/observable/range';
+  import { map, filter } from 'rxjs/operators';
+
+  @Component({
+    selector: 'app-observable',
+    template: \`
+
+    \`
+  })
+  export class ObservableComponent {
+
+      constructor() {
+        range(1, 100)
+            .pipe(
+              filter(x => x % 2 === 1),
+              map(x => x + x))
+            .subscribe(x => console.log(x));
+      }
+
+  }
+
+  `
 };
 apip337 = {
-  name: '',
-  code: ``
+  name: 'Scan',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import { range } from 'rxjs/observable/range';
+  import { map, filter, scan } from 'rxjs/operators';
+
+  @Component({
+    selector: 'app-observable',
+    template: \`
+
+    \`
+  })
+  export class ObservableComponent {
+
+     source$ = range(0, 10);
+
+      constructor() {
+        this.source$
+            .pipe(
+              filter(x => x % 2 === 0),
+              map(x => x + x),
+              scan((acc, x) => acc + x, 0))
+            .subscribe(x => console.log(x));
+      }
+
+  }
+
+  `
 };
 apip338 = {
-  name: '',
-  code: ``
+  name: 'Observable FromEvent',
+  code: `
+
+  import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/fromEvent';
+
+  @Component({
+    selector: 'app-observable',
+    template: \`
+            <button #herSexyButton>Click</button>
+    \`
+  })
+  export class ObservableComponent implements AfterViewInit {
+      @ViewChild('herSexyButton') button: ElementRef;
+
+      ngAfterViewInit() {
+        const btnSubscription = Observable.fromEvent(this.button.nativeElement, 'click')
+                            .subscribe(() => console.log('Clicked'));
+
+      }
+  }
+
+
+  `
 };
 apip339 = {
-  name: '',
-  code: ``
+  name: 'Button Scan',
+  code: `
+
+  import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/fromEvent';
+  import { scan } from 'rxjs/operators';
+
+  @Component({
+    selector: 'app-observable',
+    template: \`
+            <button #herSexyButton>Click</button>
+    \`
+  })
+  export class ObservableComponent implements AfterViewInit {
+      @ViewChild('herSexyButton') button: ElementRef;
+
+      ngAfterViewInit() {
+        const btnSubscription =
+                        Observable.fromEvent(this.button.nativeElement, 'click')
+                                .pipe(
+                                scan(count => count + 1, 0)
+                                )
+                                .subscribe((count) => console.log(\`Clicked \${count} times\`));
+      }
+  }
+
+  `
 };
 apip340 = {
-  name: '',
-  code: ``
+  name: 'Throttle Time',
+  code: `
+  import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/fromEvent';
+  import { scan, throttleTime } from 'rxjs/operators';
+
+  @Component({
+    selector: 'app-observable',
+    template: \`
+            <button #herSexyButton>Click</button>
+    \`
+  })
+  export class ObservableComponent implements AfterViewInit {
+      @ViewChild('herSexyButton') button: ElementRef;
+
+      ngAfterViewInit() {
+        const btnSubscription = Observable.fromEvent(this.button.nativeElement, 'click').pipe(
+                                  throttleTime(1000),
+                                  scan(count => count + 1, 0)
+                                )
+                                .subscribe((count) => console.log(\`Clicked \${count} times\`));
+      }
+  }
+
+  `
 };
 apip341 = {
-  name: '',
-  code: ``
+  name: 'Map',
+  code: `
+
+  import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/fromEvent';
+  import { scan, throttleTime, map } from 'rxjs/operators';
+
+  @Component({
+    selector: 'app-observable',
+    template: \`
+            <button #herSexyButton>Click</button>
+    \`
+  })
+  export class ObservableComponent implements AfterViewInit {
+      @ViewChild('herSexyButton') button: ElementRef;
+
+      ngAfterViewInit() {
+        const btnSubscription = Observable.fromEvent(this.button.nativeElement, 'click').pipe(
+                                  throttleTime(1000),
+                                  map(event => event.clientX),
+                                  scan((count, clientX) => count + clientX, 0)
+                                )
+                                .subscribe((count) => console.log(count));
+      }
+  }
+
+  `
 };
 apip342 = {
-  name: '',
-  code: ``
+  name: 'Observable',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+
+
+  @Component({
+    selector: 'app-observable',
+    template: \` \`
+  })
+  export class ObservableComponent {
+
+    private myObservable = Observable.create((observer) => {
+      observer.next(1);
+      observer.next(2);
+      observer.next(3);
+      setTimeout(() => {
+        observer.next(4);
+        observer.complete();
+      }, 1000);
+      observer.next(5);
+      observer.next(6);
+  });
+
+
+    constructor() {
+      console.log('just before subscribe');
+      this.myObservable.subscribe({
+        next: x => console.log('got value ' + x),
+        error: err => console.log('something wrong occured: ' + err),
+        complete: () => console.log('done')
+      });
+      console.log('just after subscribe');
+    }
+
+  }
+
+
+  `
 };
 apip343 = {
-  name: '',
-  code: ``
+  name: 'Interval',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import { interval } from 'rxjs/observable/interval';
+  import { filter, map, take, toArray } from 'rxjs/operators';
+
+
+  @Component({
+    selector: 'app-observable',
+    template: \` \`
+  })
+  export class ObservableComponent {
+
+      takeEveryNth = (n: number) => <T>(source: Observable<T>) =>
+                     new Observable<T>(observer => {
+                      let count = 0;
+                      return source.subscribe({
+                        next(x) {
+                          if (count++ % n === 0) {
+                            observer.next(x);
+                          }
+                        },
+                          error(err) { observer.error(err); },
+                          complete() { observer.complete(); }
+                      });
+                     })
+      takeEveryNthSimple = (n: number) => <T>(source: Observable<T>) =>
+                        source.pipe(
+                          filter((value, index) => index % n === 0)
+                        )
+
+     takeEveryNthSimplest = (n: number) => filter((value, index) => index % n === 0);
+
+
+
+      constructor() {
+              interval(1).pipe(
+                  this.takeEveryNth(2),
+                  map(x => x + x),
+                  this.takeEveryNthSimple(3),
+                  map(x => x * x),
+                  this.takeEveryNthSimplest(4),
+                  take(3),
+                  toArray()
+                  ).subscribe(x => console.log(x));
+     }
+
+  }
+
+  `
 };
 apip344 = {
-  name: '',
-  code: ``
+  name: 'Observables Generalizations Functions',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+
+  @Component({
+    selector: 'app-observable',
+    template: \` \`
+  })
+  export class ObservableComponent {
+
+            myFun = Observable.create((observer) => {
+              console.log('Hi Baby ...');
+              observer.next(42);
+            });
+
+            constructor() {
+              this.myFun.subscribe((x) => console.log(x));
+              this.myFun.subscribe((y) => console.log(y));
+              this.myFun.subscribe((z) => console.log(z));
+            }
+
+  }
+
+  `
 };
 apip345 = {
-  name: '',
-  code: ``
+  name: 'Behavior Subject',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
+  @Component({
+    selector: 'app-observable',
+    template: \` \`
+  })
+  export class ObservableComponent {
+
+      subject = new BehaviorSubject(100);
+
+      constructor() {
+
+        this.subject.subscribe({
+          next: (v) => console.log('observerA: ' + v)
+        });
+
+        this.subject.next(101);
+        this.subject.next(102);
+
+        this.subject.subscribe({
+          next: (v) => console.log('observerB: ' + v)
+        });
+
+        this.subject.next(103);
+
+      }
+
+  }
+
+  `
 };
 apip346 = {
-  name: '',
-  code: ``
+  name: 'Replay Subject',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { ReplaySubject } from 'rxjs/ReplaySubject';
+
+  @Component({
+    selector: 'app-observable',
+    template: \` \`
+  })
+  export class ObservableComponent {
+
+      subject = new ReplaySubject(2);
+
+      constructor() {
+
+        this.subject.subscribe({
+          next: (v) => console.log('observerA: ' + v)
+        });
+
+        this.subject.next(1);
+        this.subject.next(2);
+        this.subject.next(3);
+        this.subject.next(4);
+        this.subject.next(5);
+        this.subject.next(6);
+
+        this.subject.subscribe({
+          next: (v) => console.log('observerB: ' + v)
+        });
+
+        this.subject.next(7);
+
+      }
+
+  }
+
+  `
 };
 apip347 = {
-  name: '',
-  code: ``
+  name: 'Async Subject',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { AsyncSubject } from 'rxjs/AsyncSubject';
+
+  @Component({
+    selector: 'app-observable',
+    template: \` \`
+  })
+  export class ObservableComponent {
+
+      subject = new AsyncSubject();
+
+      constructor() {
+
+        this.subject.subscribe({
+          next: (v) => console.log('observerA: ' + v)
+        });
+
+        this.subject.next(1);
+        this.subject.next(2);
+        this.subject.next(3);
+        this.subject.next(4);
+        this.subject.next(5);
+
+        this.subject.subscribe({
+          next: (v) => console.log('observerB: ' + v)
+        });
+
+        this.subject.next(6);
+        this.subject.complete();
+
+      }
+
+  }
+
+  `
 };
 apip348 = {
-  name: '',
-  code: ``
+  name: 'Create',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/from';
+
+
+  @Component({
+    selector: 'app-observable',
+    template: \` \`
+  })
+  export class ObservableComponent {
+      input = Observable.from([2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]);
+      multiplyByTen(input) {
+        const output = Observable.create(function subscribe(observer) {
+                  input.subscribe({
+                  next: (cp) => observer.next(10 * cp),
+                  error: (err) => observer.error(err),
+                  complete: () => observer.complete()
+              });
+        });
+        return output;
+      }
+
+      constructor() {
+        const output = this.multiplyByTen(this.input);
+        output.subscribe(a => console.log(a));
+      }
+
+  }
+
+  `
 };
 apip349 = {
-  name: '',
-  code: ``
+  name: 'Instance Operators',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/from';
+
+
+  @Component({
+    selector: 'app-observable',
+    template: \` \`
+  })
+  export class ObservableComponent {
+      i = Observable.prototype.multiplyByTen = function multiplyByTen() {
+        const input = this;
+        return Observable.create(function subscribe(observer) {
+                  input.subscribe({
+                  next: (cp) => observer.next(10 * cp),
+                  error: (err) => observer.error(err),
+                  complete: () => observer.complete()
+              });
+        });
+      };
+
+      constructor() {
+        const observable = Observable.from([2, 4, 8, 16, 32, 64, 128]).multiplyByTen();
+        observable.subscribe(a => console.log(a));
+      }
+
+  }
+
+  `
 };
 apip350 = {
-  name: '',
-  code: ``
+  name: 'Scheduler',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import { Scheduler } from 'rxjs/Scheduler';
+  import { async } from 'rxjs/scheduler/async';
+  import 'rxjs/add/operator/observeOn';
+
+
+  @Component({
+    selector: 'app-observable',
+    template: \` \`
+  })
+  export class ObservableComponent {
+      observable = Observable.create((observer) => {
+          observer.next(10);
+          observer.next(20);
+          observer.next(30);
+          observer.complete();
+      })
+      .observeOn(async);
+
+      constructor() {
+        console.log('just before subscribe');
+        this.observable.subscribe({
+          next: cp => console.log('got value ' + cp),
+          error: err => console.log('something wrong occured ' + err),
+          complete: () => console.log('done')
+        });
+        console.log('just after subscribe');
+      }
+
+  }
+
+  `
 };
 apip351 = {
-  name: '',
-  code: ``
+  name: 'Converting To Observables',
+  code: `
+
+          const obs = Observable.of('hi', 'baby', 'cpu2');
+          const obsArr = Observable.from([1, 2, 3, 4, 5, 6]);
+          const obsEvent = Observable.fromEvent(document.querySelector('button'), 'click');
+          const obsProm = Observable.fromPromise(fetch('/data'));
+
+  `
 };
 apip352 = {
-  name: '',
-  code: ``
+  name: 'Creating Observables',
+  code: `
+
+  export class ObservableComponent {
+
+    myObservable = new Subject();
+
+    constructor() {
+      this.myObservable.subscribe(value => console.log(value));
+      this.myObservable.next('foo');
+      this.myObservable.next('bar');
+      this.myObservable.next('baz');
+
+      const myObservable1 = Observable.create(observer => {
+              observer.next('oof');
+              setTimeout(() => observer.next('rab'), 500);
+              setTimeout(() => observer.next('zab'), 1000);
+      });
+      myObservable1.subscribe(value => console.log(value));
+
+    }
+
+}
+
+  `
 };
 apip353 = {
-  name: '',
-  code: ``
+  name: 'Controlling The Flow',
+  code: `
+
+  import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/fromEvent';
+  import { filter, map, delay, throttleTime,
+           debounceTime, take, takeUntil } from 'rxjs/operators';
+
+
+  @Component({
+    selector: 'app-observable',
+    template: \`
+
+          <input type="text" #box>
+          <button #herSexyButton>Button</button>
+
+    \`
+  })
+  export class ObservableComponent implements AfterViewInit {
+      @ViewChild('box') input: ElementRef;
+      @ViewChild('herSexyButton') button: ElementRef;
+
+      constructor() { }
+
+      ngAfterViewInit() {
+        const input = Observable.fromEvent(this.input.nativeElement, 'input');
+
+        input.pipe(
+          filter(event => event.target.value.length > 3),
+          map(event => event.target.value)
+        )
+        .subscribe(value => console.log(value));
+
+        input.pipe(
+          delay(2000),
+          map(event => event.target.value)
+        )
+        .subscribe(value => console.log(value));
+
+        input.pipe(
+          throttleTime(200),
+          map(event => event.target.value)
+        )
+        .subscribe(value => console.log(value));
+
+        input.pipe(
+          debounceTime(200),
+          map(event => event.target.value)
+        )
+        .subscribe(value => console.log(value));
+
+        input.pipe(
+          take(3),
+          map(event => event.target.value)
+        )
+        .subscribe(value => console.log(value));
+
+        const stopStream = Observable.fromEvent(this.button.nativeElement, 'click');
+        input.pipe(
+          takeUntil(stopStream),
+          map(event => event.target.value)
+        )
+        .subscribe(value => console.log(value));
+
+      }
+
+  }
+
+  `
 };
 apip354 = {
-  name: '',
-  code: ``
+  name: 'Producing Values',
+  code: `
+
+  import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/fromEvent';
+  import { map, pluck, pairwise, distinct, distinctUntilChanged } from 'rxjs/operators';
+
+
+  @Component({
+    selector: 'app-observable',
+    template: \`
+
+          <input type="text" #box>
+
+    \`
+  })
+  export class ObservableComponent implements AfterViewInit {
+      @ViewChild('box') input: ElementRef;
+
+      constructor() { }
+
+      ngAfterViewInit() {
+        const input = Observable.fromEvent(this.input.nativeElement, 'input');
+
+        input.pipe(
+          map(event => event.target.value)
+        )
+        .subscribe(value => console.log(value));
+
+        input.pipe(
+          pluck('target', 'value')
+        )
+        .subscribe(value => console.log(value));
+
+        input.pipe(
+          pluck('target', 'value'),
+          pairwise()
+        )
+        .subscribe(value => console.log(value));
+
+        input.pipe(
+          pluck('target', 'value'),
+          distinct()
+        )
+        .subscribe(value => console.log(value));
+
+        input.pipe(
+          pluck('target', 'value'),
+          distinctUntilChanged()
+        )
+        .subscribe(value => console.log(value));
+
+      }
+
+  }
+
+  `
 };
 apip355 = {
-  name: '',
-  code: ``
+  name: 'Simple Store',
+  code: `
+
+  import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+  import { Observable } from 'rxjs/Observable';
+
+  export interface StoreOptions {
+    debug?: boolean;
+    mutateState?: boolean;
+  }
+
+  export abstract class Store<T extends object> extends Observable<T> {
+    private stateSubject: BehaviorSubject<T>;
+    private options: StoreOptions;
+
+    get state() {
+      return this.stateSubject.value;
+    }
+
+    constructor(initialState: T, options: StoreOptions = {}) {
+      const stateSubject = new BehaviorSubject(initialState);
+      super(observer => stateSubject.subscribe(observer));
+      this.stateSubject = stateSubject;
+      this.options = options;
+    }
+
+    protected mutate(newState: Partial<T>) {
+      const state = this.options.mutateState ?
+      Object.assign(this.state, newState) : Object.assign({}, this.state, newState);
+      if (this.options.debug) {
+        console.log(\`State changed [\${this.constructor.name}]:\`, state);
+      }
+      this.stateSubject.next(state);
+    }
+
+  }
+
+  `
 };
 apip356 = {
   name: '',

@@ -110,6 +110,11 @@
       "id": 22,
       "title": "Angular Tour Of Heroes",
       "date": "02/22/2018"
+    },
+    {
+      "id": 23,
+      "title": "Introduction RxJS",
+      "date": "02/23/2018"
     }
 	]
 }
