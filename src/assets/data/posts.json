@@ -115,6 +115,11 @@
       "id": 23,
       "title": "Introduction RxJS",
       "date": "02/23/2018"
+    },
+    {
+      "id": 24,
+      "title": "Angular API: Animations + Core + Forms",
+      "date": "02/24/2018"
     }
 	]
 }

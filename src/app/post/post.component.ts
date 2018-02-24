@@ -16645,44 +16645,467 @@ apip355 = {
   `
 };
 apip356 = {
-  name: '',
-  code: ``
+  name: 'State Function',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { animate, state, style, transition, trigger } from '@angular/animations';
+
+  @Component({
+    selector: 'app-animations',
+    template: \`
+                <button (click)="expand()">Open</button>
+                <button (click)="collapse()">Closed</button>
+                <hr>
+                <div class="toggle-container" [@openClose]="stateExpression">
+                      Look at this box
+                </div>
+    \`,
+    styles: [\`
+          .toggle-container {
+            background-color: white;
+            border: 10px solid black;
+            width: 200px;
+            text-align: center;
+            line-height: 100px;
+            font-size: 50px;
+            box-sizing: border-box;
+            overflow: hidden;
+          }
+
+    \`],
+    animations: [trigger(
+      'openClose',
+      [
+        state('collapsed, void', style({height: '0px', color: 'red', borderColor: 'red'})),
+        state('expanded', style({height: '*', borderColor: 'green', color: 'green'})),
+        transition('collapsed <=> expanded',
+                   [animate(1000, style({height: '250px'})), animate(1000)])
+      ]
+    )]
+  })
+  export class AnimationsComponent {
+    stateExpression: string;
+
+    constructor() {
+      this.collapse();
+    }
+
+    expand() {
+      this.stateExpression = 'expanded';
+    }
+
+    collapse() {
+      this.stateExpression = 'collapsed';
+    }
+
+  }
+
+  `
 };
 apip357 = {
-  name: '',
-  code: ``
+  name: 'Query Function',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { animate, style, transition, trigger, query } from '@angular/animations';
+
+  @Component({
+    selector: 'app-animations',
+    template: \`
+               <div [@queryAnimation]>
+                  <h1>Title</h1>
+                  <div class="content">
+                    {{ message }}
+                  </div>
+               </div>
+    \`,
+    animations: [
+      trigger('queryAnimation', [
+        transition('* => *', [
+          query('h1', style({opacity: 0})),
+          query('.content', style({opacity: 0})),
+          query('h1', animate(1000, style({opacity: 1}))),
+          query('.content', animate(1000, style({opacity: 1}))),
+        ])
+      ])
+    ]
+  })
+  export class AnimationsComponent {
+    title = 'Hello Animations';
+    message = 'The will to win is nothing without the will to prepare.';
+
+  }
+
+  `
 };
 apip358 = {
-  name: '',
-  code: ``
+  name: 'Animate Child Function',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { animate, style, transition, trigger, query } from '@angular/animations';
+
+  @Component({
+    selector: 'app-animations',
+    template: \`
+                <button (click)="exp = !exp">Toggle</button>
+                <hr>
+
+                <div [@parentAnimation]="exp">
+                <header>Hello</header>
+                <div [@childAnimation]="exp">
+                      one
+                </div>
+                <div [@childAnimation]="exp">
+                      two
+                </div>
+                <div [@childAnimation]="exp">
+                      three
+                </div>
+    \`,
+    animations: [
+      trigger(
+      'parentAnimation', [
+        transition('false => true', [
+          query('header', [
+            style({ opacity: 0}),
+            animate(1000, style({ opacity: 1}))
+          ]),
+          query('@childAnimation', [
+            animateChild()
+          ])
+        ])
+      ]),
+      trigger('childAnimation', [
+        transition('false => true', [
+          style({opacity: 0}),
+          animate(1000, style({ opacity: 1}))
+        ])
+      ])
+    ]
+  })
+  export class AnimationsComponent {
+    exp = false;
+
+  }
+
+  `
 };
 apip359 = {
-  name: '',
-  code: ``
+  name: 'Stagger Function',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { animate, query, stagger, state,
+           style, transition, trigger } from '@angular/animations';
+
+    @Component({
+      selector: 'app-animations',
+      template: \`
+                  <button (click)="toggle()">Show / Hide Items</button>
+                  <hr>
+                  <div [@listAnimation]="items.length">
+                        <div *ngFor="let item of items">
+                              {{ item }}
+                        </div>
+                  </div>
+      \`,
+      animations: [trigger(
+        'listAnimation',
+        [
+          transition('* => *', [
+            query(':leave', [
+              stagger(100, [
+                animate('1s', style({ opacity: 0}))
+              ])
+            ]),
+            query(':enter', [
+              style({ opacity: 0}),
+              stagger(100, [
+                animate('1s', style({ opacity: 1}))
+              ])
+            ])
+          ])
+        ]
+      )],
+    })
+    export class AnimationsComponent {
+      items = [];
+
+      showItems() {
+        this.items = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024];
+      }
+
+      hideItems() {
+        this.items = [];
+      }
+
+      toggle() {
+        this.items.length ? this.hideItems() : this.showItems();
+      }
+
+    }
+
+  `
 };
 apip360 = {
-  name: '',
-  code: ``
+  name: 'Transition Function',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { group, animate, query, style, transition, trigger } from '@angular/animations';
+
+    @Component({
+      selector: 'app-animations',
+      template: \`
+                  <button (click)="previous()">Previous</button>
+                  <button (click)="next()">Next</button>
+                  <hr>
+                  <div [@bannerAnimation]="selectedIndex" class="banner-container">
+                          <div class="banner" *ngFor="let banner of banners">
+                            {{ banner }}
+                          </div>
+                  </div>
+      \`,
+      styles: [\`
+          .banner-container {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+          }
+          .banner-container > .banner {
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 200px;
+            line-height: 500px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+          }
+
+      \`],
+      animations: [trigger(
+        'bannerAnimation',
+        [
+          transition(':increment', group([
+            query(':enter', [
+              style({ left: '100%'}),
+              animate('0.5s ease-out', style('*'))
+            ]),
+            query(':leave', [
+              animate('0.5s ease-out', style({ left: '-100%'}))
+            ])
+          ])),
+          transition(':decrement', group([
+            query(':enter', [
+              style({ left: '-100%'}),
+              animate('0.5s ease-out', style('*'))
+            ]),
+            query(':leave', [
+              animate('0.5s ease-out', style({ left: '100%'}))
+            ])
+          ]))
+        ]
+      )],
+    })
+    export class AnimationsComponent {
+      private allBanners = ['1', '2', '3', '4'];
+      selectedIndex = 0;
+
+      get banners() {
+        return [this.allBanners[this.selectedIndex]];
+      }
+
+      previous() {
+        this.selectedIndex = Math.max(this.selectedIndex - 1, 0);
+      }
+
+      next() {
+        this.selectedIndex = Math.max(this.selectedIndex + 1, this.allBanners.length - 1);
+      }
+
+    }
+
+  `
 };
 apip361 = {
-  name: '',
-  code: ``
+  name: 'AfterContentChecked Interface',
+  code: `
+
+  import { Component, AfterContentChecked } from '@angular/core';
+
+  @Component({
+    selector: 'app-core',
+    template: \`
+            <h3>{{ message }}</h3>
+    \`
+  })
+  export class CoreComponent implements AfterContentChecked {
+    message = 'I love you ...';
+
+    constructor() { }
+
+    // lifecycle hook that is called after every check of a directive's content
+    ngAfterContentChecked() {
+      console.log('ngAfterContentChecked() called');
+    }
+
+  }
+
+
+  `
 };
 apip362 = {
-  name: '',
-  code: ``
+  name: 'AfterViewInit Interface',
+  code: `
+
+  import { Component, AfterViewInit } from '@angular/core';
+
+  @Component({
+    selector: 'app-core',
+    template: \`
+            <h3>{{ message }}</h3>
+    \`
+  })
+  export class CoreComponent implements AfterViewInit {
+    message = 'I love you ...';
+
+    constructor() { }
+
+    // lifecycle hook that is called after a component's view has been fully initialized
+    ngAfterViewInit() {
+      console.log('ngAfterViewInit() called');
+    }
+
+  }
+
+  `
 };
 apip363 = {
-  name: '',
-  code: ``
+  name: 'Component Decorator',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  // marks a class as an angular component and collects component configuration metadata
+
+  @Component({
+    changeDetection?: ChangeDetectionStrategy
+    viewProviders?: Provider[]
+    moduleId?: string
+    templateUrl?: string
+    template?: string
+    styleUrls?: string[]
+    styles?: string[]
+    animations?: any[]
+    encapsulation?: ViewEncapsulation
+    interpolation?: [string, string]
+    entryComponents?: Array<Type<any> | any[]>
+    preserveWhitespaces?: boolean
+    // inherited from core/Directive
+    selector?: string
+    inputs?: string[]
+    outputs?: string[]
+    host?: { ... }
+    providers?: Provider[]
+    exportAs?: string
+    queries?: { ... }
+  })
+
+  @Component({
+    selector: 'app-core',
+    template: \`
+            <h3>{{ message }}</h3>
+    \`
+  })
+  export class CoreComponent {
+    message = 'I love you ...';
+
+    constructor() { }
+
+  }
+
+  `
 };
 apip364 = {
-  name: '',
-  code: ``
+  name: 'NgModule Decorator',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+  import { RouterModule, Routes } from '@angular/router';
+  import { FormsModule } from '@angular/forms';
+  import { HttpClientModule } from '@angular/common/http';
+
+  import { AppComponent } from './app.component';
+  import { AnimationsComponent } from './animations/animations.component';
+  import { CoreComponent } from './core/core.component';
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      AnimationsComponent,
+      CoreComponent
+    ],
+    imports: [
+      BrowserModule,
+      BrowserAnimationsModule,
+      FormsModule,
+      HttpClientModule
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  @NgModule({
+    providers?: Provider[]
+    declarations?: Array<Type<any> | any[]>
+    imports?: Array<Type<any> | ModuleWithProviders | any[]>
+    exports?: Array<Type<any> | any[]>
+    entryComponents?: Array<Type<any> | any[]>
+    bootstrap?: Array<Type<any> | any[]>
+    schemas?: Array<SchemaMetadata | any[]>
+    id?: string
+  })
+
+
+  `
 };
 apip365 = {
-  name: '',
-  code: ``
+  name: 'OnInit Interface',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  @Component({
+    selector: 'app-core',
+    template: \`
+            <h3>{{ message }}</h3>
+    \`
+  })
+  export class CoreComponent implements OnInit {
+    message = 'I love you ...';
+
+    constructor() { }
+
+    // lifecycle hook that is called after data bound properties
+    // of a directive are initialized
+    ngOnInit() {
+      console.log('ngOnInit() called');
+    }
+
+  }
+
+  `
 };
 apip366 = {
   name: '',
