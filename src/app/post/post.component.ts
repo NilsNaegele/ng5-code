@@ -17761,60 +17761,576 @@ apip380 = {
   `
 };
 apip381 = {
-  name: '',
-  code: ``
+  name: 'DOM Control With Structural Directives NgFor && NgIf',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <div *ngFor="let article of articles; let i = index;">
+                <h1 *ngIf="article.active">
+                        ({{ i }}): {{ article.title }}
+                </h1>
+          </div>
+          \`
+  })
+  export class NewsComponent {
+
+        articles: Object[] = [
+          { title: 'Foo', active: true },
+          { title: 'Bar', active: false },
+          { title: 'Baz', active: true }
+        ];
+
+  }
+
+  `
 };
 apip382 = {
-  name: '',
-  code: ``
+  name: 'Template Reference Variables Reference Elements',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <input #box (keyup)="0">
+            <h1>{{ box.value }}</h1>
+          \`
+  })
+  export class NewsComponent { }
+
+  `
 };
 apip383 = {
-  name: '',
-  code: ``
+  name: 'Attribute Property Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <input #box
+                    (keyup.enter)="setValue(box.value)"
+                    (keyup)="checkStale(box.value)">
+            <h1 [style.color]="isStale ? 'red' : 'green'">
+                {{ myBox }}
+            </h1>
+          \`
+  })
+  export class NewsComponent {
+          isStale = false;
+          myBox = '';
+
+          setValue(input: string) {
+            this.myBox = input;
+          }
+
+          checkStale(input: string): void {
+            this.isStale = input !== this.myBox;
+          }
+
+  }
+
+  `
 };
 apip384 = {
-  name: '',
-  code: ``
+  name: 'Lifecycle Hooks',
+  code: `
+
+  import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+            <h1>
+                  <ng-content></ng-content>{{ articleTitle }}
+            </h1>
+    \`
+  })
+  export class ArticleComponent implements OnInit, OnDestroy {
+        @Input() articleTitle: string;
+
+        ngOnInit() {
+          console.log('created', this.articleTitle);
+        }
+
+        ngOnDestroy() {
+          console.log('destroyed', this.articleTitle);
+        }
+  }
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <input (keyup.enter)="add($event)">
+            <app-article *ngFor="let title of titles; let i = index;"
+                          [articleTitle]="title">
+            <button (click)="remove(i)">X</button>
+          \`
+  })
+  export class NewsComponent {
+          titles: string[] = [];
+
+          add(e: Event): void {
+            this.titles.push(e.target.value);
+            e.target.value = '';
+          }
+
+          remove(index: number): void {
+            this.titles.splice(index, 1);
+          }
+
+  }
+
+  `
 };
 apip385 = {
-  name: '',
-  code: ``
+  name: 'Referencing Parent Component From Child Component',
+  code: `
+
+  import { Component, Input } from '@angular/core';
+
+  @Component({
+    selector: 'app-feedback',
+    template: \`
+            <h1>
+                  Number of likes: {{ value }}
+            </h1>
+            <button (click)="likeArticle()">Like this article</button>
+    \`
+  })
+  export class FeedbackComponent {
+      @Input() value: number;
+
+      constructor(private newsComponent: NewsComponent) { }
+
+      likeArticle(): void {
+        this.newsComponent.incrementLikes();
+      }
+
+  }
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <app-feedback [value]="likes"></app-feedback>
+          \`
+  })
+  export class NewsComponent {
+          likes = 0;
+
+          incrementLikes() {
+            this.likes++;
+          }
+
+  }
+  `
 };
 apip386 = {
-  name: '',
-  code: ``
+  name: 'ViewChild && ForwardRef Mutual Parent-Child Awareness',
+  code: `
+
+  import { Component, Input, Inject, forwardRef, ViewChild } from '@angular/core';
+
+  @Component({
+    selector: 'app-feedback',
+    template: \`
+            <h1>
+                  Number of likes: {{ value }}
+            </h1>
+            <button (click)="likeArticle()"
+                    [disabled]="!likeEnabled">
+                  Like this article
+            </button>
+    \`
+  })
+  export class FeedbackComponent {
+      @Input() value: number;
+
+      likeEnabled = false;
+
+      constructor(@Inject(forwardRef(() => NewsComponent))
+                          private newsComponent: NewsComponent) { }
+
+      likeArticle(): void {
+        this.newsComponent.incrementLikes();
+      }
+
+      setLikeEnabled(newEnabledStatus: boolean): void {
+        this.likeEnabled = newEnabledStatus;
+      }
+
+  }
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <input type="checkbox" (click)="changeLikesEnabled($event)">
+            <app-feedback [value]="likes"></app-feedback>
+          \`
+  })
+  export class NewsComponent {
+    @ViewChild(FeedbackComponent) feedbackComponent: FeedbackComponent;
+    likes = 0;
+
+    incrementLikes() {
+        this.likes++;
+    }
+
+    changeLikesEnabled(e: Event): void {
+      this.feedbackComponent.setLikeEnabled(e.target.checked);
+    }
+
+  }
+
+  `
 };
 apip387 = {
-  name: '',
-  code: ``
+  name: 'ContentChild && ForwardRef Mutual Parent-Child Awareness',
+  code: `
+
+  import { Component, Inject, forwardRef, ContentChild } from '@angular/core';
+
+  @Component({
+    selector: 'app-feedback',
+    template: \`
+            <h1>
+                  Number of likes: {{ value }}
+            </h1>
+            <button (click)="likeArticle()"
+                    [disabled]="!likeEnabled">
+                  Like this article
+            </button>
+    \`
+  })
+  export class FeedbackComponent {
+      value: number;
+
+      likeEnabled = false;
+
+      constructor(@Inject(forwardRef(() => NewsComponent))
+                          private newsComponent: NewsComponent) {
+                            this.updateLikes();
+                           }
+
+      likeArticle(): void {
+        this.newsComponent.incrementLikes();
+        this.updateLikes();
+      }
+
+      updateLikes() {
+        this.value = this.newsComponent.likes;
+      }
+
+      setLikeEnabled(newEnabledStatus: boolean): void {
+        this.likeEnabled = newEnabledStatus;
+      }
+
+  }
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <input type="checkbox" (click)="changeLikesEnabled($event)">
+            <ng-content></ng-content>
+          \`
+  })
+  export class NewsComponent {
+    @ContentChild(FeedbackComponent) feedbackComponent: FeedbackComponent;
+    likes = 0;
+
+    incrementLikes() {
+        this.likes++;
+    }
+
+    changeLikesEnabled(e: Event): void {
+      this.feedbackComponent.setLikeEnabled(e.target.checked);
+    }
+
+  }
+
+  *****************************************************************
+  Root App Component Transclusion
+
+  <app-news>
+        <app-feedback></app-feedback>
+  </app-news>
+
+  `
 };
 apip388 = {
-  name: '',
-  code: ``
+  name: 'NgModel Two-Way Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+              <h1>{{ title }}</h1>
+              <input [(ngModel)]="title">
+              <input [(ngModel)]="title">
+              <input [(ngModel)]="title">
+          \`
+  })
+  export class NewsComponent {
+      title = '';
+  }
+  `
 };
 apip389 = {
-  name: '',
-  code: ``
+  name: 'Form Group Bundle Controls',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { FormControl, FormGroup, Validators } from '@angular/forms';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <p>Title: <input [formControl]="titleControl"></p>
+            <p>Text: <input [formControl]="textControl"></p>
+            <p><button (click)="saveArticle()">Save</button></p>
+            <hr>
+            <p>Preview:</p>
+            <div style="border: 1px solid #999; margin: 1px;">
+                <h1>{{ article.title }}</h1>
+                <p>{{ article.text }}</p>
+            </div>
+
+    \`
+  })
+  export class NewsComponent {
+          article = { title: '', text: ''};
+
+          titleControl = new FormControl(null, Validators.required);
+          textControl = new FormControl(null, Validators.required);
+
+          articleFormGroup = new FormGroup({
+            title: this.titleControl,
+            text: this.textControl
+          });
+
+          saveArticle() {
+            if (this.articleFormGroup.valid) {
+              this.article = this.articleFormGroup.value;
+            } else {
+              console.log('Missing field(s)!');
+            }
+          }
+
+   }
+
+
+  `
 };
 apip390 = {
-  name: '',
-  code: ``
+  name: 'Form Array Bundle Form Controls',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { FormControl, FormArray, Validators } from '@angular/forms';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <p>Tags:</p>
+            <ul>
+                <li *ngFor="let tag of tags;">
+                    <input [formControl]="tag">
+                </li>
+            </ul>
+            <p><button (click)="addTag()">++</button></p>
+            <p><button (click)="saveArticle()">Save</button></p>
+
+    \`
+  })
+  export class NewsComponent {
+          tags: Array<FormControl> = [];
+          tagFormArray: FormArray = new FormArray(this.tags);
+
+          addTag(): void {
+            this.tagFormArray.push(new FormControl(null, Validators.required));
+          }
+
+          saveArticle() {
+            if (this.tagFormArray.valid) {
+              alert('Valid!');
+            } else {
+              alert('Missing field(s)!');
+            }
+          }
+
+   }
+
+  `
 };
 apip391 = {
-  name: '',
-  code: ``
+  name: 'NgForm Basic Form',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { NgForm } from '@angular/forms';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <form #myForm="ngForm" (ngSubmit)="saveArticle(myForm)">
+                <p><input ngModel name="title" placeholder="Title"></p>
+                <p><input ngModel name="text" placeholder="Text"></p>
+                <p><button type="submit">Save</button></p>
+            </form>
+    \`
+  })
+  export class NewsComponent {
+        saveArticle(form: NgForm) {
+            console.log(form.value);
+        }
+   }
+
+  `
 };
 apip392 = {
-  name: '',
-  code: ``
+  name: 'FormBuilder Basic Form',
+  code: `
+
+  import { Component, Inject } from '@angular/core';
+  import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <form [formGroup]="articleGroup" (ngSubmit)="saveArticle()">
+              <div formGroupName="article">
+                    <p><input formControlName="title" placeholder="Title"></p>
+                    <p><textarea formControlName="text" placeholder="Text"></textarea></p>
+              </div>
+              <p><button type="submit">Save</button></p>
+            </form>
+    \`
+  })
+  export class NewsComponent {
+          articleGroup: FormGroup;
+
+          constructor(@Inject(FormBuilder) formBuilder: FormBuilder) {
+            this.articleGroup = formBuilder.group({
+              article: formBuilder.group({
+                title: [null, Validators.required],
+                text: [null, Validators.required]
+              })
+            });
+          }
+
+          saveArticle(): void {
+            console.log(this.articleGroup.value);
+          }
+
+   }
+
+
+  `
 };
 apip393 = {
-  name: '',
-  code: ``
+  name: 'Custom Validator',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { FormControl, Validators } from '@angular/forms';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <h2>Improve, Improve, Improve ...</h2>
+            <textarea [formControl]="body" placeholder="Text"></textarea>
+            <p><button (click)="saveArticle()">Save</button></p>
+    \`
+  })
+  export class NewsComponent {
+          body = new FormControl(null,
+          [Validators.required, this.wordCountValidator]);
+
+          wordCountValidator(formControl: FormControl): {[key: string]: any} {
+            const wordCount = ((formControl.value || '').match(/\S+/g) || []).length;
+            return wordCount <= 5 ? null : { maxwords: { limit: 5, actual: wordCount }};
+          }
+
+          saveArticle(): void {
+            console.log(this.body);
+            if (this.body.valid) {
+              alert('Valid!');
+            } else {
+              alert('Invalid!');
+            }
+          }
+
+   }
+
+  `
 };
 apip394 = {
-  name: '',
-  code: ``
+  name: 'HttpClient Basic Observable',
+  code: `
+
+  import { Component, OnInit, OnDestroy } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+
+  import { Subscription } from 'rxjs/Subscription';
+
+  export class Article {
+    id: number;
+    title: string;
+    author: string;
+  }
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <h2>Improve, Improve, Improve ...</h2>
+            <h1>({{ id }}) {{ title }}</h1>
+            <p>{{ author }}</p>
+    \`
+  })
+  export class NewsComponent implements OnInit, OnDestroy {
+        id: number;
+        title: string;
+        author: string;
+
+        newsSubscription: Subscription;
+
+        constructor(private http: HttpClient) {}
+
+        ngOnInit() {
+        this.newsSubscription =
+            this.http.get<Article>('assets/news.json').subscribe(response => {
+            this.id = response.id;
+            this.title = response.title;
+            this.author = response.author;
+          },
+          error => console.log(error)
+        );
+        }
+
+        ngOnDestroy() {
+          this.newsSubscription.unsubscribe();
+        }
+
+   }
+
+******************************************************
+News.JSON
+
+{
+  "id": 1,
+  "title": "The Will To Win Is Nothing Without The Will To Prepare",
+  "author": "Nils-Holger Nägele"
+}
+
+  `
 };
 apip395 = {
   name: '',
