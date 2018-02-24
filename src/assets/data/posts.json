@@ -118,8 +118,13 @@
     },
     {
       "id": 24,
-      "title": "Angular API: Animations + Core + Forms",
+      "title": "Angular Animations + Core API",
       "date": "02/24/2018"
+    },
+    {
+      "id": 25,
+      "title": "Angular Recipes",
+      "date": "02/25/2018"
     }
 	]
 }

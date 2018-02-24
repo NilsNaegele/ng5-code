@@ -17108,64 +17108,657 @@ apip365 = {
   `
 };
 apip366 = {
-  name: '',
-  code: ``
+  name: 'Renderer2 Class',
+  code: `
+
+  class Renderer2 {
+    get data: {...}
+    destroy(): void
+    createElement(name: string, namespace?: string | null): any
+    createComment(value: string): any
+    createText(value: string): any
+    destroyNode: ((node: any) => void ) | null
+    appendChild(parent: any, newChild: any): void
+    insertBefore(parent: any, newChild: any, refChild: any): void
+    removeChild(parent: any, oldChild: any): void
+    selectRootElement(selectorOrNode: string | any): any
+    parentNode(node: any): any
+    nextSibling(node: any): any
+    setAttribute(el: any, name: string, value: string, namespace?: string | null): void
+    removeAttribute(el: any, name: string, namespace?: string | null): void
+    addClass(el: any, name: string): void
+    removeClass(el: any, name: string): void
+    setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2): void
+    removeStyle(el: any, style: string, flags?: RendererStyleFlags2): void
+    setProperty(el: any, name: string, value: any): void
+    setValue(node: any, value: string): void
+    listen(target: 'window' | 'document' | 'body' | any, eventName: string,
+          callback: (event: any) => boolean | void): () => void
+  }
+
+  `
 };
 apip367 = {
-  name: '',
-  code: ``
+  name: 'SimpleChanges Interface',
+  code: `
+
+          interface SimpleChanges {
+            __index(propName: string): SimpleChange
+          }
+
+  `
 };
 apip368 = {
-  name: '',
-  code: ``
+  name: 'Type Interface',
+  code: `
+
+            // represents a type that a component or other object is instances of
+
+            interface Type<T> extends Function {
+              new (...args: any[]): T
+            }
+
+  `
 };
 apip369 = {
-  name: '',
-  code: ``
+  name: 'ViewChildren Decorator',
+  code: `
+
+    import { Component, Input, AfterViewInit,
+    Directive, QueryList, ViewChildren } from '@angular/core';
+
+    @Directive({
+        selector: 'app-pane'
+      })
+    export class PaneComponent {
+      @Input() id: string;
+
+    }
+
+    @Component({
+        selector: 'app-core',
+        template: \`
+          <app-pane id="1"></app-pane>
+          <app-pane id="2"></app-pane>
+          <app-pane id="3" *ngIf="shouldShow"></app-pane>
+
+          <button (click)="show()">Show 3</button>
+
+          <div>panes: {{ serializedPanes }}</div>
+      \`
+  })
+  export class CoreComponent implements AfterViewInit {
+      @ViewChildren(PaneComponent) panes: QueryList<PaneComponent>;
+      serializedPanes = '';
+
+      shouldShow = false;
+
+      show() {
+          this.shouldShow = true;
+      }
+
+      ngAfterViewInit() {
+          this.calculateSerializedPanes();
+          this.panes.changes.subscribe((r) => { this.calculateSerializedPanes(); });
+      }
+
+      calculateSerializedPanes() {
+          setTimeout(() => {
+          this.serializedPanes = this.panes.map(p => p.id).join(', ');
+      }, 0);
+    }
+
+  }
+
+  `
 };
 apip370 = {
-  name: '',
-  code: ``
+  name: 'ChangeDetectorRef Class',
+  code: `
+
+  import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+
+  @Component({
+    selector: 'app-cmp',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: \`
+            Number of ticks: {{ numberOfTicks }}
+    \`
+  })
+  export class MyComponent {
+    numberOfTicks = 0;
+
+    constructor(private ref: ChangeDetectorRef) {
+      setInterval(() => {
+              this.numberOfTicks++;
+              this.ref.markForCheck();
+      }, 1000);
+    }
+
+  }
+
+  @Component({
+    selector: 'app-core',
+    template: \`
+            <app-cmp></app-cmp>
+    \`
+  })
+  export class CoreComponent { }
+
+  ***************************************************************
+
+  import { Component, ChangeDetectorRef } from '@angular/core';
+
+export class DataProvider {
+  get data() {
+    return [1, 2, 3, 4, 5, 6, 7, 8];
+  }
+}
+
+@Component({
+  selector: 'app-giant-list',
+  template: \`
+          <li *ngFor="let d of dataProvider.data">Data {{ d }}</li>
+  \`
+})
+export class GiantListComponent {
+
+        constructor(private ref: ChangeDetectorRef,
+                    public dataProvider: DataProvider) {
+                    this.ref.detach();
+                    setInterval(() => {
+                        this.ref.detectChanges();
+                    }, 5000);
+        }
+}
+
+@Component({
+  selector: 'app-core',
+  providers: [DataProvider],
+  template: \`
+            <app-giant-list></app-giant-list>
+  \`
+})
+export class CoreComponent { }
+
+***************************************************************
+
+import { Component, ChangeDetectorRef } from '@angular/core';
+
+export class DataProvider {
+  data = 100;
+
+
+  constructor() {
+    setInterval(() => {
+        this.data = this.data * 8;
+    }, 500);
+  }
+}
+
+@Component({
+  selector: 'app-live-data',
+  inputs: ['live'],
+  template: \`
+          Data: {{ dataProvider.data }}
+  \`
+})
+export class LiveDataComponent {
+
+        constructor(private ref: ChangeDetectorRef,
+                    public dataProvider: DataProvider) { }
+
+        set live(value) {
+          if (value) {
+            this.ref.reattach();
+          } else {
+            this.ref.detach();
+          }
+        }
+
+}
+
+@Component({
+  selector: 'app-core',
+  providers: [DataProvider],
+  template: \`
+            Live Update: <input type="checkbox" [(ngModel)]="live">
+            <app-live-data [live]="live"><app-live-data>
+  \`
+})
+export class CoreComponent {
+  live = true;
+
+}
+
+  `
 };
 apip371 = {
-  name: '',
-  code: ``
+  name: 'AfterContentInit Interface',
+  code: `
+  import { Component, AfterContentInit } from '@angular/core';
+
+  @Component({
+    selector: 'app-core',
+    template: \` \`
+  })
+  export class CoreComponent implements AfterContentInit {
+
+      // lifecycle hook that is called after a directive's content
+      // has been fully initialized
+
+      ngAfterContentInit() {
+          console.log('ngAfterContentInit() called');
+      }
+
+  }
+
+  `
 };
 apip372 = {
-  name: '',
-  code: ``
+  name: 'ContentChild Decorator',
+  code: `
+
+  import { Component, Input, AfterContentInit, ContentChild, Directive } from '@angular/core';
+
+  @Directive({
+    selector: 'app-pane'
+  })
+  export class PaneDirective {
+        @Input() id: string;
+  }
+
+  @Component({
+    selector: 'app-tab',
+    template: \`
+          <div>pane: {{ pane?.id }}</div>
+    \`
+  })
+  export class TabComponent {
+          @ContentChild(PaneDirective) pane: PaneDirective;
+  }
+
+  @Component({
+    selector: 'app-core',
+    template: \`
+
+              <app-tab>
+                        <app-pane id="1" *ngIf="shouldShow"></app-pane>
+                        <app-pane id="2" *ngIf="!shouldShow"></app-pane>
+              </app-tab>
+
+              <button (click)="toggle()">Toggle</button>
+    \`
+  })
+  export class CoreComponent {
+      shouldShow = true;
+
+      toggle() {
+        this.shouldShow = !this.shouldShow;
+      }
+  }
+
+  `
 };
 apip373 = {
-  name: '',
-  code: ``
+  name: 'Directive Decorator',
+  code: `
+
+  import { Component, Directive } from '@angular/core';
+
+  // marks a class as an angular directive and collects configuration metadata
+
+  @Directive({
+    selector?: string
+    inputs?: string[]
+    outputs?: string[]
+    host?: { ... }
+    providers?: Provider[]
+    exportAs?: string
+    queries?: { ... }
+  })
+
+  @Component({
+    selector: 'app-bank-account',
+    inputs: ['bankName: bank-name', 'id: account-id'],
+    template: \`
+              Bank Name: {{ bankName }}
+              Account Id: {{ id }}
+    \`
+  })
+  export class BankAccountComponent {
+    bankName: string;
+    id: string;
+   }
+
+
+  @Component({
+    selector: 'app-core',
+    template: \`
+
+          <app-bank-account bank-name="RBC" account-id="4747"></app-bank-account>
+
+    \`
+  })
+  export class CoreComponent {
+
+  }
+
+  *******************************************************************
+
+  import { Component, Directive, EventEmitter } from '@angular/core';
+
+  @Directive({
+  selector: 'app-interval-dir',
+  outputs: ['everySecond', 'three3Secs: everyThreeSeconds']
+  })
+  export class IntervalDirective {
+    everySecond = new EventEmitter();
+    three3Secs = new EventEmitter();
+
+    constructor() {
+      setInterval(() => this.everySecond.emit('event'), 1000);
+      setInterval(() => this.three3Secs.emit('event'), 3000);
+  }
+
+}
+
+
+@Component({
+  selector: 'app-core',
+  template: \`
+        <app-interval-dir (everySecond)="everySecond()"
+                          (everyThreeSeconds)="everyThreeSeconds()">
+        </app-interval-dir>
+  \`
+})
+export class CoreComponent {
+
+          everySecond() {
+            console.log('second');
+          }
+          everyThreeSeconds() {
+            console.log('three seconds');
+          }
+
+}
+
+
+*******************************************************************
+
+import { Component, Directive } from '@angular/core';
+
+@Directive({
+  selector: 'button[counting]',
+  host: { '(click)': 'onClick($event.target)' }
+})
+export class CountClicksDirective {
+       numberOfClicks = 0;
+
+       onClick(btn) {
+         console.log('button', btn, 'number of clicks: ', this.numberOfClicks++);
+       }
+}
+
+
+@Component({
+  selector: 'app-core',
+  template: \`
+        <button counting>Increment</button>
+  \`
+})
+export class CoreComponent { }
+
+
+*******************************************************************
+
+import { Component, Directive } from '@angular/core';
+import { NgModel } from '@angular/forms';
+
+@Directive({
+  selector: '[ngModel]',
+  host: {
+        '[class.valid]': 'valid',
+        '[class.invalid]' : 'invalid'
+      }
+})
+export class NgModelStatusDirective {
+       constructor(public control: NgModel) { }
+
+       get valid() { return this.control.valid; }
+       get invalid() { return this.control.invalid; }
+}
+
+
+@Component({
+  selector: 'app-core',
+  template: \`
+        <input [(ngModel)]="prop">
+  \`
+})
+export class CoreComponent {
+  prop;
+}
+
+  `
 };
 apip374 = {
-  name: '',
-  code: ``
+  name: 'Component Interpolation',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <p>{{ currentDate | date }}</p>
+          <h1>{{ title }}</h1>
+          <h3>Written by: {{ author }}</h3>
+    \`
+  })
+  export class NewsComponent {
+
+    currentDate = new Date();
+    title = 'Angular 6 Love Affair';
+    author = 'Nils';
+
+  }
+
+  `
 };
 apip375 = {
-  name: '',
-  code: ``
+  name: 'Component Input',
+  code: `
+  import { Component, Input } from '@angular/core';
+
+  @Component({
+    selector: 'app-attribution',
+    template: \`
+        <h3>Written by: {{ author }}</h3>
+    \`
+  })
+  export class AttributionComponent {
+    @Input() author: string;
+  }
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <p>{{ currentDate | date }}</p>
+          <h1>{{ title }}</h1>
+          <app-attribution [author]="author"></app-attribution>
+    \`
+  })
+  export class NewsComponent {
+
+    currentDate = new Date();
+    title = 'ES6/7/8 Exploration';
+    author = 'Nils';
+
+  }
+
+  `
 };
 apip376 = {
-  name: '',
-  code: ``
+  name: 'Native Element Attribute Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <img [src]="logoImageUrl">
+    \`
+  })
+  export class NewsComponent {
+
+      logoImageUrl = 'https://angular.io/assets/images/logos/angular/angular.svg';
+
+  }
+
+  `
 };
 apip377 = {
-  name: '',
-  code: ``
+  name: 'Registering Handlers On Native Browser Events',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <h1>{{ title }}</h1>
+          <p>Likes: {{ likeCount }}</p>
+          <button (click)="like()">Like</button>
+    \`
+  })
+  export class NewsComponent {
+          title = 'Single Page Applications are the Future of the Web with AI && VR';
+          likeCount = 0;
+          like() {
+            ++this.likeCount;
+          }
+  }
+
+  `
 };
 apip378 = {
-  name: '',
-  code: ``
+  name: 'Custom Events With EventEmitter',
+  code: `
+
+  import { Component, EventEmitter, Output } from '@angular/core';
+
+  @Component({
+    selector: 'app-text-editor',
+    template: \`
+            <textarea (keyup)="emitWordCount($event)"></textarea>
+    \`
+  })
+  export class TextEditorComponent {
+    @Output() countUpdate = new EventEmitter<number>();
+
+    emitWordCount(e: Event) {
+      this.countUpdate.emit((e.target.value.match(/\S+/g) || []).length);
+    }
+  }
+
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <h1>{{ title }}</h1>
+          <p>Word count: {{ wordCount }}</p>
+          <app-text-editor (countUpdate)="updateWordCount($event)">
+          </app-text-editor>
+    \`
+  })
+  export class NewsComponent {
+          title = 'Single Page Applications are the Future of the Web with AI && VR';
+          wordCount = 0;
+
+          updateWordCount(count: number): void {
+            this.wordCount = count;
+          }
+
+  }
+
+  `
 };
 apip379 = {
-  name: '',
-  code: ``
+  name: 'Attaching Behavior DOM Elements With Directives',
+  code: `
+
+  import { Component, Directive, HostListener } from '@angular/core';
+
+  @Directive({
+    selector: '[app-click-to-reveal]'
+  })
+  export class ClickToRevealDirective {
+    @HostListener('click', ['$event.target'])
+      reveal(target) {
+        target.style['white-space'] = 'normal';
+    }
+  }
+
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <h1 app-click-to-reveal>{{ title }}</h1>
+    \`,
+    styles: [\`
+      h1 {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 300px;
+      }
+    \`]
+  })
+  export class NewsComponent {
+          title = \`Push it baby, Push it. Desugar, decompose.
+                   You will need a pound of sugar a day to keep up with me.\`;
+
+  }
+
+  `
 };
 apip380 = {
-  name: '',
-  code: ``
+  name: 'NgContent Project Nested Content',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-ad-section',
+    template: \`
+            <a href="#">{{ adText }}</a>
+            <ng-content select="p"></ng-content>
+    \`
+  })
+  export class AdSectionComponent {
+    adText = 'Loved by millions of Developers worldwide ...';
+  }
+
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <h1>{{ title }}</h1>
+          <app-ad-section>
+              <p>Angular to make the Web more beautiful and open.</p>
+              <p>An Open Source World full of knowledge, peace and love.</p>
+          </app-ad-section>
+          \`
+  })
+  export class NewsComponent {
+          title = 'Angular here to save the world!!!';
+
+  }
+
+  `
 };
 apip381 = {
   name: '',
