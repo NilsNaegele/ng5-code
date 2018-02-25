@@ -19490,60 +19490,851 @@ apip407 = {
   `
 };
 apip408 = {
-  name: '',
-  code: ``
+  name: 'Inject Simple Service In Component',
+  code: `
+
+  import { Component, Injectable } from '@angular/core';
+
+
+  @Injectable()
+  export class NewsService {
+          private title = \`The Object Of The War Is The Domination And Organization
+                           Of The Continent Known as Europe.\`;
+
+         getTitle() {
+           return this.title;
+         }
+
+  }
+
+  /**************************************************************************** */
+
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <h1>News Component</h1>
+          <button (click)="getArticle()">Show Article</button>
+          <h2>{{ title }}</h2>
+    \`,
+    providers: [ NewsService ]
+  })
+  export class NewsComponent {
+      title: string;
+
+      constructor(private newsService: NewsService) { }
+
+      getArticle(): void {
+        this.title = this.newsService.getTitle();
+      }
+
+  }
+
+
+  `
 };
 apip409 = {
-  name: '',
-  code: ``
+  name: 'Service Instance Creation And Injection With NgModule',
+  code: `
+
+  import { NgModule, Component, Injectable } from '@angular/core';
+
+
+  @Injectable()
+  export class NewsService {
+          private title = \`The Object Of The War Is The Domination And Organization
+                           Of The Continent Known as Europe.\`;
+
+         getTitle() {
+           return this.title;
+         }
+
+  }
+
+  /**************************************************************************** */
+
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <h1>News Component</h1>
+          <h2>{{ title }}</h2>
+    \`,
+    providers: [ NewsService ]
+  })
+  export class NewsComponent {
+      title: string;
+
+      constructor(private newsService: NewsService) {
+        this.title = this.newsService.getTitle();
+      }
+
+  }
+
+  /**************************************************************************** */
+
+
+  @NgModule({
+    declarations: [ NewsComponent ],
+    providers: [ NewsService ],
+    bootstrap: [ NewsComponent ],
+    exports: [ NewsComponent ]
+  })
+  export class NewsModule { }
+
+  /**************************************************************************** */
+
+  Root App Component
+  <app-news></app-news>
+  <app-news></app-news>
+  <app-news></app-news>
+
+  `
 };
 apip410 = {
-  name: '',
-  code: ``
+  name: 'Service Injection Aliasing With UseClass && UseExisting',
+  code: `
+
+  import { Component, Injectable } from '@angular/core';
+
+  export interface NewsSourceInterface {
+    getNews(): News;
+  }
+
+  export interface News {
+    title: string;
+    body: string;
+    notes?: string;
+  }
+
+
+  @Injectable()
+  export class NewsService implements NewsSourceInterface {
+          private title = \`The Will To Win Is Nothing Without The Will To Prepare.\`;
+          private body = 'I have met my hero, he is me.';
+
+         getNews() {
+           return  {
+             title: this.title,
+             body: this.body
+           };
+         }
+
+  }
+
+  /**************************************************************************** */
+
+  @Injectable()
+  export class EditorNewsService extends NewsService implements NewsSourceInterface {
+          private notes = 'WORK HARD | BE KIND | DO MORE ... Code With Passion.';
+
+         constructor() {
+           super();
+         }
+
+         getNews(): News {
+           console.log(super.getNews());
+           return Object.assign({}, super.getNews(), { notes: this.notes});
+         }
+
+  }
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-default-view',
+    template: \`
+          <h3>Default View</h3>
+          <ng-content></ng-content>
+    \`,
+    providers: [ NewsService ]
+  })
+  export class DefaultViewComponent { }
+
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-editor-view',
+    template: \`
+          <h3>Editor View</h3>
+          <ng-content></ng-content>
+    \`,
+    providers: [
+      { provide: NewsService, useClass: EditorNewsService }
+     ]
+  })
+  export class EditorViewComponent { }
+
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <h1>News Component</h1>
+          <h2> {{ news.title }}</h2>
+          <p>{{ news.body }}</p>
+          <p *ngIf="news.notes">
+            <i>Notes: {{ news.notes }}</i>
+          </p>
+    \`
+  })
+  export class NewsComponent {
+      news: News;
+
+      constructor(private newsService: NewsService) {
+        this.news = this.newsService.getNews();
+      }
+
+  }
+
+  /**************************************************************************** */
+
+  Root App Component
+
+    <app-default-view>
+        <app-news></app-news>
+    </app-default-view>
+    <hr>
+    <app-editor-view>
+      <app-news></app-news>
+    </app-editor-view>
+
+  `
 };
 apip411 = {
-  name: '',
-  code: ``
+  name: 'Unit Test With Karma, Jasmine && Angular Core Testing',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <h1>We are DRIVEN. Use Your Superpowers To Do Good.</h1>
+            <h3>{{ title }}</h3>
+    \`
+  })
+  export class NewsComponent {
+        title = \`Never stop thinking about tomorrow.\`;
+
+  }
+
+  /**************************************************************************** */
+
+  import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+
+  import { NewsComponent } from './news.component';
+
+  describe('NewsComponent', () => {
+    let component: NewsComponent;
+    let fixture: ComponentFixture<NewsComponent>;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [ NewsComponent ]
+    })
+    .compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(NewsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should have correct title', () => {
+    expect(component.title).toBe(\`Never stop thinking about tomorrow.\`);
+  });
+
+  it('should render title in an h3 tag', async(() => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('h3').textContent)
+          .toContain(component.title);
+
+  }));
+
+});
+
+
+  `
 };
 apip412 = {
-  name: '',
-  code: ``
+  name: 'Simple E2E Test With Protractor',
+  code: `
+
+  import { browser, by, element } from 'protractor';
+
+  export class AppPage {
+    navigateTo() {
+      return browser.get('/');
+    }
+
+    getHeaderText() {
+      return element(by.css('app-root h1')).getText();
+    }
+  }
+
+  /**************************************************************************** */
+
+  import { AppPage } from './app.po';
+
+  describe('ng5-apis App', () => {
+  let page: AppPage;
+
+  beforeEach(() => {
+    page = new AppPage();
+  });
+
+  it('should have correct h1 text', () => {
+    page.navigateTo();
+    expect(page.getHeaderText()).toEqual('Use Your Superpowers To Do Good.');
+  });
+});
+
+  `
 };
 apip413 = {
-  name: '',
-  code: ``
+  name: 'Unit Test Synchronous Service',
+  code: `
+
+  import { Injectable } from '@angular/core';
+
+  @Injectable()
+  export class MagicQuoteService {
+    private values: string[];
+    private lastIndex: number;
+
+    constructor() {
+      this.values = [
+        'Never stop thinking about tomorrow',
+        'Use your superpowers to do good',
+        'Work hard, be kind, do more ...',
+        'Improve, improve, improve'
+      ];
+      this.lastIndex = this.getIndex();
+     }
+
+     private getIndex(): number {
+       return Math.floor(Math.random() * this.values.length);
+     }
+
+     reveal(): string {
+       let newIdx = this.getIndex();
+       if (newIdx === this.lastIndex) {
+         newIdx = (++newIdx) % this.values.length;
+       }
+       this.lastIndex = newIdx;
+       return this.values[newIdx];
+     }
+
+  }
+
+  /**************************************************************************** */
+
+  import { TestBed, inject } from '@angular/core/testing';
+
+  import { MagicQuoteService } from './magic-quote.service';
+
+  describe('MagicQuoteService', () => {
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+        providers: [MagicQuoteService]
+    });
+  });
+
+  it('should be created', inject([MagicQuoteService],
+    (magicQuoteService: MagicQuoteService) => {
+    expect(magicQuoteService).toBeTruthy();
+  }));
+
+  it('should return a string with nonzero length', inject([MagicQuoteService],
+    (magicQuoteService: MagicQuoteService) => {
+        const result = magicQuoteService.reveal();
+        expect(result).toEqual(jasmine.any(String));
+        expect(result.length).toBeGreaterThan(0);
+    }));
+
+    it('should not return the same value twice in a row', inject([MagicQuoteService],
+      (magicQuoteService: MagicQuoteService) => {
+          let last;
+          for (let i = 0; i < 100; ++i) {
+            const next = magicQuoteService.reveal();
+            expect(next).not.toEqual(last);
+            last = next;
+          }
+      }));
+
+});
+
+  `
 };
 apip414 = {
-  name: '',
-  code: ``
+  name: 'Unit Test Component With Stub',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { MagicQuoteService } from '../magic-quote.service';
+
+  @Component({
+    selector: 'app-magic-quote',
+    template: \`
+                <button (click)="update()">Click me!</button>
+                <h1>{{ result }}</h1>
+    \`
+  })
+  export class MagicQuoteComponent {
+        result = '';
+
+        constructor(private magicQuoteService: MagicQuoteService) { }
+
+        update() {
+          this.result = this.magicQuoteService.reveal();
+        }
+
+  }
+
+  /**************************************************************************** */
+
+  import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+
+import { MagicQuoteComponent } from './magic-quote.component';
+import { MagicQuoteService } from './../magic-quote.service';
+
+describe('MagicQuoteComponent', () => {
+  let component: MagicQuoteComponent;
+  let fixture: ComponentFixture<MagicQuoteComponent>;
+
+  const getHeaderElement = () => fixture.nativeElement.querySelector('h1');
+  const magicQuoteResponse = 'Answer unclear';
+  const magicQuoteServiceStub = {
+    reveal: () => magicQuoteResponse
+  };
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [ MagicQuoteComponent ],
+      providers: [
+        {
+          provide: MagicQuoteService,
+          useValue: magicQuoteServiceStub
+        }
+      ]
+    })
+    .compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(MagicQuoteComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should begin with no text', () => {
+        fixture.detectChanges();
+        expect(getHeaderElement().textContent).toEqual('');
+  });
+
+  it('should show text after click', async(() => {
+        fixture.debugElement.query(By.css('button'))
+        .triggerEventHandler('click', null);
+        fixture.detectChanges();
+        expect(getHeaderElement().textContent).toEqual(magicQuoteResponse);
+  }));
+});
+
+  `
 };
 apip415 = {
-  name: '',
-  code: ``
+  name: 'Unit Test Component With Spies',
+  code: `
+
+  import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+  import { By } from '@angular/platform-browser';
+
+  import { MagicQuoteComponent } from './magic-quote.component';
+  import { MagicQuoteService } from './../magic-quote.service';
+
+  describe('MagicQuoteComponent', () => {
+    let component: MagicQuoteComponent;
+    let fixture: ComponentFixture<MagicQuoteComponent>;
+
+    const getHeaderElement = () => fixture.nativeElement.querySelector('h1');
+    const magicQuoteResponse = 'Answer unclear';
+    let magicQuoteService;
+    let revealSpy;
+
+    const clickButton = () => {
+      fixture.debugElement.query(By.css('button')).triggerEventHandler('click', null);
+    };
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        declarations: [ MagicQuoteComponent ],
+        providers: [ MagicQuoteService ]
+      })
+      .compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(MagicQuoteComponent);
+      magicQuoteService = fixture.debugElement.injector.get(MagicQuoteService);
+      revealSpy = spyOn(magicQuoteService, 'reveal').and.returnValue(magicQuoteResponse);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    });
+
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should begin with no text', () => {
+          fixture.detectChanges();
+          expect(getHeaderElement().textContent).toEqual('');
+    });
+
+    it('should call reveal after a click', () => {
+      clickButton();
+      expect(revealSpy.calls.count()).toBe(1);
+      expect(revealSpy.calls.mostRecent().returnValue).toBe(magicQuoteResponse);
+  });
+
+    it('should show text after click', async(() => {
+          fixture.debugElement.query(By.css('button'))
+          .triggerEventHandler('click', null);
+          fixture.detectChanges();
+          expect(getHeaderElement().textContent).toEqual(magicQuoteResponse);
+    }));
+  });
+
+
+  `
 };
 apip416 = {
-  name: '',
-  code: ``
+  name: 'Impure Pipe () => Give Me One More Pipe;',
+  code: `
+
+  import { Pipe, PipeTransform } from '@angular/core';
+
+  @Pipe({
+    name: 'addRandom',
+    pure: false
+  })
+  export class AddRandomPipe implements PipeTransform {
+
+    transform(value: string): string {
+      return value + Math.random();
+    }
+
+  }
+
+  /**************************************************************************** */
+
+  import { Component, ChangeDetectionStrategy } from '@angular/core';
+
+  @Component({
+  selector: 'app-news',
+  template: \`
+        <h1>Never stop thinking about tomorrow.</h1>
+          <input #box>
+          <button (click)="update(box.value)">Update</button>
+          <h1>{{ title | addRandom }}</h1>
+  \`,
+  changeDetection: ChangeDetectionStrategy.OnPush
+  })
+  export class NewsComponent {
+      title = '';
+
+      update(newTitle: string): void {
+        this.title = newTitle;
+      }
+
+  }
+
+  `
 };
 apip417 = {
-  name: '',
-  code: ``
+  name: 'Listen For NgZone Events',
+  code: `
+
+  import { Component, NgZone } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <button (click)="foo()">Foo</button>
+    \`
+  })
+  export class AppComponent {
+
+      constructor(private zone: NgZone) {
+        zone.onStable.subscribe(() => console.log('stable'));
+        zone.onUnstable.subscribe(() => console.log('unstable'));
+      }
+
+      foo() {
+        setTimeout(() => console.log('timeout handler'), 1000);
+      }
+
+  }
+
+  `
 };
 apip418 = {
-  name: '',
-  code: ``
+  name: 'Execution Inside && Outside Angular Zone',
+  code: `
+
+  import { Component, NgZone } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h3>Progress: {{ progress }}%</h3>
+            <button (click)="runInsideAngularZone()">
+                Run inside Angular Zone
+            </button>
+            <button (click)="runOutsideAngularZone()">
+              Run outside Angular Zone
+            </button>
+    \`
+  })
+  export class AppComponent {
+    progress = 0;
+    startTime = 0;
+
+    constructor(private zone: NgZone) { }
+
+    runInsideAngularZone() {
+      this.start();
+      this.step(() => this.finish('Inside Angular Zone'));
+    }
+
+    runOutsideAngularZone() {
+      this.start();
+      this.zone.runOutsideAngular(() => {
+        this.step(() => this.finish('Outside Angular Zone'));
+      });
+    }
+
+    start() {
+      this.progress = 0;
+      this.startTime = performance.now();
+    }
+
+    finish(location: string) {
+      this.zone.run(() => {
+          console.log(location);
+          console.log(\`Took \${performance.now() - this.startTime} ms\`);
+      });
+    }
+
+    step(doneCallback: () => void) {
+      if (++this.progress < 100) {
+        setTimeout(() => {
+          this.step(doneCallback);
+        }, 10);
+      } else {
+        doneCallback();
+      }
+    }
+
+  }
+
+  `
 };
 apip419 = {
-  name: '',
-  code: ``
+  name: 'Explicit Change Detection With OnPush',
+  code: `
+
+  import { Component, Input, ChangeDetectionStrategy,
+           ChangeDetectorRef, OnInit } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <h1>{{ title }}</h1>
+           <p>Likes {{ count }}</p>
+    \`,
+    changeDetection: ChangeDetectionStrategy.OnPush
+  })
+  export class NewsComponent implements OnInit {
+        @Input() likes: Observable<Event>;
+        title = 'Never stop thinking about tomorrow.';
+        count = 0;
+
+        constructor(private changeDetectorRef: ChangeDetectorRef) { }
+
+        ngOnInit() {
+          this.likes.subscribe((evt: Event) => {
+              ++this.count;
+              this.changeDetectorRef.markForCheck();
+          });
+        }
+
+  }
+
+  /**************************************************************************** */
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import { Subject } from 'rxjs/Subject';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+          <button (click)="likeSubject.next($event)">Like!</button>
+          <app-news [likes]="likeEmitter"></app-news>
+  \`
+  })
+    export class AppComponent {
+
+        likeSubject = new Subject<Event>();
+        likeEmitter = this.likeSubject.asObservable();
+
+  }
+
+  `
 };
 apip420 = {
-  name: '',
-  code: ``
+  name: 'ViewEncapsulation For Maximum Efficiency',
+  code: `
+
+  import { Component, ViewEncapsulation} from '@angular/core';
+
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+          <h1>{{ title }}</h1>
+    \`,
+    encapsulation: ViewEncapsulation.Emulated,
+    styles: [\`
+      h1 {
+        color: red;
+      }
+    \`]
+  })
+  export class NewsComponent {
+        title = 'Never stop thinking about tomorrow ...';
+
+  }
+
+  `
 };
 apip421 = {
-  name: '',
-  code: ``
+  name: 'Performance Matters: Lazy Loading',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { Routes, RouterModule } from '@angular/router';
+
+  import { AppComponent } from './app.component';
+  import { LinkComponent } from './link/link.component';
+
+  const appRoutes: Routes = [
+        {
+          path: 'news',
+          loadChildren: 'app/news/news.module#NewsModule'
+        },
+        {
+          path: '**',
+          component: LinkComponent
+        }
+  ];
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      LinkComponent
+    ],
+    imports: [
+      BrowserModule,
+      RouterModule.forRoot(appRoutes)
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  /**************************************************************************** */
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+          <h1>Root Component</h1>
+          <router-outlet></router-outlet>
+    \`
+  })
+  export class AppComponent { }
+
+  /**************************************************************************** */
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-link',
+    template: \`
+          <a routerLink="/news">News</a>
+    \`
+  })
+  export class LinkComponent { }
+
+  /**************************************************************************** */
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <h1>{{ title }}</h1>
+    \`
+  })
+  export class NewsComponent {
+      title = \`Never stop thinking about tommorrow.
+                Use your Superpowers to do good.\`;
+
+  }
+
+  /**************************************************************************** */
+
+  import { NgModule } from '@angular/core';
+  import { CommonModule } from '@angular/common';
+  import { Routes, RouterModule } from '@angular/router';
+
+  import { NewsComponent } from './news.component';
+
+  const newsRoutes: Routes = [
+      { path: '', component: NewsComponent }
+  ];
+
+  @NgModule({
+    imports: [
+      CommonModule,
+      RouterModule.forChild(newsRoutes)
+    ],
+    declarations: [ NewsComponent ],
+    exports: [ NewsComponent ]
+  })
+  export class NewsModule { }
+
+  `
 };
 apip422 = {
   name: '',
