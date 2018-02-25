@@ -18333,56 +18333,1161 @@ News.JSON
   `
 };
 apip395 = {
-  name: '',
-  code: ``
+  name: 'Subject Publish-Subscribe Model',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { Subject } from 'rxjs/Subject';
+
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <button (click)="emitEvent($event)">Emit Event</button>
+
+            <p *ngFor="let click of clicks; let i = index;">
+              ({{ i }}): {{ click }}
+            </p>
+    \`
+  })
+  export class NewsComponent {
+        clickEmitter = new Subject<Event>();
+        clicks: Array<Event> = [];
+
+        emitEvent(event) {
+          this.clickEmitter.next(event);
+        }
+
+        constructor() {
+          this.clickEmitter.subscribe(clickEvent => this.clicks.push(clickEvent));
+        }
+
+   }
+
+  `
 };
 apip396 = {
-  name: '',
-  code: ``
+  name: 'BehaviorSubject',
+  code: `
+
+  import { Component, Injectable } from '@angular/core';
+  import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+  import { Observable } from 'rxjs/Observable';
+
+  export const enum AuthenticationState {
+              LoggedIn,
+              LoggedOut
+  }
+
+  @Injectable()
+  export class AuthenticationService {
+    private authenticationManager = new BehaviorSubject(AuthenticationState.LoggedOut);
+    private authenticationState: AuthenticationState;
+    authenticationChanged: Observable<AuthenticationState>;
+
+    constructor() {
+      this.authenticationChanged = this.authenticationManager.asObservable();
+    }
+
+    login(): void {
+      this.setAuthenticationState(AuthenticationState.LoggedIn);
+    }
+
+    logout(): void {
+      this.setAuthenticationState(AuthenticationState.LoggedOut);
+    }
+
+    private emitAuthenticationState(): void {
+      this.authenticationManager.next(this.authenticationState);
+    }
+
+    private setAuthenticationState(newAuthenticationState: AuthenticationState): void {
+      this.authenticationState = newAuthenticationState;
+      this.emitAuthenticationState();
+    }
+
+  }
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+              <button *ngIf="!loggedIn" (click)="login()">Login</button>
+              <button *ngIf="loggedIn" (click)="logout()">Logout</button>
+    \`,
+    providers: [AuthenticationService]
+  })
+  export class NewsComponent {
+        loggedIn = false;
+
+        constructor(private authenticationService: AuthenticationService) {
+            this.authenticationService.authenticationChanged.subscribe(
+              newAuthenticationState => {
+                this.loggedIn = (newAuthenticationState === AuthenticationState.LoggedIn);
+              }
+            );
+        }
+
+        login(): void {
+          this.authenticationService.login();
+        }
+
+        logout(): void {
+          this.authenticationService.logout();
+        }
+
+   }
+
+  `
 };
 apip397 = {
-  name: '',
-  code: ``
+  name: 'Generalized Publish Subscribe Service',
+  code: `
+
+  import { Component, Injectable, Input, AfterViewInit, OnDestroy } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import { Subject } from 'rxjs/Subject';
+  import { Observer } from 'rxjs/Observer';
+  import { Subscription } from 'rxjs/Subscription';
+  import 'rxjs/add/operator/filter';
+  import 'rxjs/add/operator/map';
+
+
+  @Injectable()
+  export class PublishSubscribeService {
+         private publishSubscribeSubject = new Subject<any>();
+         private emitter: Observable<any>;
+
+         constructor() {
+           this.emitter = this.publishSubscribeSubject.asObservable();
+         }
+
+         publish(channel: string, event: any): void {
+           this.publishSubscribeSubject.next({
+                channel: channel,
+                event: event
+           });
+         }
+
+         subscribe(channel: string, handler: ((value: any) => void)): Subscription {
+           return this.emitter
+                      .filter(emission => emission.channel === channel)
+                      .map(emission => emission.event)
+                      .subscribe(handler);
+         }
+
+  }
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+              <p>Heard {{ count }} of {{ subscribeChannel }}</p>
+              <button (click)="send()">Send {{ publishChannel }}</button>
+    \`
+  })
+  export class NewsComponent implements AfterViewInit, OnDestroy {
+        @Input() publishChannel: string;
+        @Input() subscribeChannel: string;
+        private pubSubServiceSubscription: Subscription;
+        count = 0;
+
+        constructor(private pubSubService: PublishSubscribeService) { }
+
+        send() {
+          this.pubSubService.publish(this.publishChannel, {});
+        }
+
+        ngAfterViewInit() {
+          this.pubSubService.subscribe(this.subscribeChannel, event => ++this.count);
+        }
+
+        ngOnDestroy() {
+          this.pubSubServiceSubscription.unsubscribe();
+        }
+
+   }
+
+*****************************************************
+   Root App Component
+
+   <app-news subscribeChannel="hi" publishChannel="baby"></app-news>
+   <app-news subscribeChannel="baby" publishChannel="hi"></app-news>
+
+  `
 };
 apip398 = {
-  name: '',
-  code: ``
+  name: 'Follow Changes In ViewChildren With QueryLists',
+  code: `
+
+    import { Component, ViewChildren, QueryList,
+            Input, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+
+
+          @Component({
+              selector: 'app-inner',
+              template: \`
+                        <p>{{ value }}</p>
+                \`
+              })
+        export class InnerComponent {
+        @Input() value: number;
+        }
+
+
+          @Component({
+              selector: 'app-news',
+              template: \`
+                  <button (click)="add()">More</button>
+                  <button (click)="remove()">Less</button>
+                  <button (click)="shuffle()">Shuffle</button>
+                  <app-inner *ngFor="let l of list" value="{{l}}"></app-inner>
+                  <p>Value of last: {{ lastValue }}</p>
+              \`
+          })
+        export class NewsComponent implements AfterViewInit {
+        @ViewChildren(InnerComponent) innerComponents: QueryList<InnerComponent>;
+        list: Array<number> = [];
+        lastValue: number;
+
+        constructor(private changeDetectorRef: ChangeDetectorRef) { }
+
+        add(): void {
+            this.list.push(this.list.length);
+        }
+
+        remove(): void {
+            this.list.pop();
+        }
+
+        shuffle(): void {
+            this.list = this.list.sort(() => (4 * Math.random() > 2) ? 1 : -1);
+        }
+
+        ngAfterViewInit() {
+        this.innerComponents.changes.subscribe(innerComponents => {
+         this.lastValue = (innerComponents.last || {}).value;
+         this.changeDetectorRef.detectChanges();
+      });
+    }
+
+  }
+
+  `
 };
 apip399 = {
-  name: '',
-  code: ``
+  name: 'AutoComplete',
+  code: `
+
+  import { Component, Injectable } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+  import { FormControl } from '@angular/forms';
+
+  import { Observable } from 'rxjs/Observable';
+
+  import 'rxjs/add/operator/map';
+  import 'rxjs/add/observable/of';
+  import 'rxjs/add/operator/concatMap';
+  import 'rxjs/add/operator/delay';
+  import 'rxjs/add/operator/debounceTime';
+  import 'rxjs/add/operator/distinctUntilChanged';
+  import 'rxjs/add/operator/switchMap';
+
+
+  export interface Response {
+    prefix: string;
+  }
+
+  @Injectable()
+  export class APIService {
+
+          constructor(private http: HttpClient) { }
+
+          search(query: string): Observable<string> {
+            return this.http.get<Response>('assets/response.json')
+                            .map(response => response.prefix + query)
+                            .concatMap(
+                              a => Observable.of(a).delay(Math.random() * 1000));
+          }
+
+  }
+
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+              <input [formControl]="queryField">
+                  <p *ngFor="let result of results">
+                      {{ result }}
+                  </p>
+    \`,
+    providers: [ APIService ]
+  })
+  export class NewsComponent  {
+          results: string[] = [];
+          queryField = new FormControl();
+
+          constructor(private apiService: APIService) {
+            this.queryField.valueChanges
+                            .debounceTime(300)
+                            .distinctUntilChanged()
+                            .switchMap(query => this.apiService.search(query))
+                            .subscribe(result => this.results.push(result));
+          }
+
+   }
+
+********************************************************
+Response.JSON
+
+{
+  "prefix": "You searched for "
+}
+
+  `
 };
 apip400 = {
-  name: '',
-  code: ``
+  name: 'Application Setup Simple Route',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>Root Component</h1>
+              <router-outlet></router-outlet>
+    \`
+  })
+  export class AppComponent { }
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-default',
+    template: \`<h1>Hi Baby ...</h1>\`
+  })
+  export class DefaultComponent { }
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-news',
+    template: \`<h1>What's New?</h1>\`
+  })
+  export class NewsComponent  { }
+
+
+   /**************************************************************************** */
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule, Routes } from '@angular/router';
+
+  const appRoutes: Routes = [
+    { path: '**', component: DefaultComponent }
+  ];
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      DefaultComponent,
+      NewsComponent
+    ],
+    imports: [
+      BrowserModule,
+      RouterModule.forRoot(appRoutes)
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  `
 };
 apip401 = {
-  name: '',
-  code: ``
+  name: 'Navigating With RouterLinks',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>Root Component</h1>
+              <a [routerLink]="['']">Default</a>
+              <a [routerLink]="['news']">News</a>
+              <router-outlet></router-outlet>
+    \`
+  })
+  export class AppComponent { }
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-default',
+    template: \`<h1>Hi Baby ...</h1>\`
+  })
+  export class DefaultComponent { }
+
+
+   /**************************************************************************** */
+
+  @Component({
+    selector: 'app-news',
+    template: \`<h1>What's New?</h1>\`
+  })
+  export class NewsComponent  { }
+
+
+   /**************************************************************************** */
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule, Routes } from '@angular/router';
+
+  const appRoutes: Routes = [
+    { path: 'news', component: NewsComponent },
+    { path: '**', component: DefaultComponent }
+  ];
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      DefaultComponent,
+      NewsComponent
+    ],
+    imports: [
+      BrowserModule,
+      RouterModule.forRoot(appRoutes)
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+
+  `
 };
 apip402 = {
-  name: '',
-  code: ``
+  name: 'Navigating With RouterService',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { Router } from '@angular/router';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>Root Component</h1>
+              <button (click)="visitDefault()">Default</button>
+              <button (click)="visitNews()">News</button>
+              <router-outlet></router-outlet>
+    \`
+  })
+  export class AppComponent {
+
+        constructor(private router: Router) { }
+
+        visitDefault() {
+          this.router.navigate(['']);
+        }
+
+        visitNews() {
+          this.router.navigate(['news']);
+        }
+
+  }
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-default',
+    template: \`<h1>Hi Baby ...</h1>\`
+  })
+  export class DefaultComponent { }
+
+
+   /**************************************************************************** */
+
+  @Component({
+    selector: 'app-news',
+    template: \`<h1>What's New?</h1>\`
+  })
+  export class NewsComponent  { }
+
+
+   /**************************************************************************** */
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule, Routes } from '@angular/router';
+
+  const appRoutes: Routes = [
+    { path: 'news', component: NewsComponent },
+    { path: '**', component: DefaultComponent }
+  ];
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      DefaultComponent,
+      NewsComponent
+    ],
+    imports: [
+      BrowserModule,
+      RouterModule.forRoot(appRoutes)
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  `
 };
 apip403 = {
-  name: '',
-  code: ``
+  name: 'Path Construction With LocationStrategy',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { Router } from '@angular/router';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>Root Component</h1>
+              <button (click)="visitDefault()">Default</button>
+              <button (click)="visitNews()">News</button>
+              <router-outlet></router-outlet>
+    \`
+  })
+  export class AppComponent {
+
+        constructor(private router: Router) { }
+
+        visitDefault() {
+          this.router.navigate(['']);
+        }
+
+        visitNews() {
+          this.router.navigate(['news']);
+        }
+
+  }
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-default',
+    template: '<h1>Hi Baby ...</h1>'
+  })
+  export class DefaultComponent { }
+
+
+   /**************************************************************************** */
+
+  @Component({
+    selector: 'app-news',
+    template: '<h1>What\'s New?</h1>'
+  })
+  export class NewsComponent  { }
+
+
+   /**************************************************************************** */
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule, Routes } from '@angular/router';
+  import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+
+  const appRoutes: Routes = [
+    { path: 'news', component: NewsComponent },
+    { path: '**', component: DefaultComponent }
+  ];
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      DefaultComponent,
+      NewsComponent
+    ],
+    imports: [
+      BrowserModule,
+      RouterModule.forRoot(appRoutes)
+    ],
+    providers: [
+      { provide: LocationStrategy, useClass: HashLocationStrategy }
+    ],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  `
 };
 apip404 = {
-  name: '',
-  code: ``
+  name: 'RouterLinkActive Build Stateful Route Behavior',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { Router } from '@angular/router';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>Root Component</h1>
+              <a [routerLink]="['']"
+                 [routerLinkActive]="'active-navlink'"
+                 [routerLinkActiveOptions]="{exact: true}">
+                 Default
+              </a>
+              <a [routerLink]="['news']"
+                 [routerLinkActive]="'active-navlink'"
+                 [routerLinkActiveOptions]="{exact: true}">
+                 News
+              </a>
+              <router-outlet></router-outlet>
+    \`,
+    styles: [\`
+        .active-navlink {
+          color: red;
+          text-transform: uppercase;
+        }
+    \`]
+  })
+  export class AppComponent {
+
+        constructor(private router: Router) { }
+
+        visitDefault() {
+          this.router.navigate(['']);
+        }
+
+        visitNews() {
+          this.router.navigate(['news']);
+        }
+
+  }
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-default',
+    template: '<h1>Hi Baby ...</h1>'
+  })
+  export class DefaultComponent { }
+
+
+   /**************************************************************************** */
+
+  @Component({
+    selector: 'app-news',
+    template: '<h1>What\'s New?</h1>'
+  })
+  export class NewsComponent  { }
+
+
+   /**************************************************************************** */
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule, Routes } from '@angular/router';
+  import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+
+  const appRoutes: Routes = [
+    { path: 'news', component: NewsComponent },
+    { path: '**', component: DefaultComponent }
+  ];
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      DefaultComponent,
+      NewsComponent
+    ],
+    imports: [
+      BrowserModule,
+      RouterModule.forRoot(appRoutes)
+    ],
+    providers: [
+      { provide: LocationStrategy, useClass: HashLocationStrategy }
+    ],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  `
 };
 apip405 = {
-  name: '',
-  code: ``
+  name: 'Nested Views With Route Parameters && Child Routes',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { Router, ActivatedRoute } from '@angular/router';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>Root Component</h1>
+              <a [routerLink]="['']"
+                 [routerLinkActive]="'active-navlink'"
+                 [routerLinkActiveOptions]="{exact: true}">
+                 Default
+              </a>
+              <a [routerLink]="['news']"
+                 [routerLinkActive]="'active-navlink'"
+                 [routerLinkActiveOptions]="{exact: true}">
+                 News
+              </a>
+              <router-outlet></router-outlet>
+    \`,
+    styles: [\`
+        .active-navlink {
+          color: red;
+          text-transform: uppercase;
+        }
+    \`]
+  })
+  export class AppComponent {
+
+        constructor(private router: Router) { }
+
+        visitDefault() {
+          this.router.navigate(['']);
+        }
+
+        visitNews() {
+          this.router.navigate(['news']);
+        }
+
+  }
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-default',
+    template: '<h1>Hi Baby ...</h1>'
+  })
+  export class DefaultComponent { }
+
+
+   /**************************************************************************** */
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <h2>News Component!</h2>
+            <router-outlet></router-outlet>
+    \`
+  })
+  export class NewsComponent  { }
+
+
+   /**************************************************************************** */
+
+   @Component({
+    selector: 'app-news-list',
+    template: \`
+            <h3>News List</h3>
+            <p *ngFor="let newsId of newsIds">
+                <a [routerLink]="newsId">
+                    News ({{ newsId }})
+                </a>
+            </p>
+    \`
+  })
+  export class NewsListComponent  {
+        newsIds: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
+
+  }
+
+   /**************************************************************************** */
+
+   @Component({
+    selector: 'app-news-detail',
+    template: \`
+              <h1>News Detail</h1>
+              <p>Showing News {{ newsId }}</p>
+              <a [routerLink]="'../'">Back Up</a>
+    \`
+  })
+  export class NewsDetailComponent  {
+                newsId: number;
+
+                constructor(private activatedRoute: ActivatedRoute) {
+                    this.activatedRoute.params
+                        .subscribe(params => this.newsId = params['newsId']);
+                }
+
+  }
+
+
+   /**************************************************************************** */
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule, Routes } from '@angular/router';
+
+  const appRoutes: Routes = [
+    { path: 'news', component: NewsComponent,
+      children: [
+        { path: '', component: NewsListComponent },
+        { path: ':newsId', component: NewsDetailComponent }
+      ]
+  },
+    { path: '**', component: DefaultComponent }
+  ];
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      DefaultComponent,
+      NewsComponent,
+      NewsListComponent,
+      NewsDetailComponent
+    ],
+    imports: [
+      BrowserModule,
+      RouterModule.forRoot(appRoutes)
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  `
 };
 apip406 = {
-  name: '',
-  code: ``
+  name: 'Routing Arrays && Matrix URL Parameters',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { Router, ActivatedRoute } from '@angular/router';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>Root Component</h1>
+              <a [routerLink]="['']">
+                 Default
+              </a>
+              <a [routerLink]="['news', {listData: 'foo bar baz'}]">
+                 News
+              </a>
+              <router-outlet></router-outlet>
+    \`
+  })
+  export class AppComponent { }
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-default',
+    template: '<h1>Hi Baby ...</h1>'
+  })
+  export class DefaultComponent { }
+
+
+   /**************************************************************************** */
+
+  @Component({
+    selector: 'app-news',
+    template: \`
+            <h2>News Component!</h2>
+            <router-outlet></router-outlet>
+    \`
+  })
+  export class NewsComponent  { }
+
+
+   /**************************************************************************** */
+
+   @Component({
+    selector: 'app-news-list',
+    template: \`
+            <h3>News List</h3>
+            <p *ngFor="let newsId of newsIds">
+                <a [routerLink]="[newsId, { detailData: 'oof rab zab'}]">
+                    News ({{ newsId }})
+                </a>
+            </p>
+    \`
+  })
+  export class NewsListComponent  {
+        newsIds: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
+
+        constructor(private activatedRoute: ActivatedRoute) {
+                    this.activatedRoute.params.subscribe(params => {
+                        console.log('List params:');
+                        console.log(window.location.href);
+                        console.log(params);
+                    });
+        }
+
+  }
+
+   /**************************************************************************** */
+
+   @Component({
+    selector: 'app-news-detail',
+    template: \`
+              <h1>News Detail</h1>
+              <p>Showing News {{ newsId }}</p>
+              <a [routerLink]="'../'">Back Up</a>
+    \`
+  })
+  export class NewsDetailComponent  {
+                newsId: number;
+
+                constructor(private activatedRoute: ActivatedRoute) {
+                    this.activatedRoute.params
+                        .subscribe(params => {
+                          console.log('Detail params:');
+                          console.log(window.location.href);
+                          console.log(params);
+                          this.newsId = params['newsId'];
+                    });
+                }
+
+  }
+
+
+   /**************************************************************************** */
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule, Routes } from '@angular/router';
+
+  const appRoutes: Routes = [
+    { path: 'news', component: NewsComponent,
+      children: [
+        { path: '', component: NewsListComponent },
+        { path: ':newsId', component: NewsDetailComponent }
+      ]
+  },
+    { path: '**', component: DefaultComponent }
+  ];
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      DefaultComponent,
+      NewsComponent,
+      NewsListComponent,
+      NewsDetailComponent
+    ],
+    imports: [
+      BrowserModule,
+      RouterModule.forRoot(appRoutes)
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  `
 };
 apip407 = {
-  name: '',
-  code: ``
+  name: 'Route Authentication Controls With Route Guards',
+  code: `
+
+  import { Component, Injectable, OnDestroy } from '@angular/core';
+  import { Router, ActivatedRoute, CanActivate } from '@angular/router';
+
+  import { Observable } from 'rxjs/Observable';
+  import { Subscription } from 'rxjs/Subscription';
+  import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+  import 'rxjs/add/operator/map';
+  import 'rxjs/add/operator/take';
+
+  @Injectable()
+  export class AuthenticationService {
+        private authenticationSubject = new BehaviorSubject(null);
+        userNameEmitter: Observable<string>;
+
+        private setAuthenticationState(userName: string): void {
+          this.authenticationSubject.next(userName);
+        }
+
+        constructor() {
+          this.userNameEmitter = this.authenticationSubject.asObservable();
+          this.logOut();
+        }
+
+        logIn(userName: string): void {
+          this.setAuthenticationState(userName);
+        }
+
+        logOut(): void {
+          this.setAuthenticationState(null);
+        }
+
+  }
+
+  /**************************************************************************** */
+
+  @Injectable()
+  export class AuthGuard implements CanActivate {
+
+        constructor(private router: Router,
+                    private authenticationService: AuthenticationService) { }
+
+        canActivate(): Observable<boolean> {
+          return this.authenticationService.userNameEmitter.map((userName) => {
+                    if (!userName) {
+                      this.router.navigate(['login']);
+                    } else {
+                      return true;
+                    }
+          }).take(1);
+        }
+  }
+
+  /**************************************************************************** */
+
+  @Injectable()
+  export class LogOutGuard implements CanActivate {
+
+        constructor(private router: Router,
+                    private authenticationService: AuthenticationService) { }
+
+        canActivate(): boolean {
+          this.authenticationService.logOut();
+          this.router.navigate(['']);
+          return true;
+        }
+  }
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h3 *ngIf="!!(userName | async)">
+                  Hi, {{ userName | async }}.
+              </h3>
+              <a routerLink="">Default</a>
+              <a routerLink="profile">Profile</a>
+
+              <a *ngIf="!(userName | async)" routerLink="login">LogIn</a>
+              <a *ngIf="!!(userName | async)" routerLink="logout">LogOut</a>
+
+              <router-outlet></router-outlet>
+    \`
+  })
+  export class AppComponent {
+            userName: Observable<string>;
+
+            constructor(private authenticationService: AuthenticationService) {
+              this.userName = this.authenticationService.userNameEmitter;
+            }
+  }
+
+  /**************************************************************************** */
+
+  @Component({
+    selector: 'app-default',
+    template: '<h1>Hi Baby ...</h1>'
+  })
+  export class DefaultComponent { }
+
+
+   /**************************************************************************** */
+
+  @Component({
+    selector: 'app-login',
+    template: \`
+            <h2>LogIn View</h2>
+            <input #box>
+            <button (click)="logIn(box.value)">LogIn</button>
+    \`
+  })
+  export class LogInComponent implements OnDestroy  {
+        private userNameSubscription: Subscription;
+
+        constructor(private router: Router,
+                    private authenticationService: AuthenticationService) { }
+
+        logIn(newUserName: string): void {
+          this.authenticationService.logIn(newUserName);
+          this.userNameSubscription = this.authenticationService.
+                                      userNameEmitter.subscribe(userName => {
+                                        if (!!userName) {
+                                          this.router.navigate(['']);
+                                        }
+                                      });
+        }
+
+        ngOnDestroy() {
+          this.userNameSubscription &&
+          this.userNameSubscription.unsubscribe();
+        }
+
+  }
+
+
+   /**************************************************************************** */
+
+   @Component({
+    selector: 'app-logout',
+    template: \` \`
+  })
+  export class LogOutComponent  { }
+
+   /**************************************************************************** */
+
+   @Component({
+    selector: 'app-profile',
+    template: \`
+              <h1>Profile View</h1>
+              UserName: <input #box value="{{ userName | async }}">
+              <button (click)="upDate(box.value)">Update</button>
+    \`
+  })
+  export class ProfileComponent  {
+                userName: Observable<string>;
+
+                constructor(private authenticationService: AuthenticationService) {
+                    this.userName = this.authenticationService.userNameEmitter;
+                }
+
+                upDate(userName: string): void {
+                  this.authenticationService.logIn(userName);
+                }
+
+  }
+
+
+   /**************************************************************************** */
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule, Routes } from '@angular/router';
+
+
+  const appRoutes: Routes = [
+    { path: 'login', component: LogInComponent },
+    { path: 'logout', component: LogOutComponent, canActivate: [LogOutGuard] },
+    { path: 'profile', component: ProfileComponent, canActivate: [ AuthGuard] },
+    { path: '**', component: DefaultComponent }
+  ];
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      DefaultComponent,
+      LogInComponent,
+      LogOutComponent,
+      ProfileComponent
+    ],
+    imports: [
+      BrowserModule,
+      RouterModule.forRoot(appRoutes)
+    ],
+    providers: [AuthenticationService, AuthGuard, LogOutGuard],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  `
 };
 apip408 = {
   name: '',
