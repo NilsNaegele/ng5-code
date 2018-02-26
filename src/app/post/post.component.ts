@@ -20337,60 +20337,604 @@ apip421 = {
   `
 };
 apip422 = {
-  name: '',
-  code: ``
+  name: 'Package JSON',
+  code: `
+
+  {
+    "name": "ng5-redux",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {
+      "ng": "ng",
+      "start": "ng serve",
+      "build": "ng build",
+      "test": "ng test",
+      "lint": "ng lint",
+      "e2e": "ng e2e"
+    },
+    "private": true,
+    "dependencies": {
+      "@angular-redux/store": "^7.1.0",
+      "@angular/animations": "^5.2.6",
+      "@angular/common": "^5.2.6",
+      "@angular/compiler": "^5.2.6",
+      "@angular/core": "^5.2.6",
+      "@angular/forms": "^5.2.6",
+      "@angular/http": "^5.2.6",
+      "@angular/platform-browser": "^5.2.6",
+      "@angular/platform-browser-dynamic": "^5.2.6",
+      "@angular/platform-server": "^5.2.6",
+      "@angular/router": "^5.2.6",
+      "core-js": "^2.4.1",
+      "redux": "^3.7.2",
+      "rxjs": "^5.5.6",
+      "zone.js": "^0.8.14"
+    },
+    "devDependencies": {
+      "@angular/cli": "^1.7.1",
+      "@angular/compiler-cli": "^5.2.6",
+      "@angular/language-service": "^4.2.4",
+      "@types/jasmine": "~2.5.53",
+      "@types/jasminewd2": "~2.0.2",
+      "@types/node": "~6.0.60",
+      "codelyzer": "~3.1.1",
+      "jasmine-core": "~2.6.2",
+      "jasmine-spec-reporter": "~4.1.0",
+      "karma": "~1.7.0",
+      "karma-chrome-launcher": "~2.1.1",
+      "karma-cli": "~1.0.1",
+      "karma-coverage-istanbul-reporter": "^1.2.1",
+      "karma-jasmine": "~1.1.0",
+      "karma-jasmine-html-reporter": "^0.2.2",
+      "protractor": "~5.1.2",
+      "ts-node": "~3.2.0",
+      "tslint": "~5.3.2",
+      "typescript": "^2.6.2"
+    }
+  }
+
+
+  `
 };
 apip423 = {
-  name: '',
-  code: ``
+  name: 'Counter App: App Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { FormsModule } from '@angular/forms';
+
+  import { NgReduxModule, NgRedux, DevToolsExtension } from '@angular-redux/store';
+  import { rootReducer, IAppState, INITIAL_STATE } from './store';
+  import { CounterActions } from './actions';
+
+  import { AppComponent } from './app.component';
+
+  @NgModule({
+    declarations: [
+      AppComponent
+    ],
+    imports: [
+      BrowserModule,
+      FormsModule,
+      NgReduxModule
+    ],
+    providers: [ CounterActions ],
+    bootstrap: [ AppComponent ]
+  })
+  export class AppModule {
+
+    constructor(ngRedux: NgRedux<IAppState>, devTools: DevToolsExtension) {
+      const storeEnhancers = devTools.isEnabled() ? [ devTools.enhancer() ] : [];
+      ngRedux.configureStore(rootReducer, INITIAL_STATE, [], storeEnhancers);
+    }
+
+  }
+
+
+  `
 };
 apip424 = {
-  name: '',
-  code: ``
+  name: 'Actions',
+  code: `
+
+  import { Injectable } from '@angular/core';
+
+  import { Action } from 'redux';
+
+  @Injectable()
+  export class CounterActions {
+    static INCREMENT = 'INCREMENT';
+    static DECREMENT = 'DECREMENT';
+
+    increment(): Action {
+      return { type: CounterActions.INCREMENT };
+    }
+
+    decrement(): Action {
+      return { type: CounterActions.DECREMENT };
+    }
+
+  }
+
+  `
 };
 apip425 = {
-  name: '',
-  code: ``
+  name: 'Store',
+  code: `
+
+  import { Action } from 'redux';
+  import { CounterActions } from './actions';
+
+  export interface IAppState {
+    count: number;
+  }
+
+  export const INITIAL_STATE: IAppState = {
+    count: 0
+  };
+
+
+  export function rootReducer(lastState: IAppState, action: Action): IAppState {
+        switch (action.type) {
+          case CounterActions.INCREMENT: return { count: lastState.count + 1 };
+          case CounterActions.DECREMENT: return { count: lastState.count - 1 };
+        }
+
+        return lastState;
+  }
+
+  `
 };
 apip426 = {
-  name: '',
-  code: ``
+  name: 'App Component',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { NgRedux, select } from '@angular-redux/store';
+  import { CounterActions } from './actions';
+  import { IAppState } from './store';
+
+  import { Observable } from 'rxjs/Observable';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+          <div>
+                Count: {{ count$ | async }}
+                <button (click)="increment()">++</button>
+                <button (click)="decrement()">--</button>
+          </div>
+    \`
+  })
+  export class AppComponent {
+          @select() readonly count$: Observable<number>;
+
+          constructor(private ngRedux: NgRedux<IAppState>,
+                      private actions: CounterActions) { }
+
+          increment() {
+            this.ngRedux.dispatch(this.actions.increment());
+          }
+
+          decrement() {
+            this.ngRedux.dispatch(this.actions.decrement());
+          }
+
+  }
+
+  `
 };
 apip427 = {
-  name: '',
-  code: ``
-};
-apip428 = {
-  name: '',
-  code: ``
+  name: 'Index HTML',
+  code: `
+
+  <!doctype html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>ng5-redux</title>
+    <base href="/">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+  </head>
+  <body>
+  <app-root>launch my baby ...</app-root>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+  crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+  integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+  crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+  crossorigin="anonymous"></script>
+  </body>
+  </html>
+
+  `
 };
 apip429 = {
-  name: '',
-  code: ``
+  name: 'Unit Test Selectors',
+  code: `
+
+  import { TestBed } from '@angular/core/testing';
+
+  import { NgReduxTestingModule, MockNgRedux } from '@angular-redux/store/testing';
+  import { Subject } from 'rxjs/Subject';
+  import 'rxjs/add/operator/toArray';
+
+  import { AppComponent } from './app.component';
+  import { IAppState } from './store';
+  import { CounterActions } from './actions';
+
+  describe('AppComponent', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        declarations: [ AppComponent],
+        imports: [ NgReduxTestingModule ],
+        providers: [ CounterActions ]
+      }).compileComponents();
+
+      MockNgRedux.reset();
+    });
+
+    it('should select the current values from Redux', done => {
+      const fixture = TestBed.createComponent(AppComponent);
+      const componentUnderTest = fixture.debugElement.componentInstance;
+
+      const countStub: Subject<number> =
+                       MockNgRedux.getSelectorStub<IAppState, number>('count');
+
+      const expectedValues = [2, 4, 8, 16, 8, 16, 8, 4, 2];
+
+      expectedValues.forEach(value => countStub.next(value));
+
+      countStub.complete();
+
+      componentUnderTest.count$.toArray().subscribe(
+                actualValues => expect(actualValues).toEqual(expectedValues), null, done
+      );
+    });
+
+  });
+
+  `
+};
+apip428 = {
+  name: 'Todo App: App Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { FormsModule } from '@angular/forms';
+
+  import { NgReduxModule, NgRedux, DevToolsExtension } from '@angular-redux/store';
+  import { rootReducer, IAppState, INITIAL_STATE } from './store';
+
+  import { AppComponent } from './app.component';
+  import { TodoOverviewComponent } from './todo-overview/todo-overview.component';
+  import { TodoListComponent } from './todo-list/todo-list.component';
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      TodoOverviewComponent,
+      TodoListComponent
+    ],
+    imports: [
+      BrowserModule,
+      FormsModule,
+      NgReduxModule
+    ],
+    providers: [],
+    bootstrap: [ AppComponent ]
+  })
+  export class AppModule {
+
+    constructor(ngRedux: NgRedux<IAppState>, devTools: DevToolsExtension) {
+      const storeEnhancers = devTools.isEnabled() ? [ devTools.enhancer() ] : [];
+      ngRedux.configureStore(rootReducer, INITIAL_STATE, [], storeEnhancers);
+    }
+
+  }
+
+  `
 };
 apip430 = {
-  name: '',
-  code: ``
+  name: 'App Component',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+          <div class="container">
+            <div>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">What needs to be done?</h3>
+                        <h6 class="card-subtitle mb-2 text-muted">Angular & Redux</h6>
+                        <app-todo-overview></app-todo-overview>
+                        <app-todo-list></app-todo-list>
+                    </div>
+                </div>
+            </div>
+          </div>
+    \`
+  })
+  export class AppComponent { }
+
+
+  `
 };
 apip431 = {
-  name: '',
-  code: ``
+  name: 'Todo Class',
+  code: `
+
+    export class Todo {
+      id: number;
+      description: string;
+      responsible: string;
+      priority: string;
+      isCompleted: boolean;
+  }
+
+  `
 };
 apip432 = {
-  name: '',
-  code: ``
+  name: 'Todo Actions',
+  code: `
+
+  export const ADD_TODO = 'ADD_TODO';
+  export const TOGGLE_TODO = 'TOGGLE_TODO';
+  export const REMOVE_TODO = 'REMOVE_TODO';
+  export const REMOVE_ALL_TODOS = 'REMOVE_ALL_TODOS';
+
+  `
 };
 apip433 = {
-  name: '',
-  code: ``
+  name: 'Todo Store',
+  code: `
+
+  import { Todo } from './todo';
+  import { ADD_TODO, TOGGLE_TODO, REMOVE_TODO, REMOVE_ALL_TODOS } from './actions';
+
+  export interface IAppState {
+    todos: Todo[];
+    lastUpdate: Date;
+  }
+
+  export const INITIAL_STATE: IAppState = {
+    todos: [],
+    lastUpdate: null
+  };
+
+
+  export function rootReducer(state: IAppState, action): IAppState {
+        switch (action.type) {
+          case ADD_TODO:
+          action.todo.id = state.todos.length + 1;
+          return Object.assign({}, state, {
+                 todos: state.todos.concat(Object.assign({}, action.todo)),
+                 lastUpdate: new Date()
+          });
+
+          case TOGGLE_TODO:
+          const todo = state.todos.find(to => to.id === action.id);
+          const index = state.todos.indexOf(todo);
+          return Object.assign({}, state, {
+                todos: [
+                  ...state.todos.slice(0, index),
+                  Object.assign({}, todo, {isCompleted: !todo.isCompleted}),
+                  ...state.todos.slice(index + 1)
+                ],
+                lastUpdate: new Date()
+          });
+
+          case REMOVE_TODO:
+          return Object.assign({}, state, {
+                todos: state.todos.filter(to => to.id !== action.id),
+                lastUpdate: new Date()
+          });
+
+          case REMOVE_ALL_TODOS:
+          return Object.assign({}, state, {
+                todos: [],
+                lastUpdate: new Date()
+          });
+        }
+
+        return state;
+  }
+
+  `
 };
 apip434 = {
-  name: '',
-  code: ``
+  name: 'TodoOverview Component',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { NgRedux, select } from '@angular-redux/store';
+  import { IAppState } from '../store';
+  import { REMOVE_ALL_TODOS } from '../actions';
+
+  @Component({
+    selector: 'app-todo-overview',
+    template: \`
+        <p class="text-right">
+            <span class="badge badge-danger">
+                Last Update: {{ (lastUpdate | async) | date:'mediumTime' }}
+                Total Todos: {{ (todos | async).length }}
+            </span>
+            <button class="btn btn-primary" (click)="clearTodos()">Delete All</button>
+        </p>
+        <br>
+        <br>
+    \`
+  })
+  export class TodoOverviewComponent {
+    @select() todos;
+    @select() lastUpdate;
+
+    constructor(private ngRedux: NgRedux<IAppState>) { }
+
+    clearTodos() {
+      this.ngRedux.dispatch({ type: REMOVE_ALL_TODOS });
+    }
+
+  }
+
+  `
 };
 apip435 = {
-  name: '',
-  code: ``
+  name: 'TodoList Component',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { NgRedux, select } from '@angular-redux/store';
+  import { IAppState } from '../store';
+  import { ADD_TODO, REMOVE_TODO, TOGGLE_TODO } from '../actions';
+  import { Todo } from '../todo';
+
+
+  @Component({
+    selector: 'app-todo-list',
+    template: \`
+                <h6>Create Todo</h6>
+                <form (ngSubmit)="onSubmit()" #todoForm="ngForm">
+                  <div class="form-row">
+                      <div class="col-auto">
+                            <input
+                                  type="text"
+                                  class="form-control"
+                                  placeholder="Description"
+                                  id="description"
+                                  [(ngModel)]="model.description"
+                                  name="description"
+                                  #description="ngModel">
+                      </div>
+                      <div class="col-auto">
+                            <input
+                                  type="text"
+                                  class="form-control"
+                                  placeholder="Responsible"
+                                  id="responsible"
+                                  [(ngModel)]="model.responsible"
+                                  name="responsible"
+                                  #responsible="ngModel">
+                      </div>
+                      <div class="col-auto">
+                            <select
+                                  class="form-control"
+                                  id="priority"
+                                  [(ngModel)]="model.priority"
+                                  name="priority"
+                                  #priority="ngModel">
+                                  <option value="low">Low</option>
+                                  <option value="medium">Medium</option>
+                                  <option value="high">High</option>
+                            </select>
+                      </div>
+                      <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                      </div>
+                  </div>
+                </form>
+                <br>
+                <h6>Todos List:</h6>
+                <div *ngIf="(todos | async)?.length !== 0">
+                <table class="table">
+                      <thead class="thead-inverse">
+                              <tr>
+                                  <th>#</th>
+                                  <th>Todo Description</th>
+                                  <th>Responsible</th>
+                                  <th>Priority</th>
+                                  <th></th>
+                              </tr>
+                      </thead>
+                      <tbody>
+                          <tr *ngFor="let todo of todos | async">
+                              <td><span (click)="toggle(todo)"
+                                        [class.completed]="todo.isCompleted">
+                                        {{ todo.id }}
+                                  </span>
+                              </td>
+                              <td><span (click)="toggle(todo)"
+                                        [class.completed]="todo.isCompleted">
+                                        {{ todo.description }}
+                                  </span>
+                              </td>
+                              <td><span (click)="toggle(todo)"
+                                        [class.completed]="todo.isCompleted">
+                                        {{ todo.responsible }}
+                                  </span>
+                              </td>
+                              <td>
+                                  <span *ngIf="todo.priority === 'low'"
+                                        class="badge badge-success">Low</span>
+                                  <span *ngIf="todo.priority === 'medium'"
+                                        class="badge badge-warning">Medium</span>
+                                  <span *ngIf="todo.priority === 'high'"
+                                        class="badge badge-danger">High</span>
+                              </td>
+                              <td>
+                                    <button class="btn btn-primary" (click)="remove(todo)">
+                                      Delete
+                                    </button>
+                              </td>
+                          </tr>
+                      </tbody>
+                </table>
+    \`,
+    styles: [\`
+      .completed {
+          text-decoration: line-through;
+      }
+    \`]
+  })
+  export class TodoListComponent {
+
+        @select() todos;
+
+        model: Todo = {
+          id: 0,
+          description: 'Work Hard | Be Kind | Do More ...',
+          responsible: 'Nils',
+          priority: 'high',
+          isCompleted: false
+        };
+
+        constructor(private ngRedux: NgRedux<IAppState>) { }
+
+        onSubmit(): void {
+          this.ngRedux.dispatch({ type: ADD_TODO, todo: this.model });
+
+        }
+
+        toggle(todo: Todo): void {
+          this.ngRedux.dispatch({ type: TOGGLE_TODO, id: todo.id });
+        }
+
+        remove(todo: Todo) {
+          this.ngRedux.dispatch({ type: REMOVE_TODO, id: todo.id });
+        }
+
+  }
+
+  `
 };
 apip436 = {
   name: '',
@@ -20425,6 +20969,230 @@ apip443 = {
   code: ``
 };
 apip444 = {
+  name: '',
+  code: ``
+};
+apip445 = {
+  name: '',
+  code: ``
+};
+apip446 = {
+  name: '',
+  code: ``
+};
+apip447 = {
+  name: '',
+  code: ``
+};
+apip448 = {
+  name: '',
+  code: ``
+};
+apip449 = {
+  name: '',
+  code: ``
+};
+apip450 = {
+  name: '',
+  code: ``
+};
+apip451 = {
+  name: '',
+  code: ``
+};
+apip452 = {
+  name: '',
+  code: ``
+};
+apip453 = {
+  name: '',
+  code: ``
+};
+apip454 = {
+  name: '',
+  code: ``
+};
+apip455 = {
+  name: '',
+  code: ``
+};
+apip456 = {
+  name: '',
+  code: ``
+};
+apip457 = {
+  name: '',
+  code: ``
+};
+apip458 = {
+  name: '',
+  code: ``
+};
+apip459 = {
+  name: '',
+  code: ``
+};
+apip460 = {
+  name: '',
+  code: ``
+};
+apip461 = {
+  name: '',
+  code: ``
+};
+apip462 = {
+  name: '',
+  code: ``
+};
+apip463 = {
+  name: '',
+  code: ``
+};
+apip464 = {
+  name: '',
+  code: ``
+};
+apip465 = {
+  name: '',
+  code: ``
+};
+apip466 = {
+  name: '',
+  code: ``
+};
+apip467 = {
+  name: '',
+  code: ``
+};
+apip468 = {
+  name: '',
+  code: ``
+};
+apip469 = {
+  name: '',
+  code: ``
+};
+apip470 = {
+  name: '',
+  code: ``
+};
+apip471 = {
+  name: '',
+  code: ``
+};
+apip472 = {
+  name: '',
+  code: ``
+};
+apip473 = {
+  name: '',
+  code: ``
+};
+apip474 = {
+  name: '',
+  code: ``
+};
+apip475 = {
+  name: '',
+  code: ``
+};
+apip476 = {
+  name: '',
+  code: ``
+};
+apip477 = {
+  name: '',
+  code: ``
+};
+apip478 = {
+  name: '',
+  code: ``
+};
+apip479 = {
+  name: '',
+  code: ``
+};
+apip480 = {
+  name: '',
+  code: ``
+};
+apip481 = {
+  name: '',
+  code: ``
+};
+apip482 = {
+  name: '',
+  code: ``
+};
+apip483 = {
+  name: '',
+  code: ``
+};
+apip484 = {
+  name: '',
+  code: ``
+};
+apip485 = {
+  name: '',
+  code: ``
+};
+apip486 = {
+  name: '',
+  code: ``
+};
+apip487 = {
+  name: '',
+  code: ``
+};
+apip488 = {
+  name: '',
+  code: ``
+};
+apip489 = {
+  name: '',
+  code: ``
+};
+apip490 = {
+  name: '',
+  code: ``
+};
+apip491 = {
+  name: '',
+  code: ``
+};
+apip492 = {
+  name: '',
+  code: ``
+};
+apip493 = {
+  name: '',
+  code: ``
+};
+apip494 = {
+  name: '',
+  code: ``
+};
+apip495 = {
+  name: '',
+  code: ``
+};
+apip496 = {
+  name: '',
+  code: ``
+};
+apip497 = {
+  name: '',
+  code: ``
+};
+apip498 = {
+  name: '',
+  code: ``
+};
+apip499 = {
+  name: '',
+  code: ``
+};
+apip500 = {
   name: '',
   code: ``
 };

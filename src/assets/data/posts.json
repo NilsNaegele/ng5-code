@@ -125,6 +125,11 @@
       "id": 25,
       "title": "Angular Recipes",
       "date": "02/25/2018"
+    },
+    {
+      "id": 26,
+      "title": "Angular State Management",
+      "date": "02/26/2018"
     }
 	]
 }
