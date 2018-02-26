@@ -20337,7 +20337,7 @@ apip421 = {
   `
 };
 apip422 = {
-  name: 'Package JSON',
+  name: 'Angular Redux State Management: Package JSON',
   code: `
 
   {
@@ -20937,40 +20937,603 @@ apip435 = {
   `
 };
 apip436 = {
-  name: '',
-  code: ``
+  name: 'NGRX State Management: Package JSON',
+  code: `
+
+  {
+    "name": "ng5-redux",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {
+      "ng": "ng",
+      "start": "ng serve",
+      "build": "ng build",
+      "test": "ng test",
+      "lint": "ng lint",
+      "e2e": "ng e2e"
+    },
+    "private": true,
+    "dependencies": {
+      "@angular/animations": "^5.2.6",
+      "@angular/common": "^5.2.6",
+      "@angular/compiler": "^5.2.6",
+      "@angular/core": "^5.2.6",
+      "@angular/forms": "^5.2.6",
+      "@angular/http": "^5.2.6",
+      "@angular/platform-browser": "^5.2.6",
+      "@angular/platform-browser-dynamic": "^5.2.6",
+      "@angular/platform-server": "^5.2.6",
+      "@angular/router": "^5.2.6",
+      "@ngrx/effects": "^5.1.0",
+      "@ngrx/router-store": "^5.0.1",
+      "@ngrx/store": "^5.1.0",
+      "@ngrx/store-devtools": "^5.1.0",
+      "core-js": "^2.4.1",
+      "rxjs": "^5.5.6",
+      "zone.js": "^0.8.14"
+    },
+    "devDependencies": {
+      "@angular/cli": "^1.7.1",
+      "@angular/compiler-cli": "^5.2.6",
+      "@angular/language-service": "^4.2.4",
+      "@types/jasmine": "~2.5.53",
+      "@types/jasminewd2": "~2.0.2",
+      "@types/node": "~6.0.60",
+      "codelyzer": "~3.1.1",
+      "jasmine-core": "~2.6.2",
+      "jasmine-spec-reporter": "~4.1.0",
+      "karma": "~1.7.0",
+      "karma-chrome-launcher": "~2.1.1",
+      "karma-cli": "~1.0.1",
+      "karma-coverage-istanbul-reporter": "^1.2.1",
+      "karma-jasmine": "~1.1.0",
+      "karma-jasmine-html-reporter": "^0.2.2",
+      "protractor": "~5.1.2",
+      "ts-node": "~3.2.0",
+      "tslint": "~5.3.2",
+      "typescript": "^2.6.2"
+    }
+  }
+
+  `
 };
 apip437 = {
-  name: '',
-  code: ``
+  name: 'Counter App: App Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { FormsModule } from '@angular/forms';
+
+  import { StoreModule } from '@ngrx/store';
+
+  import { AppComponent, counterReducer } from './app.component';
+
+
+  @NgModule({
+    declarations: [
+      AppComponent
+    ],
+    imports: [
+      BrowserModule,
+      FormsModule,
+      StoreModule.forRoot({ count: counterReducer })
+    ],
+    providers: [],
+    bootstrap: [ AppComponent ]
+  })
+  export class AppModule {
+
+  }
+
+  `
 };
 apip438 = {
-  name: '',
-  code: ``
+  name: 'App Component With Reducer',
+  code: `
+
+  import { Action } from '@ngrx/store';
+
+  export const INCREMENT = 'INCREMENT';
+  export const DECREMENT = 'DECREMENT';
+  export const RESET = 'RESET';
+
+  export function counterReducer(state: number = 0, action: Action) {
+
+        switch (action.type) {
+          case INCREMENT:
+            return state + 1;
+          case DECREMENT:
+            return state - 1;
+          case RESET:
+            return 0;
+          default:
+            return state;
+        }
+  }
+
+  /********************************************************************** */
+
+  import { Component } from '@angular/core';
+  import { Store, select } from '@ngrx/store';
+  import { Observable } from 'rxjs/Observable';
+
+  interface AppState {
+    count: number;
+  }
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+          <div class="container">
+            <div>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Counter</h3>
+                        <h6 class="card-subtitle mb-2 text-muted">Angular & ngrx</h6>
+                        <h1>Current Count: {{ count$ | async }}</h1>
+                        <button class="btn btn-danger" (click)="increment()">
+                            Increment
+                        </button>
+                        <button class="btn btn-success" (click)="decrement()">
+                            Decrement
+                        </button>
+                        <button class="btn btn-warning" (click)="reset()">
+                            Reset Counter
+                        </button>
+                    </div>
+                </div>
+            </div>
+          </div>
+    \`
+  })
+  export class AppComponent {
+        count$: Observable<number>;
+
+        constructor(private store: Store<AppState>) {
+          this.count$ = store.pipe(select('count'));
+        }
+
+        increment() {
+          this.store.dispatch({ type: INCREMENT });
+        }
+
+        decrement() {
+          this.store.dispatch({ type: DECREMENT });
+        }
+
+        reset() {
+          this.store.dispatch({ type: RESET });
+        }
+
+  }
+
+  `
 };
 apip439 = {
-  name: '',
-  code: ``
+  name: 'Forms App: App Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+  import { StoreModule } from '@ngrx/store';
+  import { StoreDevtools } from '@ngrx/store-devtools';
+  import { EffectsModule } from '@ngrx/effects';
+
+  import { AppComponent} from './app.component';
+  import { AddressComponent } from './address/address.component';
+  import { RangeComponent } from './range/range.component';
+  import { reducers } from './reducers';
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      AddressComponent,
+      RangeComponent
+    ],
+    imports: [
+      BrowserModule,
+      FormsModule,
+      ReactiveFormsModule,
+      StoreModule.forRoot(reducers),
+      EffectsModule.forRoot([])
+
+    ],
+    providers: [ ],
+    bootstrap: [ AppComponent ]
+  })
+  export class AppModule {
+
+  }
+
+
+  `
 };
 apip440 = {
-  name: '',
-  code: ``
+  name: 'Actions',
+  code: `
+
+  import { Action } from '@ngrx/store';
+
+  export const CHANGE_FORM = '[Examples > Form] Change Form';
+  export const RESET = '[Examples > Form] Reset';
+
+  export class ChangeForm implements Action {
+    readonly type = CHANGE_FORM;
+
+    constructor(public payload: any) { }
+  }
+
+  export class Reset implements Action {
+    readonly type = RESET;
+  }
+
+  export type Actions = ChangeForm | Reset;
+
+
+  `
 };
 apip441 = {
-  name: '',
-  code: ``
+  name: 'Reducers',
+  code: `
+
+  import { ActionReducerMap, createSelector, createFeatureSelector,
+    ActionReducer, MetaReducer } from '@ngrx/store';
+
+  import * as actions from './actions';
+
+  export const reducers: ActionReducerMap<State> = {
+    form: formReducer
+  };
+
+  export interface State {
+    form: Form;
+  }
+
+  export interface Form {
+    address: Address;
+    range: Range;
+  }
+
+  export interface Address {
+    zip: string;
+    city: string;
+    street: string;
+  }
+
+  export interface Range {
+    min: number;
+    max: number;
+  }
+
+
+  export const initialForm: Form = {
+   address: {
+     zip: '',
+     city: '',
+     street: 'Sunrise Boulevard'
+   },
+   range: {
+     min: 10,
+     max: 100
+   }
+};
+
+export function formReducer(state: Form = initialForm,
+                       action: actions.Actions): Form {
+
+   switch (action.type) {
+     case actions.CHANGE_FORM: {
+           return { ...state, ...action.payload };
+     }
+     case actions.RESET: {
+       return state;
+     }
+     default: {
+       return state;
+     }
+   }
+}
+
+export const getAddress = (state: Form) => {
+console.log('getAddress');
+return state.address;
+};
+
+// selectors
+export const getFormState = createFeatureSelector<Form>('form');
+export const getFormAddress = createSelector(getFormState, getAddress);
+export const getFormAddressValidity = createSelector(getFormAddress, (address) => ({
+        city: !!address.city,
+        zip: !!address.zip
+}));
+
+export const getIsFormAddressValid =
+           createSelector(getFormAddressValidity, ({ city, zip }) =>
+           console.log('chech validity of address') || !!(city && zip));
+
+export const getIsFormValid =
+           createSelector(getIsFormAddressValid, (isFormAddress) => isFormAddress);
+
+
+  `
 };
 apip442 = {
-  name: '',
-  code: ``
+  name: 'Address Component',
+  code: `
+
+  import { Component, ChangeDetectorRef,
+           ChangeDetectionStrategy, Input } from '@angular/core';
+  import { ControlValueAccessor, NG_VALUE_ACCESSOR,
+           FormGroup, FormControl } from '@angular/forms';
+
+  @Component({
+    selector: 'app-address',
+    template: \`
+            <div [formGroup]="form">
+                <div>
+                      <label>zip *</label>
+                      <input type="text" formControlName="zip"
+                      [class.invalid]="!validity.zip && zip.touched"
+                      (blur)="onTouched()">
+                </div>
+                <div>
+                      <label>city *</label>
+                      <input type="text" formControlName="city"
+                      [class.invalid]="!validity.city && city.touched"
+                      (blur)="onTouched()">
+                </div>
+                <div>
+                      <label>street</label>
+                      <input type="text" formControlName="street"
+                      (blur)="onTouched()">
+                </div>
+                <pre>{{ form.value | json }}</pre>
+            </div>
+
+    \`,
+    styles: [\`
+      :host {
+        display: block;
+        background-color: #cff;
+      }
+    \`],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [
+      {
+        provide: NG_VALUE_ACCESSOR,
+        useExisting: AddressComponent,
+        multi: true
+      }
+    ]
+  })
+  export class AddressComponent implements ControlValueAccessor {
+    @Input() validity: {[key: string]: boolean };
+
+    form: FormGroup;
+    onTouched: () => void;
+
+    get zip() { return this.form.get('zip'); }
+    get city() { return this.form.get('city'); }
+
+    constructor(private changeDetectorRef: ChangeDetectorRef) {
+      this.form = new FormGroup({
+        zip: new FormControl(),
+        city: new FormControl(),
+        street: new FormControl()
+      });
+    }
+
+    markAsUnTouched() {
+      // this.form.markAsUntouched();
+      // const controls = this.form.controls;
+      // Object.keys(controls).forEach((key) => {
+      //         controls[key].markAsUntouched();
+      // });
+      // this.changeDetectorRef.markForCheck();
+    }
+
+    markAsTouched() {
+      this.form.markAsTouched();
+      const controls = this.form.controls;
+      Object.keys(controls).forEach((key) => {
+              controls[key].markAsTouched();
+      });
+      this.changeDetectorRef.markForCheck();
+    }
+
+    // controlvalueaccessor
+    writeValue(obj: any) {
+      console.log('AddressComponent#writeValue', obj);
+      if (obj) {
+        this.form.setValue(obj, { emitEvent: false });
+        this.changeDetectorRef.markForCheck();
+      }
+    }
+
+    registerOnChange(fun: any) {
+      this.form.valueChanges.subscribe(fun);
+    }
+
+    registerOnTouched(fun: any) {
+      this.onTouched = fun;
+    }
+
+  }
+
+  `
 };
 apip443 = {
-  name: '',
-  code: ``
+  name: 'Range Component',
+  code: `
+
+  import { Component, ChangeDetectionStrategy, ElementRef,
+           Input, ViewChild } from '@angular/core';
+  import { AbstractControl, ControlValueAccessor, NG_VALIDATORS,
+           NG_VALUE_ACCESSOR, Validator, FormGroup,
+           Validators, FormControl } from '@angular/forms';
+
+  @Component({
+    selector: 'app-range',
+    template: \`
+          <div [formGroup]="form">
+              <div>
+                  <label>minimum</label>
+                  <input type="number" formControlName="min" (blur)="onTouched()">
+              </div>
+              <div>
+                  <label>max</label>
+                  <input type="number" formControlName="max" (blur)="onTouched()">
+              </div>
+              <pre>{{ form.value | json }}</pre>
+          </div>
+    \`,
+    styles: [\`
+      :host {
+        display: block;
+        background-color: #ccf;
+      }
+    \`],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [
+      {
+        provide: NG_VALUE_ACCESSOR,
+        useExisting: RangeComponent,
+        multi: true
+      }
+    ]
+  })
+  export class RangeComponent implements ControlValueAccessor {
+    form: FormGroup;
+    onTouched: () => void;
+
+    private get min() {
+      return this.form.get('min');
+    }
+
+    private get max() {
+      return this.form.get('max');
+    }
+
+    constructor() {
+      this.form = new FormGroup({
+        min: new FormControl(),
+        max: new FormControl()
+      });
+
+      this.min.valueChanges.subscribe((value: number) => {
+        if (value < 0) {
+          this.min.setValue(0, { emitEvent: false });
+        } else if (value > this.max.value) {
+          this.max.setValue(value, { emitEvent: false });
+        }
+      });
+
+      this.max.valueChanges.subscribe((value: number) => {
+        if (value < 0) {
+          this.max.setValue(0, { emitEvent: false });
+        } else if (value < this.min.value) {
+          this.min.setValue(value, { emitEvent: false });
+        }
+      });
+    }
+
+    // controlvalueaccessor
+    writeValue(obj: any) {
+      if (obj) {
+        this.form.setValue(obj, { emitEvent: false });
+      }
+    }
+
+    registerOnChange(fun: any) {
+      this.form.valueChanges.subscribe(val => {
+        fun(val);
+      });
+    }
+
+    registerOnTouched(fun: any) {
+      this.onTouched = fun;
+    }
+
+  }
+
+  `
 };
 apip444 = {
-  name: '',
-  code: ``
+  name: 'App Component',
+  code: `
+
+  import { Component, ViewChildren, QueryList, ViewChild,
+           ChangeDetectorRef, ChangeDetectionStrategy, OnInit } from '@angular/core';
+  import { FormBuilder, FormControl, FormGroup,
+           Validators, NgForm } from '@angular/forms';
+
+  import { Store } from '@ngrx/store';
+  import * as fromRoot from './reducers';
+  import { Form } from './reducers';
+  import * as actions from './actions';
+
+  import { AddressComponent } from './address/address.component';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/operator/debounceTime';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <form class="margin"
+                      #ngForm="ngForm"
+                      (ngSubmit)="onSubmit()"
+                      novalidate>
+                <app-address name="address"
+                             [ngModel]="(form$ | async).address"
+                             [validity]="addressValidity$ | async">
+                </app-address>
+                <app-range name="range"
+                          [ngModel]="(form$ | async).range">
+                </app-range>
+                <button>submit</button>
+                <pre>ngForm.status: {{ ngForm.status | json }}</pre>
+                <pre>isFormValid$: {{ isFormValid$ | async | json }}</pre>
+                </form>
+                <div style="background-color: #ffc">
+                    <pre>form$: {{ form$ | async | json }}</pre>
+                </div>
+    \`,
+    changeDetection: ChangeDetectionStrategy.OnPush
+  })
+  export class AppComponent implements OnInit {
+      @ViewChild(NgForm) private ngForm: NgForm;
+      @ViewChild(AddressComponent) private address;
+
+      form$: Observable<Form>;
+      addressValidity$: Observable<{[key: string]: boolean}>;
+      isFormValid$: Observable<boolean>;
+
+      constructor(private store: Store<fromRoot.State>) { }
+
+      ngOnInit() {
+        this.form$ = this.store.select(fromRoot.getFormState);
+        this.addressValidity$ = this.store.select(fromRoot.getFormAddressValidity);
+        this.isFormValid$ = this.store.select(fromRoot.getIsFormValid);
+
+        this.ngForm.valueChanges.debounceTime(0).subscribe(value => {
+                console.log('ngForm.valueChanges', value);
+                this.store.dispatch(new actions.ChangeForm(value));
+        });
+      }
+
+      onSubmit() {
+        console.log('submit');
+        this.address.markAsTouched();
+      }
+
+  }
+
+  `
 };
 apip445 = {
   name: '',
