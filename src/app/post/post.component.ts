@@ -21536,68 +21536,666 @@ apip444 = {
   `
 };
 apip445 = {
-  name: '',
-  code: ``
+  name: 'NGRX Angular Material Todo App: Package JSON',
+  code: `
+
+  {
+    "name": "ng5-ngrx",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {
+      "ng": "ng",
+      "start": "ng serve",
+      "build": "ng build",
+      "test": "ng test",
+      "lint": "ng lint",
+      "e2e": "ng e2e"
+    },
+    "private": true,
+    "dependencies": {
+      "@angular/animations": "^5.2.6",
+      "@angular/cdk": "^5.2.2",
+      "@angular/common": "^5.2.6",
+      "@angular/compiler": "^5.2.6",
+      "@angular/core": "^5.2.6",
+      "@angular/forms": "^5.2.6",
+      "@angular/http": "^5.2.6",
+      "@angular/material": "^5.2.2",
+      "@angular/platform-browser": "^5.2.6",
+      "@angular/platform-browser-dynamic": "^5.2.6",
+      "@angular/platform-server": "^5.2.6",
+      "@angular/router": "^5.2.6",
+      "@ngrx/effects": "^5.1.0",
+      "@ngrx/router-store": "^5.0.1",
+      "@ngrx/store": "^5.1.0",
+      "@ngrx/store-devtools": "^5.1.0",
+      "angular-in-memory-web-api": "^0.5.3",
+      "core-js": "^2.4.1",
+      "hammerjs": "^2.0.8",
+      "rxjs": "^5.5.6",
+      "zone.js": "^0.8.14"
+    },
+    "devDependencies": {
+      "@angular/cli": "^1.7.1",
+      "@angular/compiler-cli": "^5.2.6",
+      "@angular/language-service": "^4.2.4",
+      "@types/jasmine": "~2.5.53",
+      "@types/jasminewd2": "~2.0.2",
+      "@types/node": "~6.0.60",
+      "codelyzer": "~3.1.1",
+      "jasmine-core": "~2.6.2",
+      "jasmine-spec-reporter": "~4.1.0",
+      "karma": "~1.7.0",
+      "karma-chrome-launcher": "~2.1.1",
+      "karma-cli": "~1.0.1",
+      "karma-coverage-istanbul-reporter": "^1.2.1",
+      "karma-jasmine": "~1.1.0",
+      "karma-jasmine-html-reporter": "^0.2.2",
+      "protractor": "~5.1.2",
+      "ts-node": "~3.2.0",
+      "tslint": "~5.3.2",
+      "typescript": "^2.6.2"
+    }
+  }
+
+  `
 };
 apip446 = {
-  name: '',
-  code: ``
+  name: 'Index HTML HTML-CENTRIC HERE',
+  code: `
+  <!doctype html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>ng5-ngrx</title>
+    <base href="/">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
+  </head>
+  <body>
+  <app-root>launch my baby ...</app-root>
+  </body>
+  </html>
+
+
+  `
 };
 apip447 = {
-  name: '',
-  code: ``
+  name: 'Global Styles CSS',
+  code: `
+
+  /* Master Styles */
+  @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+  `
 };
 apip448 = {
-  name: '',
-  code: ``
+  name: 'Main TS',
+  code: `
+
+  import { enableProdMode } from '@angular/core';
+  import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+
+  import 'hammerjs';
+
+  import { AppModule } from './app/app.module';
+  import { environment } from './environments/environment';
+
+  if (environment.production) {
+    enableProdMode();
+  }
+
+  platformBrowserDynamic().bootstrapModule(AppModule);
+
+  `
 };
 apip449 = {
-  name: '',
-  code: ``
+  name: 'App Module',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+  import { HttpClientModule } from '@angular/common/http';
+  import { RouterModule } from '@angular/router';
+  import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+  import { MatInputModule, MatButtonModule, MatListModule,
+           MatCheckboxModule, MatCardModule } from '@angular/material';
+
+  import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+
+  import { StoreModule } from '@ngrx/store';
+  import { StoreDevtools } from '@ngrx/store-devtools';
+
+  import { AppComponent} from './app.component';
+  import { ListTodoComponent } from './list-todo/list-todo.component';
+  import { HomeComponent } from './home/home.component';
+  import { DetailsComponent } from './details/details.component';
+  import { AddTodoComponent } from './add-todo/add-todo.component';
+
+  import { appRoutes } from './routes';
+  import { todoReducer } from './todo.reducer';
+  import { InMemoryDataService } from './in-memory-data.service';
+  import { TodosService } from './todos.service';
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      ListTodoComponent,
+      HomeComponent,
+      DetailsComponent,
+      AddTodoComponent
+    ],
+    imports: [
+      BrowserModule,
+      BrowserAnimationsModule,
+      HttpClientModule,
+      FormsModule,
+      ReactiveFormsModule,
+      MatInputModule,
+      MatListModule,
+      MatCheckboxModule,
+      MatCardModule,
+      StoreModule.forRoot({ todo: todoReducer }),
+      RouterModule.forRoot(appRoutes),
+      HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService,
+                                            { dataEncapsulation: false })
+    ],
+    providers: [ TodosService ],
+    bootstrap: [ AppComponent ]
+  })
+  export class AppModule {
+
+  }
+
+  `
 };
 apip450 = {
-  name: '',
-  code: ``
+  name: 'In Memory Data Service',
+  code: `
+
+  import { InMemoryDbService } from 'angular-in-memory-web-api';
+
+
+  export class InMemoryDataService implements InMemoryDbService {
+
+            createDb() {
+              const heroesTodos = [
+                  {
+                    id: 1,
+                    name: 'Create new Angular Apps',
+                    description: 'Newest Versions of everything',
+                    state: true
+                  },
+                  {
+                    id: 2,
+                    name: 'Write new Angular Blog Posts',
+                    description: 'New Features, API, Code, Events',
+                    state: true
+                  },
+                  {
+                    id: 3,
+                    name: 'Create new Angular Tutorials',
+                    description: 'Angular CLI, NGRX, Material Design, D3',
+                    state: true
+                  },
+                  {
+                    id: 4,
+                    name: 'Create and Publish an Angular Library',
+                    description: 'NGPackagr',
+                    state: true
+                  },
+                  {
+                    id: 5,
+                    name: 'Contribute in Open Source Repositories on GitHub',
+                    description: 'Contribute, Contribute, Contribute',
+                    state: true
+                  },
+                  {
+                    id: 6,
+                    name: 'Get a good wife. Get married.',
+                    description: \`Make a Big Array of Children. A Big Bunch.
+                                  Live happily ever after ...\`,
+                    state: true
+                  }
+              ];
+              return { heroesTodos };
+            }
+  }
+
+
+  `
 };
 apip451 = {
-  name: '',
-  code: ``
+  name: 'Todos Service',
+  code: `
+
+  import { Injectable } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+
+  import { Observable } from 'rxjs/Observable';
+
+  @Injectable()
+  export class TodosService {
+
+    private heroesTodosURL = 'api/heroesTodos';
+
+    constructor(private http: HttpClient) { }
+
+    loadTodos(): Observable<any> {
+      return this.http.get(this.heroesTodosURL);
+    }
+
+  }
+
+  `
 };
 apip452 = {
-  name: '',
-  code: ``
+  name: 'Todo Class',
+  code: `
+
+  export class Todo {
+    id: number;
+    name: string;
+    description: string;
+    state: boolean;
+  }
+
+  `
 };
 apip453 = {
-  name: '',
-  code: ``
+  name: 'Todo Reducer',
+  code: `
+
+  import { Todo } from './todo';
+
+  export function todoReducer(state: Todo[] = [], action) {
+
+        switch (action.type) {
+          case 'LOAD_TODOS':
+              return state = action.payload;
+
+         case 'TOGGLE_TODO':
+              state.map(todo => {
+                  if (todo.id === action.targetTodo.id) {
+                    todo.state = !action.targetTodo.state;
+                    const index = state.indexOf(action.targetTodo);
+                    if (action.targetTodo.state !== true) {
+                      state = [...state.slice(0, index), ...state.slice(index + 1),
+                               action.targetTodo];
+                    } else {
+                      state = [action.targetTodo, ...state.slice(0, index),
+                              ...state.slice(index + 1)];
+                    }
+                  }
+              });
+              return state;
+
+        case 'ADD_TODO':
+              const index = state.length;
+              action.addTodo.id = index + 1;
+              action.addTodo.state = true;
+              state = [action.addTodo, ...state];
+              return state;
+        }
+  }
+
+  `
 };
 apip454 = {
-  name: '',
-  code: ``
+  name: 'Routes',
+  code: `
+
+  import { Routes } from '@angular/router';
+
+  import { HomeComponent } from './home/home.component';
+  import { DetailsComponent } from './details/details.component';
+
+
+  export const appRoutes: Routes = [
+        {
+          path: '',
+          redirectTo: '/home',
+          pathMatch: 'full'
+        },
+        { path: 'home', component: HomeComponent },
+        { path: 'details/:id', component: DetailsComponent }
+  ];
+
+  `
 };
 apip455 = {
-  name: '',
-  code: ``
+  name: 'App State',
+  code: `
+
+  import { Todo } from './todo';
+
+  export interface AppState {
+    readonly todo: Todo[];
+  }
+
+  `
 };
 apip456 = {
-  name: '',
-  code: ``
+  name: 'App Component',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+          <div class="content-list">
+                <router-outlet></router-outlet>
+          </div>
+    \`,
+    styles: [\`
+            .content-list {
+              width: 600px;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            }
+    \`]
+  })
+  export class AppComponent { }
+
+  `
 };
 apip457 = {
-  name: '',
-  code: ``
+  name: 'AddTodo Component',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+  import { FormBuilder, FormGroup } from '@angular/forms';
+
+  import { Store } from '@ngrx/store';
+
+  import { Todo } from '../todo';
+  import { AppState } from '../app.state';
+
+  import { Observable } from 'rxjs/Observable';
+
+  @Component({
+    selector: 'app-add-todo',
+    template: \`
+          <form [formGroup]="form">
+              <mat-form-field>
+                <input matInput
+                       ngModel
+                       formControlName="name"
+                       placeholder="Name"
+                       required>
+              </mat-form-field>
+              <mat-form-field>
+                <textarea matInput
+                          ngModel
+                          formControlName="description"
+                          placeholder="Description">
+                </textarea>
+              </mat-form-field>
+          </form>
+          <div class="btn-add-todo">
+                <button mat-raised-button
+                        [disabled]="!form.valid"
+                        (click)="add(form.value)">
+                  Add
+                </button>
+          </div>
+    \`,
+    styles: [\`
+          .btn-add-todo {
+            text-align: right;
+            padding-right: 16px;
+          }
+          mat-form-field {
+            width: 47%;
+            padding-left: 10px;
+          }
+    \`]
+  })
+  export class AddTodoComponent implements OnInit {
+    todos$: Observable<Todo[]>;
+    form: FormGroup;
+
+    constructor(private formBuilder: FormBuilder,
+                private store: Store<AppState>) {
+                  this.todos$ = this.store.select('todo');
+                }
+
+    ngOnInit() {
+      this.form = this.formBuilder.group({
+                  id: null,
+                  name: '',
+                  description: '',
+                  state: null
+      });
+    }
+
+    add(todo) {
+      this.store.dispatch({
+          type: 'ADD_TODO',
+          addTodo: todo
+      });
+      this.form.reset();
+    }
+
+  }
+
+  `
 };
 apip458 = {
-  name: '',
-  code: ``
+  name: 'Details Component',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+  import { ActivatedRoute, Router } from '@angular/router';
+
+  import { Store } from '@ngrx/store';
+
+  import { AppState } from '../app.state';
+  import { Todo } from '../todo';
+
+  import { Observable } from 'rxjs/Observable';
+
+  @Component({
+    selector: 'app-details',
+    template: \`
+            <mat-card class="details-box">
+                  <mat-card-header>
+                          <mat-card-title><h2>Todo Details</h2></mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <p><strong>Name: </strong>{{ todo?.name }}</p>
+                    <p><strong>Description: </strong>{{ todo?.description }}</p>
+                    <p><strong>State: </strong>
+                              {{ todo?.state ? 'Activate' : 'Deactivate' }}</p>
+                  </mat-card-content>
+                  <mat-card-footer class="button-box">
+                        <button routerLink="/home" mat-raised-button>Close</button>
+                  </mat-card-footer>
+            </mat-card>
+    \`,
+    styles: [\`
+        .details-box {
+          width: 500px;
+          height: 220px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+        mat-card-header {
+          justify-content: center;
+        }
+        mat-card-footer {
+          text-align: right;
+          padding-right: 8px;
+        }
+    \`]
+  })
+  export class DetailsComponent implements OnInit {
+    todo: Todo;
+    todos$: Observable<Todo[]>;
+    todoId: number = null;
+
+    constructor(private store: Store<AppState>,
+                private route: ActivatedRoute,
+                private router: Router ) {
+      this.todos$ = this.store.select('todo');
+                }
+
+    loadDetails() {
+      this.todos$.subscribe(todos => {
+        const todoId = +this.route.snapshot.params.id;
+        todos.map(todo => {
+          if (todoId === todo.id) {
+            this.todo = todo;
+          }
+        });
+      });
+    }
+
+    ngOnInit() {
+      this.loadDetails();
+    }
+
+  }
+
+  `
 };
 apip459 = {
-  name: '',
-  code: ``
+  name: 'Home Component',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { Store } from '@ngrx/store';
+
+  import { AppState } from '../app.state';
+  import { Todo } from '../todo';
+  import { TodosService } from '../todos.service';
+
+  import { Observable } from 'rxjs/Observable';
+
+  @Component({
+    selector: 'app-home',
+    template: \`
+            <app-list-todo></app-list-todo>
+    \`
+  })
+  export class HomeComponent implements OnInit {
+    todos$: Observable<Todo[]>;
+
+    constructor(private todosService: TodosService,
+                private store: Store<AppState>) {
+          this.todos$ = this.store.select('todo');
+                }
+
+    getTodos() {
+      this.todosService.loadTodos().subscribe(todos => {
+        this.store.dispatch({
+          type: 'LOAD_TODOS',
+          payload: todos
+        });
+      });
+    }
+
+    ngOnInit() {
+      this.todos$.subscribe(todos => {
+        if (!todos) {
+          this.getTodos();
+        }
+      });
+    }
+
+  }
+
+  `
 };
 apip460 = {
-  name: '',
-  code: ``
+  name: 'ListTodo Component',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { Router } from '@angular/router';
+
+  import { Store } from '@ngrx/store';
+
+  import { Todo } from '../todo';
+  import { AppState } from './../app.state';
+  import { TodosService } from './../todos.service';
+
+  import { Observable } from 'rxjs/Observable';
+
+
+  @Component({
+    selector: 'app-list-todo',
+    template: \`
+              <mat-card>
+                    <mat-card-header>
+                          <h2>What needs to be done?</h2>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <app-add-todo></app-add-todo>
+                        <mat-list>
+                            <mat-list-item *ngFor="let todo of todos$ | async">
+                            <mat-divider></mat-divider>
+                            <p matLine (click)="details(todo)"
+                              [ngClass]="{'checked': todo.state === false}">
+                              {{ todo.name }}
+                            </p>
+                            <p matLine>{{ todo.state ? 'Activate' : 'Deactivate' }}</p>
+                            <mat-checkbox [checked]="!todo.state" (change)="onSelect(todo)">
+                            </mat-checkbox>
+                            </mat-list-item>
+                        </mat-list>
+                    </mat-card-content>
+              </mat-card>
+    \`,
+    styles: [\`
+          .checked {
+            text-decoration: line-through;
+          }
+          mat-card-header {
+            justify-content: center;
+            background: #f3f3f3;
+            border: solid 1px #006699;
+          }
+          mat-card-content {
+            text-align: left;
+          }
+    \`]
+  })
+  export class ListTodoComponent  {
+    todos$: Observable<Todo[]>;
+
+    constructor(private todosService: TodosService,
+                public router: Router,
+                private store: Store<AppState>) {
+                this.todos$ = this.store.select('todo');
+                }
+
+      details(todo: Todo) {
+          this.router.navigate(['/details/' + todo.id]);
+      }
+
+      onSelect(todo) {
+        this.store.dispatch({
+            type: 'TOGGLE_TODO',
+            targetTodo: todo
+        });
+      }
+
+  }
+
+  `
 };
 apip461 = {
   name: '',
