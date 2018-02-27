@@ -130,6 +130,11 @@
       "id": 26,
       "title": "Angular State Management",
       "date": "02/26/2018"
+    },
+    {
+      "id": 27,
+      "title": "Angular Universal",
+      "date": "02/27/2018"
     }
 	]
 }

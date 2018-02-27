@@ -22198,40 +22198,380 @@ apip460 = {
   `
 };
 apip461 = {
-  name: '',
-  code: ``
+  name: 'Angular Server Side Rendering (SSR): Package JSON',
+  code: `
+
+  {
+    "name": "ng5-universal",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {
+      "ng": "ng",
+      "start": "ng serve",
+      "build": "ng build",
+      "build:universal": "npm run build:client-and-server-bundles && npm run webpack:server",
+      "serve:universal": "node dist/server.js",
+      "build:client-and-server-bundles":
+                        "ng build --prod && ng build --prod --app 1 --output-hashing=false",
+      "webpack:server": "webpack --config webpack.server.config.js --progress --colors",
+      "test": "ng test",
+      "lint": "ng lint",
+      "e2e": "ng e2e"
+    },
+    "private": true,
+    "dependencies": {
+      "@angular/animations": "^5.2.6",
+      "@angular/common": "^5.2.6",
+      "@angular/compiler": "^5.2.6",
+      "@angular/core": "^5.2.6",
+      "@angular/forms": "^5.2.6",
+      "@angular/http": "^5.2.6",
+      "@angular/platform-browser": "^5.2.6",
+      "@angular/platform-browser-dynamic": "^5.2.6",
+      "@angular/platform-server": "^5.2.6",
+      "@angular/router": "^5.2.6",
+      "@nguniversal/express-engine": "^5.0.0-beta.5",
+      "@nguniversal/module-map-ngfactory-loader": "^5.0.0-beta.5",
+      "angular-in-memory-web-api": "^0.5.3",
+      "core-js": "^2.4.1",
+      "express": "^4.16.2",
+      "path": "^0.12.7",
+      "rxjs": "^5.5.6",
+      "ts-loader": "^3.5.0",
+      "zone.js": "^0.8.14"
+    },
+    "devDependencies": {
+      "@angular/cli": "^1.7.1",
+      "@angular/compiler-cli": "^5.2.6",
+      "@angular/language-service": "^4.2.4",
+      "@types/jasmine": "~2.5.53",
+      "@types/jasminewd2": "~2.0.2",
+      "codelyzer": "~3.1.1",
+      "jasmine-core": "~2.6.2",
+      "jasmine-spec-reporter": "~4.1.0",
+      "karma": "~1.7.0",
+      "karma-chrome-launcher": "~2.1.1",
+      "karma-cli": "~1.0.1",
+      "karma-coverage-istanbul-reporter": "^1.2.1",
+      "karma-jasmine": "~1.1.0",
+      "karma-jasmine-html-reporter": "^0.2.2",
+      "protractor": "~5.1.2",
+      "ts-node": "~3.2.0",
+      "tslint": "~5.3.2",
+      "typescript": "^2.6.2"
+    }
+  }
+
+  `
 };
 apip462 = {
-  name: '',
-  code: ``
+  name: 'Server TS',
+  code: `
+
+  import 'zone.js/dist/zone-node';
+  import 'reflect-metadata';
+
+  import { renderModuleFactory } from '@angular/platform-server';
+  import { enableProdMode } from '@angular/core';
+
+  import * as express from 'express';
+  import { join } from 'path';
+  import { readFileSync } from 'fs';
+
+  enableProdMode();
+
+  const app = express();
+
+  const PORT = process.env.PORT || 4000;
+  const DIST_FOLDER = join(process.cwd(), 'dist');
+
+  const template = readFileSync(join(DIST_FOLDER, 'browser', 'index.html')).toString();
+
+  const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main.bundle');
+
+  const { provideModuleMap } = require('@nguniversal/module-map-ngfactory-loader');
+
+  app.engine('html', (_, options, callback) => {
+    renderModuleFactory(AppServerModuleNgFactory, {
+      document: template,
+      url: options.req.url,
+      extraProviders: [
+        provideModuleMap(LAZY_MODULE_MAP)
+      ]
+    }).then(html => {
+      callback(null, html);
+    });
+  });
+
+  app.set('view engine', 'html');
+  app.set('views', join(DIST_FOLDER, 'browser'));
+
+  app.get('*.*', express.static(join(DIST_FOLDER, 'browser')));
+
+  app.get('*', (req, res) => {
+    res.render(join(DIST_FOLDER, 'browser', 'index.html'), { req });
+  });
+
+  app.listen(PORT, () => {
+    console.log(\`Node Server listening on http://localhost:\${PORT}\`);
+  });
+
+
+  `
 };
 apip463 = {
-  name: '',
-  code: ``
+  name: 'Webpack Server Config JS',
+  code: `
+
+  const path = require('path');
+  const webpack = require('webpack');
+
+
+  module.exports = {
+        entry: { server: './server.ts' },
+        resolve: { extensions: [ '.js', '.ts' ] },
+        target: 'node',
+        externals: [/(node_modules|main\..*\.js)/],
+        output: {
+          path: path.join(__dirname, 'dist'),
+          filename: '[name].js'
+        },
+        module: {
+          rules: [{ test: /\.ts$/, loader: 'ts-loader' }]
+        },
+        plugins: [
+          new webpack.ContextReplacementPlugin(
+            /(.+)?angular(\\|\/)core(.+)?/,
+            path.join(__dirname, 'src'),
+            {}
+          ),
+          new webpack.ContextReplacementPlugin(
+            /(.+)?express(\\|\/)(.+)?/,
+            path.join(__dirname, 'src'),
+            {}
+          )
+        ]
+  };
+
+
+  `
 };
 apip464 = {
-  name: '',
-  code: ``
+  name: 'Angular CLI JSON',
+  code: `
+
+  {
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "project": {
+      "name": "ng5-universal"
+    },
+    "apps": [
+      {
+        "root": "src",
+        "outDir": "dist/browser",
+        "assets": [
+          "assets",
+          "favicon.ico"
+        ],
+        "index": "index.html",
+        "main": "main.ts",
+        "polyfills": "polyfills.ts",
+        "test": "test.ts",
+        "tsconfig": "tsconfig.app.json",
+        "testTsconfig": "tsconfig.spec.json",
+        "prefix": "app",
+        "styles": [
+          "styles.css"
+        ],
+        "scripts": [],
+        "environmentSource": "environments/environment.ts",
+        "environments": {
+          "dev": "environments/environment.ts",
+          "prod": "environments/environment.prod.ts"
+        }
+      },
+      {
+        "platform": "server",
+        "root": "src",
+        "outDir": "dist/server",
+        "assets": [
+          "assets",
+          "favicon.ico"
+        ],
+        "index": "index.html",
+        "main": "main.server.ts",
+        "test": "test.ts",
+        "tsconfig": "tsconfig.server.json",
+        "testTsconfig": "tsconfig.spec.json",
+        "prefix": "app",
+        "styles": [
+          "styles.css"
+        ],
+        "scripts": [],
+        "environmentSource": "environments/environment.ts",
+        "environments": {
+          "dev": "environments/environment.ts",
+          "prod": "environments/environment.prod.ts"
+        }
+      }
+    ],
+    "e2e": {
+      "protractor": {
+        "config": "./protractor.conf.js"
+      }
+    },
+    "lint": [
+      {
+        "project": "src/tsconfig.app.json",
+        "exclude": "**/node_modules/**"
+      },
+      {
+        "project": "src/tsconfig.spec.json",
+        "exclude": "**/node_modules/**"
+      },
+      {
+        "project": "e2e/tsconfig.e2e.json",
+        "exclude": "**/node_modules/**"
+      }
+    ],
+    "test": {
+      "karma": {
+        "config": "./karma.conf.js"
+      }
+    },
+    "defaults": {
+      "styleExt": "css",
+      "component": {}
+    }
+  }
+
+  `
 };
 apip465 = {
-  name: '',
-  code: ``
+  name: 'TS Config Server JSON',
+  code: `
+
+  {
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+      "outDir": "../out-tsc/app",
+      "baseUrl": "./",
+      "module": "commonjs",
+      "types": []
+    },
+    "exclude": [
+      "test.ts",
+      "**/*.spec.ts"
+    ],
+    "angularCompilerOptions": {
+      "entryModule": "app/app.server.module#AppServerModule"
+    }
+  }
+
+  `
 };
 apip466 = {
-  name: '',
-  code: ``
+  name: 'Main Server TS',
+  code: `
+
+  export { AppServerModule } from './app/app.server.module';
+
+  `
 };
 apip467 = {
-  name: '',
-  code: ``
+  name: 'App Server',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { ServerModule } from '@angular/platform-server';
+  import { ModuleMapLoaderModule } from '@nguniversal/module-map-ngfactory-loader';
+
+
+  import { AppModule } from './app.module';
+  import { AppComponent } from './app.component';
+
+
+  @NgModule({
+    imports: [ AppModule, ServerModule, ModuleMapLoaderModule ],
+    providers: [ ],
+    bootstrap: [ AppComponent ]
+  })
+  export class AppServerModule { }
+
+  `
 };
 apip468 = {
-  name: '',
-  code: ``
+  name: 'App Module',
+  code: `
+
+  import { NgModule, PLATFORM_ID, APP_ID, Inject } from '@angular/core';
+  import { isPlatformBrowser } from '@angular/common';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule } from '@angular/router';
+  import { FormsModule } from '@angular/forms';
+  import { HttpClientModule } from '@angular/common/http';
+
+  import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+  import { InMemoryDataService } from './in-memory-data.service';
+
+  import { AppRoutingModule } from './app-routing.module';
+
+  import { MessageService } from './message.service';
+  import { HeroService } from './hero.service';
+
+  import { AppComponent } from './app.component';
+  import { DashboardComponent } from './dashboard/dashboard.component';
+  import { HeroDetailComponent } from './hero-detail/hero-detail.component';
+  import { HeroesComponent } from './heroes/heroes.component';
+  import { HeroSearchComponent } from './hero-search/hero-search.component';
+  import { MessagesComponent } from './messages/messages.component';
+
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      DashboardComponent,
+      HeroDetailComponent,
+      HeroesComponent,
+      HeroSearchComponent,
+      MessagesComponent
+    ],
+    imports: [
+      BrowserModule.withServerTransition({ appId: 'ng5-universal' }),
+      FormsModule,
+      HttpClientModule,
+      HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService,
+                                    { dataEncapsulation: false }),
+      AppRoutingModule
+    ],
+    providers: [ HeroService, MessageService ],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule {
+
+    constructor(@Inject(PLATFORM_ID) private platformId: Object,
+                @Inject(APP_ID) private appId: string) {
+                  const platform = isPlatformBrowser(platformId) ?
+                  'in the browser' : 'on the server';
+                  console.log(\`Running \${platform} with appId=\${appId}\`);
+                 }
+
+  }
+
+  `
 };
 apip469 = {
-  name: '',
-  code: ``
+  name: 'Build && Serve the App',
+  code: `
+              Terminal:
+              npm run build:universal
+              npm run serve:universal
+
+              Response:
+              Node Server listening on http://localhost:4000
+              Running on the server with appId=ng5-universal
+
+  `
 };
 apip470 = {
   name: '',
