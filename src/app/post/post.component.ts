@@ -22574,96 +22574,695 @@ apip469 = {
   `
 };
 apip470 = {
-  name: '',
-  code: ``
+  name: 'ES6 Classes',
+  code: `
+
+  export class Widget {
+
+    constructor(private id, private x, private y) {
+      this.setPosition(x, y);
+     }
+
+    setPosition(x, y) {
+      this.x = x;
+      this.y = y;
+    }
+
+}
+
+const myWidget = new Widget(1, 10, 20);
+
+  `
 };
 apip471 = {
-  name: '',
-  code: ``
+  name: 'ES6 Inheritance',
+  code: `
+
+  export class Widget {
+    constructor(private id, private x, private y) {
+      this.setPosition(x, y);
+     }
+
+    setPosition(x, y) {
+      this.x = x;
+      this.y = y;
+    }
+}
+
+export class TextBox extends Widget {
+    constructor(id, x, y, private width, private height) {
+      super(id, x, y);
+      this.setSize(width, height);
+    }
+
+    setSize(width, height) {
+      this.width = width;
+      this.height = height;
+    }
+
+    reset() {
+      this.setPosition(0, 0);
+      this.setSize(0, 0);
+    }
+}
+
+  `
 };
 apip472 = {
-  name: '',
-  code: ``
+  name: 'ES6 Arrow Functions',
+  code: `
+
+  const books = [
+    { name: 'Angular 5 Up and Running', read: true },
+    { name: 'ReactJS 16 Love Affair', read: true },
+    { name: 'VueJS 2 In Depth', read: false }
+  ];
+
+  const booksToRead = books.filter(b => !b.read);
+
+  console.log(booksToRead);
+
+  `
 };
 apip473 = {
-  name: '',
-  code: ``
+  name: 'ES6 Statement Bodies',
+  code: `
+
+  const books = [
+    { name: 'Angular 5 Up and Running', read: true },
+    { name: 'ReactJS 16 Love Affair', read: true },
+    { name: 'VueJS 2 In Depth', read: false }
+  ];
+
+  books.forEach(book => {
+    if (book.read) {
+      console.log(book.name);
+    }
+  });
+
+  const button = document.getElementById('sexy-button');
+  button.addEventListener('click', () => {
+    console.log('Clicked');
+  });
+
+  setTimeout(() => {
+        console.log('First callback');
+        setTimeout(() => {
+          console.log('Second callback');
+        }, 1);
+  }, 1);
+
+  `
 };
 apip474 = {
-  name: '',
-  code: ``
+  name: 'ES6 Lexical This',
+  code: `
+
+  this.books.forEach(book => {
+    if (!book.read) {
+      this.booksToRead.push(book);
+    }
+  });
+
+  function ProgressBar() {
+    this.progress = 0;
+
+    setInterval(() => {
+      this.progress++;
+    }, 1000);
+  }
+
+  let p = new ProgressBar();
+
+  `
 };
 apip475 = {
-  name: '',
-  code: ``
+  name: 'ES6 Template Literals',
+  code: `
+
+  let point = { x: 100, y: 200 };
+
+  console.log(\`Position is \${point.x}: \${point.y}\`);
+
+  let title = 'Angular Development';
+
+  let component = {
+      template: \`
+            <h1>\${title}</h1>
+            <div class="grid">
+                  <div class="col-6"></div>
+                  <div class="col-6"></div>
+            </div>
+      \`
+  };
+
+  `
 };
 apip476 = {
-  name: '',
-  code: ``
+  name: 'ES6 Default Parameter Values',
+  code: `
+
+  const playSound = (file, volume = 100) => {
+    console.log(\`Playing \${file} with volume \${volume}\`);
+  };
+
+  playSound('test.mp3');
+
+  playSound('test1.mp3', 200);
+
+  `
 };
 apip477 = {
-  name: '',
-  code: ``
+  name: 'ES6 Rest Parameter',
+  code: `
+
+  const logMessages = (...messages) => {
+    for (const message of messages) {
+      console.log(message);
+    }
+};
+
+logMessages('hello', 'baby', 'how', 'are', 'you?');
+
+  `
 };
 apip478 = {
-  name: '',
-  code: ``
+  name: 'ES6 Spread Operator',
+  code: `
+
+  const positive = [100, 200, 300];
+  const negative = [-100, -200, -300];
+
+  const numbers = [...negative, 0, ...positive];
+
+  console.log(numbers);
+
+  `
 };
 apip479 = {
-  name: '',
-  code: ``
+  name: 'ES6 Destructing Assignment Array',
+  code: `
+
+  const words = ['hello', 'baby', 'how', 'are', 'you'];
+
+  const [first, second] = words;
+
+  console.log(first);
+  console.log(second);
+
+  const getWords = () => {
+    return ['the', 'will', 'to', 'win', 'is'];
+  };
+
+  const [one, two] = getWords();
+  console.log(\`\${one} \${two}\`);
+
+  let third, fourth;
+
+  [third, fourth] = ['to', 'win'];
+
+  console.log(third);
+  console.log(fourth);
+
+  const word = ['hello'];
+
+  const [fifth= 'hey', sixth= 'there'] = word;
+
+  console.log(fifth);
+  console.log(sixth);
+
+  let seventh = 'hello';
+  let eight = 'world';
+
+  [seventh, eight] = [eight, seventh];
+  console.log(seventh, eight);
+
+  const [o, t, , , f] = words;
+
+  console.log(\`$\{o} \${t} \${f}\`);
+
+  const command = ['greet', 'Barbie', 'Mary', 'Susy'];
+
+  const [action, ...girlies] = command;
+
+  console.log(action);
+  console.log(girlies);
+
+  `
 };
 apip480 = {
-  name: '',
-  code: ``
+  name: 'ES6 Object Destructuring',
+  code: `
+
+  const obj = {
+    id: 1,
+    userName: 'mmustermann',
+    firstName: 'Max',
+    lastName: 'Mustermann'
+};
+
+const { id, userName } = obj;
+
+console.log(id);
+console.log(userName);
+
+const { id: uid, userName: login } = obj;
+
+console.log(uid);
+console.log(login);
+
+const { log } = console;
+log('hi baby');
+
+class MyClass {
+
+  sayHello(message) {
+    console.log(\`Hello, \${message}\`);
+  }
+
+  sayBye(message) {
+    console.log(\`Bye, \${message}\`);
+  }
+
+}
+
+const myClass = new MyClass();
+const { sayHello, sayBye } = myClass;
+
+sayHello('Are you there yet?');
+sayBye('See you later, alligator');
+
+const { sayHello: hello, sayBye: bye } = myClass;
+
+hello('Are you ready to conquer the world?');
+bye('Bye, bye baby');
+
+const showDialog = ({message = 'Message',
+                    size = { width: 200, height: 200 },
+                    position = { x: 300, y: 400 }} ) => {
+                    console.log(\`message: \${message}\`);
+                    console.log(\`size: \${size.width}: \${size.height}\`);
+                    console.log(\`position: \${position.x}: \${position.y}\`);
+                    };
+
+showDialog({message: 'are we there yet?', size: {width: 100, height: 100}});
+
+  `
 };
 apip481 = {
-  name: '',
-  code: ``
+  name: 'ES6 Modules',
+  code: `
+
+  export function log(message) { console.log(message); }
+
+  export const defaultMessage = 'The will to win is nothing without the will to prepare.';
+
+  export class MyClass {
+          constructor() {
+            console.log('Work Hard | Be Kind | Do More ...');
+          }
+  }
+
+  import * as logger from '../app.component';
+
+  console.log(logger.defaultMessage);
+
+  console.log(new logger.MyClass());
+
+  `
 };
 apip482 = {
-  name: '',
-  code: ``
+  name: 'TypeScript Basic Types',
+  code: `
+
+  let isEnabled: boolean = true;
+
+  let isEmpty = (herString: boolean) => !herString;
+
+  console.log(isEmpty(isEnabled));
+
+  let decimal: number = 6;
+  let hex: number = 0xf00d;
+  let binary: number = 0b1010;
+  let octal: number = 0o744;
+
+  let firstName: string = 'Anne';
+  let lastName: string = 'Nette';
+  let fullName: string = \`\${firstName} \${lastName}\`;
+
+  let template: string = \`
+                <h1>Title</h1>
+                <p>Hello, \${fullName}</p>
+  \`;
+
+  let arr1: string[] = [];
+  let arr2: Array<string> = [];
+
+  let arr3: string[] = ['hello', 'world'];
+  let arr4: Array<string> = ['hello', 'world'];
+
+  let flags: boolean[] = [true, false, true, false];
+  let flags2: boolean[] = new Array(true, false);
+
+  let numbers: number[] = [];
+  numbers.push(1);
+  console.log('First number: ' + numbers[0]);
+
+  enum Suit { Club, Diamond, Heart, Spade }
+  let d: Suit = Suit.Diamond;
+  console.log(Suit[1]);
+
+  let obj: any = {
+    log(message) {
+      console.log(message);
+    }
+  };
+  obj.log('She takes any and wants many ...');
+
+  class Logger {
+    log(message: string): void {
+      console.log(message);
+    }
+  }
+
+  let fun = (x: () => void) => x();
+
+  interface Logger {
+    log(message: string): void;
+    warn(message: string): void;
+    error(message: string): void;
+  }
+
+  `
 };
 apip483 = {
-  name: '',
-  code: ``
+  name: 'TS Classes',
+  code: `
+
+  class MyComponent {
+
+    constructor(private id: number) { }
+
+    render() {
+      console.log(\`Rendering component "\${this.id}"\`);
+    }
+
+}
+
+  let component = new MyComponent(1);
+  component.render();
+
+  class User {
+    constructor(private _firstName: string, private _lastName: string) { }
+
+    get firstName(): string {
+      return this._firstName;
+    }
+
+    set firstName(value: string) {
+      if (value) {
+          this._firstName = value.trim();
+    }
+  }
+
+get fullName(): string {
+  return \`\${this._firstName} \${this._lastName}\`;
+}
+}
+
+let user = new User('Mick', 'Long');
+console.log(\`User full name is: \${user.fullName}\`);
+user.firstName = 'Mickey';
+console.log(user.firstName);
+
+  `
 };
 apip484 = {
-  name: '',
-  code: ``
+  name: 'TS Methods',
+  code: `
+  class Sprite {
+
+    constructor(private a = 1, private b = 2) { }
+
+    render() {
+      console.log(\`rendering component as \${this.a}: \${this.b}\`);
+    }
+
+    moveTo(a: number, b: number) {
+      this.a = a;
+      this.b = b;
+      this.render();
+    }
+}
+
+let sprite = new Sprite();
+sprite.moveTo(3, 4);
+
+class NTLComponent {
+      text = 'Some text here ...';
+
+      constructor(private id = '1', private value = 100) {}
+
+      getId(): string {
+        return 'number1';
+      }
+
+      getValue(): number {
+        return 100;
+      }
+
+      log(message = 'Unknown error', level?: number) {
+        if (level === undefined) {
+          level = 1;
+        }
+        console.log(\`(\${level}): \${message}\`);
+      }
+
+      showErrors(...errors: string[]) {
+        for (let error of errors) {
+          console.log(error);
+        }
+      }
+
+      reset(): void {
+        this.text = '';
+      }
+}
+
+  `
 };
 apip485 = {
-  name: '',
-  code: ``
+  name: 'TS Inheritance',
+  code: `
+  class Animal {
+
+    constructor(private name: string) { }
+
+    makeSound() {
+      console.log('Unknown sound');
+    }
+
+  }
+
+  class Dog extends Animal {
+
+    constructor(name: string) {
+      super(name);
+    }
+
+    makeSound() {
+      console.log('Woof-woof');
+    }
+  }
+
+  class Chicken extends Animal {
+
+    constructor(name: string) {
+        super(name);
+    }
+
+    makeSound() {
+      console.log('Chicken soup');
+    }
+
+  }
+
+  let dog = new Dog('Barnie');
+  let chicken = new Chicken('Kiki');
+  dog.makeSound();
+  chicken.makeSound();
+
+  `
 };
 apip486 = {
-  name: '',
-  code: ``
+  name: 'Access Modifiers',
+  code: `
+
+  class User {
+
+    public firstName: string;
+
+    private lastName: string;
+
+    readonly id: number;
+
+    protected renderContent() { }
+
+  }
+
+  `
 };
 apip487 = {
-  name: '',
-  code: ``
+  name: 'Interfaces',
+  code: `
+
+  interface TextComponent {
+    text: string;
+    render(): void;
+  }
+
+  class PlainTextComponent implements TextComponent {
+    text: string;
+    render() {
+      console.log('rendering plain text component');
+    }
+
+  }
+
+  `
 };
 apip488 = {
-  name: '',
-  code: ``
+  name: 'Abstract Classes',
+  code: `
+
+  abstract class PageComponent {
+
+    abstract renderContent(): void;
+
+    renderHeader() {}
+
+    renderFooter() {}
+  }
+
+  class HomePageComponent extends PageComponent {
+
+        renderContent() {
+          this.renderHeader();
+          console.log('rendering home page');
+          this.renderFooter();
+        }
+  }
+
+  `
 };
 apip489 = {
-  name: '',
-  code: ``
+  name: 'Class Decorators',
+  code: `
+
+  function LogClass(constructor: Function) {
+    console.log('LogClass decorator executed for the constructor');
+    console.log(constructor);
+  }
+
+  @LogClass
+  class TextComponent {
+
+      constructor(private text = 'this is some default text') { }
+
+      render() {
+        console.log(\`Rendering text: \${this.text}\`);
+      }
+  }
+
+  let component = new TextComponent();
+  component.render();
+
+  `
 };
 apip490 = {
-  name: '',
-  code: ``
+  name: 'Decorators With Parameters',
+  code: `
+
+  function LogClassWithParams(prefix: string, suffix: string) {
+    return (constructor: Function) => {
+      console.log(\`\${prefix}
+                  LogClassWithParams decorator called for:
+                  \${constructor}
+                  \${suffix}\`);
+    };
+  }
+
+  @LogClassWithParams('BEGIN:', 'END:')
+  class TextComponent {
+
+      constructor(private text = 'this is some default text') { }
+
+      render() {
+        console.log(\`Rendering text: \${this.text}\`);
+      }
+  }
+
+  let component = new TextComponent();
+  component.render();
+
+  `
 };
 apip491 = {
-  name: '',
-  code: ``
+  name: 'Method Decorators',
+  code: `
+
+  function LogMethod(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    console.log(target);
+    console.log(propertyKey);
+    console.log(descriptor);
+  }
+
+
+  class TextComponent {
+
+      constructor(private text = 'this is some default text') { }
+
+      @LogMethod
+      render() {
+        console.log(\`Rendering text: \${this.text}\`);
+      }
+  }
+
+  let component = new TextComponent();
+  component.render();
+
+  `
 };
 apip492 = {
-  name: '',
-  code: ``
+  name: 'Accessor Decorators',
+  code: `
+
+  function LogAccessor(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    console.log('LogAccessor decorator called');
+    console.log(target);
+    console.log(propertyKey);
+    console.log(descriptor);
+  }
+
+
+  class TextComponent {
+
+      constructor(private _text = 'default text') { }
+
+      @LogAccessor
+      get text(): string {
+        return this._text;
+      }
+
+      set text(value: string) {
+        this._text = value;
+      }
+  }
+
+  let component = new TextComponent();
+
+
+  `
 };
 apip493 = {
   name: '',
