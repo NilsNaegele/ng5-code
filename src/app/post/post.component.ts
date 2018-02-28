@@ -23262,37 +23262,885 @@ apip492 = {
   let component = new TextComponent();
 
 
+***************************************************************
+
+function LogAccessorWithParams(message: string) {
+  return (target: any,
+          propertyKey: string,
+          descriptor: PropertyDescriptor) => {
+            console.log(\`Message from decorator: \${message }\`);
+          };
+}
+
+
+class TextComponent {
+
+    constructor(private _text = 'default text') { }
+
+    @LogAccessorWithParams('hello')
+    @LogAccessorWithParams('baby')
+    get text(): string {
+      return this._text;
+    }
+
+    set text(value: string) {
+      this._text = value;
+    }
+}
+
+let component = new TextComponent();
+
   `
 };
 apip493 = {
-  name: '',
-  code: ``
+  name: 'Property Decorators',
+  code: `
+
+  function LogProperty(target: any, propertyKey: string) {
+    console.log('LogProperty decorator called');
+    console.log(target);
+    console.log(propertyKey);
+}
+
+  class TextComponent {
+
+  @LogProperty
+  id: string;
+
+  constructor(id: string) {
+        this.id = id;
+  }
+}
+
+let component = new TextComponent('text1');
+
+  `
 };
 apip494 = {
-  name: '',
-  code: ``
+  name: 'Parameter Decorators',
+  code: `
+
+  function LogParameter(target: any, propertyName: string, propertyIndex: number) {
+    console.log('LogParameter decorator called');
+    console.log(target);
+    console.log(propertyName);
+    console.log(propertyIndex);
+}
+
+    class TextComponent {
+
+        render(@LogParameter positionX: number,
+               @LogParameter positionY: number) {}
+  }
+
+  let component = new TextComponent();
+  component.render(10, 20);
+
+  `
 };
 apip495 = {
-  name: '',
-  code: ``
+  name: 'Angular Interpolation',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+            <h2>My favorite technology is: {{ myTechnology }}</h2>
+    \`
+  })
+  export class AppComponent {
+    title = 'Tour Of Technologies';
+    myTechnology = 'Angular';
+  }
+
+  `
 };
 apip496 = {
-  name: '',
-  code: ``
+  name: 'Angular NgFor',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+            <h2>My favorite technology is: {{ myTechnology }}</h2>
+            <p>Technologies:</p>
+            <ul>
+                <li *ngFor="let technology of technologies">
+                      {{ technology }}
+                </li>
+            </ul>
+    \`
+  })
+  export class AppComponent {
+    title = 'Tour Of Technologies';
+    technologies = ['Angular 5', 'ES6/7/8', 'HTML5', 'CSS3'];
+    myTechnology = this.technologies[0];
+
+  }
+
+  `
 };
 apip497 = {
-  name: '',
-  code: ``
+  name: 'Angular Data Class',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+            <h2>My favorite technology is: {{ myTechnology.name }}</h2>
+            <p>Technologies:</p>
+            <ul>
+                <li *ngFor="let technology of technologies">
+                      {{ technology.name }}
+                </li>
+            </ul>
+    \`
+  })
+  export class AppComponent {
+    title = 'Tour Of Technologies';
+    technologies = [
+                    new Technology(1, 'Angular 5'),
+                    new Technology(2, 'ES6/7/8'),
+                    new Technology(3, 'HTML5'),
+                    new Technology(4, 'CSS3')
+                  ];
+    myTechnology = this.technologies[0];
+
+  }
+
+  `
 };
 apip498 = {
-  name: '',
-  code: ``
+  name: 'Angular NgIf',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+            <h2>My favorite technology is: {{ myTechnology.name }}</h2>
+            <p>Technologies:</p>
+            <ul>
+                <li *ngFor="let technology of technologies">
+                      {{ technology.name }}
+                </li>
+            </ul>
+            <p *ngIf="technologies.length > 3">There are many technologies!</p>
+    \`
+  })
+  export class AppComponent {
+    title = 'Tour Of Technologies';
+    technologies = [
+                    new Technology(1, 'Angular 5'),
+                    new Technology(2, 'ES6/7/8'),
+                    new Technology(3, 'HTML5'),
+                    new Technology(4, 'CSS3')
+                  ];
+    myTechnology = this.technologies[0];
+
+  }
+
+  `
 };
 apip499 = {
+  name: 'Interpolation Revisited',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+            <h2>My favorite technology is: {{ myTechnology.name }}</h2>
+            <h3>
+                <img src="{{ technologyImageUrl }}" style="height: 30px;">
+            </h3>
+            <p>The sum of 1 + 1 is {{ 1 + 1 }}</p>
+            <p>The sum of 1 + 1 is not {{ 1 + 1 + getVal() }}</p>
+    \`
+  })
+  export class AppComponent {
+    title = 'Tour Of Technologies';
+    technologies = [
+                    new Technology(1, 'Angular 5'),
+                    new Technology(2, 'ES6/7/8'),
+                    new Technology(3, 'HTML5'),
+                    new Technology(4, 'CSS3')
+                  ];
+    myTechnology = this.technologies[0];
+
+    technologyImageUrl = 'https://angular.io/assets/images/logos/angular/angular.svg';
+
+    getVal() {
+      return 1;
+    }
+
+  }
+
+  `
+};
+apip500 = {
+  name: 'Expression Context',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+            <span [hidden]="isUnchanged">changed</span>
+            <div *ngFor="let technology of technologies">
+                  {{ technology.name }}
+            </div>
+            <input #technologyInput (keyup)="0"> {{ technologyInput.value }}
+    \`
+  })
+  export class AppComponent {
+    title = 'Tour Of Technologies';
+    technologies = [
+                    new Technology(1, 'Angular 5'),
+                    new Technology(2, 'ES6/7/8'),
+                    new Technology(3, 'HTML5'),
+                    new Technology(4, 'CSS3')
+                  ];
+    isUnchanged = false;
+
+  }
+
+  `
+};
+apip501 = {
+  name: 'Statement Context',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+            <button (click)="onSave($event)">Save</button>
+            <button *ngFor="let technology of technologies"
+                    (click)="deleteTechnology(technology)">{{ technology.name }}</button>
+            <form #tForm (ngSubmit)="onSubmit(tForm)">...</form>
+
+    \`
+  })
+  export class AppComponent {
+    title = 'Tour Of Technologies';
+    technologies = [
+                    new Technology(1, 'Angular 5'),
+                    new Technology(2, 'ES6/7/8'),
+                    new Technology(3, 'HTML5'),
+                    new Technology(4, 'CSS3')
+                  ];
+    deleteTechnology(technology: Technology): void {
+      const index = this.technologies.indexOf(technology);
+      this.technologies.splice(index, 1);
+    }
+
+    onSave(evt): void {
+      console.log(evt);
+    }
+
+    onSubmit(form) {
+      console.log(form);
+    }
+
+  }
+
+  `
+};
+apip502 = {
+  name: 'StockItem Component',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { Stock } from '../../model/stock';
+
+  @Component({
+    selector: 'app-stock-item',
+    template: \`
+            <div class="stock-container">
+                <div class="name"><h3>{{ stock.name }}</h3> -
+                <h4>({{ stock.code }})</h4></div>
+                <div class="price"
+                [class]="stock.isPositiveChange() ? 'positive' : 'negative'"
+                >€ {{ stock.price }}</div>
+                <button (click)="toggleFavorite($event)" [disabled]="stock.favorite">
+                  Add to Favorite
+                </button>
+            </div>
+    \`,
+    styles: [\`
+    .stock-container {
+      border: 1px solid black;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 10px;
+    }
+    .stock-container .name h3, .stock-container .name h4 {
+      display: inline-block;
+    }
+    .positive {
+      color: red;
+    }
+    .negative {
+      color: green;
+    }
+    \`]
+  })
+  export class StockItemComponent implements OnInit {
+
+    stock: Stock;
+
+    constructor() { }
+
+    ngOnInit() {
+      this.stock = new Stock('ABC Stock Company', 'ASC', 105, 90);
+    }
+
+    toggleFavorite(event) {
+      console.log('Toggling the favorite state for this stock', event);
+      this.stock.favorite = !this.stock.favorite;
+    }
+
+  }
+
+
+  ***********************************************************************
+
+  export class Stock {
+    favorite = false;
+
+    constructor(public name: string,
+                public code: string,
+                public price: number,
+                public previousPrice: number) { }
+
+    isPositiveChange(): boolean {
+      return this.price >= this.previousPrice;
+    }
+  }
+
+  `
+};
+apip503 = {
+  name: 'ProductItem Component',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { Product } from '../../model/product';
+
+  @Component({
+    selector: 'app-product-item',
+    template: \`
+          <div class="product-item" [class]="product.isOnSale ? 'product-item sale' : ''">
+              <div class="image">
+                <img [src]="product.imageUrl">
+              </div>
+              <div class="details">
+                <div>{{ product.name }}</div>
+                <div>€ {{ product.price }}</div>
+              <div>
+              <button [disabled]="product.quantityInCart === 0"
+              (click)="decrementInCart()">-</button>
+              <span>{{ product.quantityInCart }}</span>
+              <button (click)="incrementInCart()">+</button>
+          </div>
+        </div>
+      </div>
+    \`,
+    styles: [\`
+      .product-item {
+        border: 1px solid black;
+        border-radius: 5px;
+        padding: 10px;
+        display: inline-block;
+      }
+      .product-item .details {
+        text-align: center;
+        color: white;
+      }
+      .product-item.sale {
+        background-color: red;
+      }
+    \`]
+  })
+  export class ProductItemComponent implements OnInit {
+    product: Product;
+
+    constructor() { }
+
+    ngOnInit() {
+      this.product = {
+        name: 'ABC Product',
+        imageUrl: 'http://via.placeholder.com/150x150',
+        price: 75,
+        isOnSale: true,
+        quantityInCart: 0
+      };
+    }
+
+    incrementInCart() {
+      this.product.quantityInCart++;
+    }
+
+    decrementInCart() {
+      if (this.product.quantityInCart > 0) {
+        this.product.quantityInCart--;
+      }
+    }
+
+  }
+
+  ***********************************************************************
+
+  export interface Product {
+    name: string;
+    imageUrl: string;
+    price: number;
+    isOnSale: boolean;
+    quantityInCart: number;
+  }
+
+  `
+};
+apip504 = {
   name: '',
   code: ``
 };
-apip500 = {
+apip505 = {
+  name: '',
+  code: ``
+};
+apip506 = {
+  name: '',
+  code: ``
+};
+apip507 = {
+  name: '',
+  code: ``
+};
+apip508 = {
+  name: '',
+  code: ``
+};
+apip509 = {
+  name: '',
+  code: ``
+};
+apip510 = {
+  name: '',
+  code: ``
+};
+apip511 = {
+  name: '',
+  code: ``
+};
+apip512 = {
+  name: '',
+  code: ``
+};
+apip513 = {
+  name: '',
+  code: ``
+};
+apip514 = {
+  name: '',
+  code: ``
+};
+apip515 = {
+  name: '',
+  code: ``
+};
+apip516 = {
+  name: '',
+  code: ``
+};
+apip517 = {
+  name: '',
+  code: ``
+};
+apip518 = {
+  name: '',
+  code: ``
+};
+apip519 = {
+  name: '',
+  code: ``
+};
+apip520 = {
+  name: '',
+  code: ``
+};
+apip521 = {
+  name: '',
+  code: ``
+};
+apip522 = {
+  name: '',
+  code: ``
+};
+apip523 = {
+  name: '',
+  code: ``
+};
+apip524 = {
+  name: '',
+  code: ``
+};
+apip525 = {
+  name: '',
+  code: ``
+};
+apip526 = {
+  name: '',
+  code: ``
+};
+apip527 = {
+  name: '',
+  code: ``
+};
+apip528 = {
+  name: '',
+  code: ``
+};
+apip529 = {
+  name: '',
+  code: ``
+};
+apip530 = {
+  name: '',
+  code: ``
+};
+apip531 = {
+  name: '',
+  code: ``
+};
+apip532 = {
+  name: '',
+  code: ``
+};
+apip533 = {
+  name: '',
+  code: ``
+};
+apip534 = {
+  name: '',
+  code: ``
+};
+apip535 = {
+  name: '',
+  code: ``
+};
+apip536 = {
+  name: '',
+  code: ``
+};
+apip537 = {
+  name: '',
+  code: ``
+};
+apip538 = {
+  name: '',
+  code: ``
+};
+apip539 = {
+  name: '',
+  code: ``
+};
+apip540 = {
+  name: '',
+  code: ``
+};
+apip541 = {
+  name: '',
+  code: ``
+};
+apip542 = {
+  name: '',
+  code: ``
+};
+apip543 = {
+  name: '',
+  code: ``
+};
+apip544 = {
+  name: '',
+  code: ``
+};
+apip545 = {
+  name: '',
+  code: ``
+};
+apip546 = {
+  name: '',
+  code: ``
+};
+apip547 = {
+  name: '',
+  code: ``
+};
+apip548 = {
+  name: '',
+  code: ``
+};
+apip549 = {
+  name: '',
+  code: ``
+};
+apip550 = {
+  name: '',
+  code: ``
+};
+apip551 = {
+  name: '',
+  code: ``
+};
+apip552 = {
+  name: '',
+  code: ``
+};
+apip553 = {
+  name: '',
+  code: ``
+};
+apip554 = {
+  name: '',
+  code: ``
+};
+apip555 = {
+  name: '',
+  code: ``
+};
+apip556 = {
+  name: '',
+  code: ``
+};
+apip557 = {
+  name: '',
+  code: ``
+};
+apip558 = {
+  name: '',
+  code: ``
+};
+apip559 = {
+  name: '',
+  code: ``
+};
+apip560 = {
+  name: '',
+  code: ``
+};
+apip561 = {
+  name: '',
+  code: ``
+};
+apip562 = {
+  name: '',
+  code: ``
+};
+apip563 = {
+  name: '',
+  code: ``
+};
+apip564 = {
+  name: '',
+  code: ``
+};
+apip565 = {
+  name: '',
+  code: ``
+};
+apip566 = {
+  name: '',
+  code: ``
+};
+apip567 = {
+  name: '',
+  code: ``
+};
+apip568 = {
+  name: '',
+  code: ``
+};
+apip569 = {
+  name: '',
+  code: ``
+};
+apip570 = {
+  name: '',
+  code: ``
+};
+apip571 = {
+  name: '',
+  code: ``
+};
+apip572 = {
+  name: '',
+  code: ``
+};
+apip573 = {
+  name: '',
+  code: ``
+};
+apip574 = {
+  name: '',
+  code: ``
+};
+apip575 = {
+  name: '',
+  code: ``
+};
+apip576 = {
+  name: '',
+  code: ``
+};
+apip577 = {
+  name: '',
+  code: ``
+};
+apip578 = {
+  name: '',
+  code: ``
+};
+apip579 = {
+  name: '',
+  code: ``
+};
+apip580 = {
+  name: '',
+  code: ``
+};
+apip581 = {
+  name: '',
+  code: ``
+};
+apip582 = {
+  name: '',
+  code: ``
+};
+apip583 = {
+  name: '',
+  code: ``
+};
+apip584 = {
+  name: '',
+  code: ``
+};
+apip585 = {
+  name: '',
+  code: ``
+};
+apip586 = {
+  name: '',
+  code: ``
+};
+apip587 = {
+  name: '',
+  code: ``
+};
+apip588 = {
+  name: '',
+  code: ``
+};
+apip589 = {
+  name: '',
+  code: ``
+};
+apip590 = {
+  name: '',
+  code: ``
+};
+apip591 = {
+  name: '',
+  code: ``
+};
+apip592 = {
+  name: '',
+  code: ``
+};
+apip593 = {
+  name: '',
+  code: ``
+};
+apip594 = {
+  name: '',
+  code: ``
+};
+apip595 = {
+  name: '',
+  code: ``
+};
+apip596 = {
+  name: '',
+  code: ``
+};
+apip597 = {
+  name: '',
+  code: ``
+};
+apip598 = {
+  name: '',
+  code: ``
+};
+apip599 = {
+  name: '',
+  code: ``
+};
+apip600 = {
+  name: '',
+  code: ``
+};
+apip601 = {
+  name: '',
+  code: ``
+};
+apip602 = {
   name: '',
   code: ``
 };
