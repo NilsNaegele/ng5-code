@@ -23749,36 +23749,430 @@ apip503 = {
   `
 };
 apip504 = {
-  name: '',
-  code: ``
+  name: 'NgClass',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { Stock } from '../../model/stock';
+
+  @Component({
+    selector: 'app-stock-item',
+    template: \`
+            <div class="stock-container">
+                <div class="name"><h3>{{ stock.name }}</h3> -
+                <h4>({{ stock.code }})</h4></div>
+                <div class="price"
+                [ngClass]="stockClasses"
+                >€ {{ stock.price }}</div>
+                <button (click)="toggleFavorite($event)" [disabled]="stock.favorite">
+                  Add to Favorite
+                </button>
+            </div>
+    \`,
+    styles: [\`
+    .stock-container {
+      border: 1px solid black;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 10px;
+    }
+    .stock-container .name h3, .stock-container .name h4 {
+      display: inline-block;
+    }
+    .positive {
+      color: red;
+    }
+    .negative {
+      color: green;
+    }
+    .large-change {
+      font-size: 1.5em;
+    }
+    .small-change {
+      font-size: 0.8em;
+    }
+    \`]
+  })
+  export class StockItemComponent implements OnInit {
+
+    stock: Stock;
+    stockClasses;
+
+    constructor() { }
+
+    ngOnInit() {
+      this.stock = new Stock('ABC Stock Company', 'ASC', 105, 90);
+      let diff = (this.stock.price / this.stock.previousPrice) - 1;
+      let largeChange = Math.abs(diff) > 0.01;
+      this.stockClasses = {
+        'positive': this.stock.isPositiveChange(),
+        'negative': !this.stock.isPositiveChange(),
+        'large-change': largeChange,
+        'small-change': !largeChange
+      };
+    }
+
+    toggleFavorite(event) {
+      console.log('Toggling the favorite state for this stock', event);
+      this.stock.favorite = !this.stock.favorite;
+    }
+
+  }
+
+  `
 };
 apip505 = {
-  name: '',
-  code: ``
+  name: 'NgStyle',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { Stock } from '../../model/stock';
+
+  @Component({
+    selector: 'app-stock-item',
+    template: \`
+            <div class="stock-container">
+                <div class="name"><h3>{{ stock.name }}</h3> -
+                <h4>({{ stock.code }})</h4></div>
+                <div class="price"
+                [ngStyle]="stockStyles"
+                >€ {{ stock.price }}</div>
+                <button (click)="toggleFavorite($event)" [disabled]="stock.favorite">
+                  Add to Favorite
+                </button>
+            </div>
+    \`,
+    styles: [\`
+    .stock-container {
+      border: 1px solid black;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 10px;
+    }
+    .stock-container .name h3, .stock-container .name h4 {
+      display: inline-block;
+    }
+    \`]
+  })
+  export class StockItemComponent implements OnInit {
+
+    stock: Stock;
+    stockStyles;
+
+    constructor() { }
+
+    ngOnInit() {
+      this.stock = new Stock('ABC Stock Company', 'ASC', 105, 90);
+      let diff = (this.stock.price / this.stock.previousPrice) - 1;
+      let largeChange = Math.abs(diff) > 0.01;
+      this.stockStyles = {
+          'color': this.stock.isPositiveChange() ? 'red' : 'green',
+          'font-size': largeChange ? '2.5em' : '0.8em'
+      };
+    }
+
+    toggleFavorite(event) {
+      console.log('Toggling the favorite state for this stock', event);
+      this.stock.favorite = !this.stock.favorite;
+    }
+
+  }
+
+  `
 };
 apip506 = {
-  name: '',
-  code: ``
+  name: 'Alternative Class && Style Binding Syntax',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { Stock } from '../../model/stock';
+
+  @Component({
+    selector: 'app-stock-item',
+    template: \`
+            <div class="stock-container">
+                <div class="name"><h3>{{ stock.name }}</h3> -
+                <h4>({{ stock.code }})</h4></div>
+                <div class="price"
+                [class.positive]="stock.isPositiveChange()"
+                [class.negative]="!stock.isPositiveChange()"
+                [style.font-size]="isLargeChange ? '3.5em' : '0.8em'"
+                >€ {{ stock.price }}</div>
+                <button (click)="toggleFavorite($event)" [disabled]="stock.favorite">
+                  Add to Favorite
+                </button>
+            </div>
+    \`,
+    styles: [\`
+    .stock-container {
+      border: 1px solid black;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 10px;
+    }
+    .stock-container .name h3, .stock-container .name h4 {
+      display: inline-block;
+    }
+    .positive {
+      color: red;
+    }
+    .negative {
+      color: green;
+    }
+    \`]
+  })
+  export class StockItemComponent implements OnInit {
+
+    stock: Stock;
+    isLargeChange: boolean;
+
+    constructor() { }
+
+    ngOnInit() {
+      this.stock = new Stock('ABC Stock Company', 'ASC', 105, 90);
+      let diff = (this.stock.price / this.stock.previousPrice) - 1;
+      this.isLargeChange = Math.abs(diff) > 0.01;
+    }
+
+    toggleFavorite(event) {
+      console.log('Toggling the favorite state for this stock', event);
+      this.stock.favorite = !this.stock.favorite;
+    }
+
+  }
+
+  `
 };
 apip507 = {
-  name: '',
-  code: ``
+  name: 'NgIf Desugared',
+  code: `
+
+      <div *ngIf="stock.favorite">
+          <button>Remove from favorite</button>
+      </div>
+
+      <div ng-template="ngIf stock.favorite">
+          <button>Remove from favorite</button>
+      </div>
+
+      <ng-template [ngIf]="stock.favorite">
+          <div>
+            <button>Remove from favorite</button>
+          </div>
+      </ng-template>
+
+  `
 };
 apip508 = {
-  name: '',
-  code: ``
+  name: 'NgIf',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { Stock } from '../../model/stock';
+
+  @Component({
+    selector: 'app-stock-item',
+    template: \`
+            <div class="stock-container">
+                <div class="name"><h3>{{ stock.name }}</h3> -
+                <h4>({{ stock.code }})</h4></div>
+                <div class="price"
+                [class]="stock.isPositiveChange() ? 'positive' : 'negative'"
+                >€ {{ stock.price }}</div>
+                <button (click)="toggleFavorite($event)" *ngIf="!stock.favorite">
+                  Add to Favorite
+                </button>
+            </div>
+    \`,
+    styles: [\`
+    .stock-container {
+      border: 1px solid black;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 10px;
+    }
+    .stock-container .name h3, .stock-container .name h4 {
+      display: inline-block;
+    }
+    .positive {
+      color: red;
+    }
+    .negative {
+      color: green;
+    }
+    \`]
+  })
+  export class StockItemComponent implements OnInit {
+
+    stock: Stock;
+    isLargeChange: boolean;
+
+    constructor() { }
+
+    ngOnInit() {
+      this.stock = new Stock('ABC Stock Company', 'ASC', 105, 90);
+      this.stock.favorite = true;
+    }
+
+    toggleFavorite(event) {
+      console.log('Toggling the favorite state for this stock', event);
+      this.stock.favorite = !this.stock.favorite;
+    }
+
+  }
+
+  `
 };
 apip509 = {
-  name: '',
-  code: ``
+  name: 'NgForOf',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { Stock } from '../../model/stock';
+
+  @Component({
+    selector: 'app-stock-item',
+    template: \`
+            <div class="stock-container" *ngFor="let stock of stocks; index as i;">
+                <div class="name"><h3>{{ stock.name }}</h3> -
+                <h4>({{ stock.code }})</h4></div>
+                <div class="price"
+                [class]="stock.isPositiveChange() ? 'positive' : 'negative'">
+                € {{ stock.price }}
+                </div>
+                <button (click)="toggleFavorite($event, i)" [disabled]="stock.favorite">
+                  Add to Favorite
+                </button>
+            </div>
+    \`,
+    styles: [\`
+    .stock-container {
+      border: 1px solid black;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 10px;
+    }
+    .stock-container .name h3, .stock-container .name h4 {
+      display: inline-block;
+    }
+    .positive {
+      color: red;
+    }
+    .negative {
+      color: green;
+    }
+    \`]
+  })
+  export class StockItemComponent implements OnInit {
+
+    stocks: Stock[] = [];
+
+    constructor() { }
+
+    ngOnInit() {
+      this.stocks = [
+              new Stock('ABC Stock Company', 'ASC', 105, 90),
+              new Stock('MNO Stock Company', 'MSC', 10, 20),
+              new Stock('XYZ Stock Company', 'XYZ', 863, 752)
+      ];
+    }
+
+    toggleFavorite(event, index) {
+      console.log('Toggling the favorite state for this stock', event);
+      this.stocks[index].favorite = !this.stocks[index].favorite;
+    }
+
+  }
+
+  `
 };
 apip510 = {
-  name: '',
-  code: ``
+  name: 'TrackBy Option: Performance Matters',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { Stock } from '../../model/stock';
+
+  @Component({
+    selector: 'app-stock-item',
+    template: \`
+            <div class="stock-container"
+                *ngFor="let stock of stocks; index as i; trackBy: trackStockByCode;">
+                <div class="name"><h3>{{ stock.name }}</h3> -
+                <h4>({{ stock.code }})</h4></div>
+                <div class="price"
+                [class]="stock.isPositiveChange() ? 'positive' : 'negative'">
+                € {{ stock.price }}
+                </div>
+                <button (click)="toggleFavorite($event, i)" [disabled]="stock.favorite">
+                  Add to Favorite
+                </button>
+            </div>
+    \`,
+    styles: [\`
+    .stock-container {
+      border: 1px solid black;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 10px;
+    }
+    .stock-container .name h3, .stock-container .name h4 {
+      display: inline-block;
+    }
+    .positive {
+      color: red;
+    }
+    .negative {
+      color: green;
+    }
+    \`]
+  })
+  export class StockItemComponent implements OnInit {
+
+    stocks: Stock[] = [];
+
+    constructor() { }
+
+    ngOnInit() {
+      this.stocks = [
+              new Stock('ABC Stock Company', 'ASC', 105, 90),
+              new Stock('MNO Stock Company', 'MSC', 10, 20),
+              new Stock('XYZ Stock Company', 'XYZ', 863, 752)
+      ];
+    }
+
+    trackStockByCode(index, stock) {
+      return stock.code;
+    }
+
+    toggleFavorite(event, index) {
+      console.log('Toggling the favorite state for this stock', event);
+      this.stocks[index].favorite = !this.stocks[index].favorite;
+    }
+
+  }
+
+  `
 };
 apip511 = {
-  name: '',
-  code: ``
+  name: 'NgSwitch',
+  code: `
+
+  <div [ngSwitch]="security.type">
+        <app-stock *ngSwitchCase="'stock'" [item]="security"></app-stock>
+        <app-option *ngSwitchCase="'option'" [item]="security"></app-option>
+        <app-derivative *ngSwitchCase="'derivative'" [item]="security"></app-derivative>
+        <app-mutual-fund *ngSwitchCase="'mutual-fund'" [item]="security"></app-mutual-fund>
+        <app-unknown *ngSwitchDefault [item]="security"></app-unknown>
+  </div>
+
+  `
 };
 apip512 = {
   name: '',
