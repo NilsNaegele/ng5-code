@@ -24627,40 +24627,425 @@ apip516 = {
   `
 };
 apip517 = {
-  name: '',
-  code: ``
+  name: 'App Component Unit Test',
+  code: `
+
+  import { AppComponent } from './app.component';
+  import { Stock } from './model/stock';
+
+  describe('AppComponent', () => {
+
+    it('should instantiate stock in ngoninit', (() => {
+      const appComponent = new AppComponent();
+      expect(appComponent.stock).toBeUndefined();
+      appComponent.ngOnInit();
+      expect(appComponent.stock).toEqual(new Stock('Rocket Stock Company', 'RSC', 1000, 110));
+    }));
+
+    it('should toggle stock favorite', (() => {
+      const appComponent = new AppComponent();
+      appComponent.ngOnInit();
+      expect(appComponent.stock.favorite).toBeFalsy();
+      appComponent.onToggleFavorite(new Stock('Rocket Test', 'RT', 104, 105));
+      expect(appComponent.stock.favorite).toBeTruthy();
+      appComponent.onToggleFavorite(new Stock('Rocket Test', 'RT', 104, 105));
+      expect(appComponent.stock.favorite).toBeFalsy();
+    }));
+  });
+
+  `
 };
 apip518 = {
-  name: '',
-  code: ``
+  name: 'Stock Item Component Unit Test',
+  code: `
+
+  import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+  import { By } from '@angular/platform-browser';
+
+  import { StockItemComponent } from './stock-item.component';
+  import { Stock } from '../../model/stock';
+
+  describe('StockItemComponent', () => {
+    let component: StockItemComponent;
+    let fixture: ComponentFixture<StockItemComponent>;
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        declarations: [ StockItemComponent ]
+      })
+      .compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(StockItemComponent);
+      component = fixture.componentInstance;
+      component.stock = new Stock('Rocket Testing Stock', 'RTS', 100, 50);
+      fixture.detectChanges();
+    });
+
+    it('should create stock component and render stock data', () => {
+      const nameEl = fixture.debugElement.query(By.css('.name'));
+      expect(nameEl.nativeElement.textContent).toEqual('Rocket Testing Stock - (RTS)');
+      const priceEl = fixture.debugElement.query(By.css('.positive'));
+      expect(priceEl.nativeElement.textContent.trim()).toEqual('€ 100');
+      const addToFavoriteButtonEl = fixture.debugElement.query(By.css('button'));
+      expect(addToFavoriteButtonEl).toBeDefined();
+    });
+
+    it('should trigger event emitter on add to favorite', () => {
+      let selectedStock: Stock;
+      component.toggleFavorite.subscribe((stock: Stock) => selectedStock = stock);
+      const addToFavoriteButtonEl = fixture.debugElement.query(By.css('button'));
+
+      expect(selectedStock).toBeUndefined();
+      addToFavoriteButtonEl.triggerEventHandler('click', null);
+      expect(selectedStock).toEqual(component.stock);
+    });
+  });
+
+  `
 };
 apip519 = {
-  name: '',
-  code: ``
+  name: 'Testing Component Interactions',
+  code: `
+
+  import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+  import { By } from '@angular/platform-browser';
+
+  import { AppComponent } from './app.component';
+  import { StockItemComponent } from './stock/stock-item/stock-item.component';
+  import { Stock } from './model/stock';
+
+  describe('AppComponent', () => {
+
+    describe('Angular Component Interaction Test', () => {
+            let component;
+            let fixture;
+
+            beforeEach(async(() => {
+                TestBed.configureTestingModule({
+                    declarations: [ AppComponent, StockItemComponent]
+                }).compileComponents();
+            }));
+            beforeEach(() => {
+                fixture = TestBed.createComponent(AppComponent);
+                component = fixture.componentInstance;
+                fixture.detectChanges();
+            });
+            it('should load stock with default values', () => {
+                  const titleEl = fixture.debugElement.query(By.css('h1'));
+                  expect(titleEl.nativeElement.textContent.trim())
+                                  .toEqual('Tour Of Stocks');
+
+                  const nameEl = fixture.debugElement.query(By.css('.name'));
+                  expect(nameEl.nativeElement.textContent)
+                                  .toEqual('Rocket Stock Company - (RSC)');
+                  const priceEl = fixture.debugElement.query(By.css('.positive'));
+                  expect(priceEl.nativeElement.textContent.trim()).toEqual('€ 1000');
+                  const addToFavoriteButtonEl = fixture.debugElement.query(By.css('button'));
+                  expect(addToFavoriteButtonEl).toBeDefined();
+            });
+    });
+  });
+
+  `
 };
 apip520 = {
-  name: '',
-  code: ``
+  name: 'Template-DRIVEN Form',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Stock } from '../model/stock';
+
+
+  @Component({
+    selector: 'app-create-stock',
+    template: \`
+            <h2>Create Stock Form</h2>
+            <div class="form-group">
+                <form (ngSubmit)="submit()">
+                    <div class="stock-name">
+                        <input type="text" placeholder="Name"
+                               name="name" [(ngModel)]="stock.name">
+                    </div>
+                    <div class="stock-code">
+                        <input type="text" placeholder="Code"
+                               name="code" [(ngModel)]="stock.code">
+                    </div>
+                    <div class="stock-price">
+                      <input type="text" placeholder="Price"
+                           name="price" [ngModel]="stock.price"
+                           (ngModelChange)="setStockPrice($event)">
+                    </div>
+                    <div class="stock-exchange">
+                         <select name="exchange" [(ngModel)]="stock.exchange">
+                              <option *ngFor="let exchange of exchanges" [ngValue]="exchange">
+                                {{ exchange }}
+                              </option>
+                         </select>
+                    </div>
+                    <div class="stock-confirm">
+                            <input type="checkbox" name="confirm" [(ngModel)]="confirmed">
+                            I confirm that the information above is accurate!
+                    </div>
+                    <button [disabled]="!confirmed" type="submit">Submit</button>
+                </form>
+            </div>
+            <h4>Stock Data is {{ stock | json }}</h4>
+            <h4>Data has been confirmed: {{ confirmed }}</h4>
+    \`,
+    styles: [\`
+          .stock-name .ng-valid,
+          .stock-code .ng-pristine,
+          .stock-price .ng-untouched {
+            background-color: red;
+          }
+          .stock-name .ng-invalid,
+          .stock-code .ng-dirty,
+          .stock-price .ng-touched {
+            background-color: green;
+          }
+
+    \`]
+  })
+  export class CreateStockComponent {
+
+    stock: Stock;
+    confirmed = false;
+    exchanges = ['DAX', 'NYSE', 'NASDAQ'];
+
+    constructor() {
+      this.stock = new Stock('Test', '', 0, 0, 'DAX');
+    }
+
+    setStockPrice(price) {
+      this.stock.price = price;
+      this.stock.previousPrice = price;
+    }
+
+    submit() {
+      console.log('Creating Stock', this.stock);
+    }
+
+  }
+
+  `
 };
 apip521 = {
-  name: '',
-  code: ``
+  name: 'Performance Matters: Lazy Loading Routes',
+  code: `
+  AppModule
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule } from '@angular/router';
+  import { FormsModule } from '@angular/forms';
+
+  import { AppComponent } from './app.component';
+  import { HomeComponent } from './home/home.component';
+
+
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      HomeComponent
+    ],
+    imports: [
+      BrowserModule,
+      FormsModule,
+      RouterModule.forRoot([
+        {path: '', component: HomeComponent},
+        {path: 'about', loadChildren: './about/about.module#AboutModule'}
+      ])
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  ***********************************************************************
+  About Module
+
+  import { NgModule } from '@angular/core';
+  import { CommonModule } from '@angular/common';
+  import { RouterModule } from '@angular/router';
+
+  import { AboutComponent } from './about.component';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    RouterModule.forChild([
+      { path: '', component: AboutComponent }
+    ])
+  ],
+  declarations: [AboutComponent]
+})
+  export class AboutModule { }
+
+  ***********************************************************************
+  AppComponent
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+  selector: 'app-root',
+  template: \`
+          <h1>{{ title }}</h1>
+          <div>
+                <a routerLink="/">Home</a>
+                <a routerLink="/about">About</a>
+          </div>
+          <router-outlet></router-outlet>
+  \`
+  })
+export class AppComponent  {
+  title = 'Angular 5 Level Up';
+
+}
+
+  `
 };
 apip522 = {
-  name: '',
-  code: ``
+  name: 'Preloading Strategy: Preload All Modules',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule, PreloadAllModules } from '@angular/router';
+  import { FormsModule } from '@angular/forms';
+
+  import { AppComponent } from './app.component';
+  import { HomeComponent } from './home/home.component';
+
+
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      HomeComponent
+    ],
+    imports: [
+      BrowserModule,
+      FormsModule,
+      RouterModule.forRoot([
+        {path: '', component: HomeComponent},
+        {path: 'about', loadChildren: './about/about.module#AboutModule'}
+      ],
+      { preloadingStrategy: PreloadAllModules }
+    )
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+
+  `
 };
 apip523 = {
-  name: '',
-  code: ``
+  name: 'Custom Preloading Strategy',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { RouterModule, PreloadAllModules,
+           PreloadingStrategy, Route } from '@angular/router';
+  import { FormsModule } from '@angular/forms';
+
+  import { AppComponent } from './app.component';
+  import { HomeComponent } from './home/home.component';
+
+  import { Observable } from 'rxjs/Observable';
+  import { of } from 'rxjs/observable/of';
+
+  export class ConfigBasedStrategy implements PreloadingStrategy {
+    preload(route: any, load: Function): Observable<any> {
+          return route.data && route.data.preload ? load() : of(null);
+    }
+  }
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      HomeComponent
+    ],
+    imports: [
+      BrowserModule,
+      FormsModule,
+      RouterModule.forRoot([
+        {path: '', component: HomeComponent},
+        {path: 'about', loadChildren: './about/about.module#AboutModule',
+        data: { preload: true } }
+      ],
+      { preloadingStrategy: ConfigBasedStrategy }
+    )
+    ],
+    providers: [ConfigBasedStrategy],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+
+  `
 };
 apip524 = {
-  name: '',
-  code: ``
+  name: 'Performance Tips',
+  code: `
+
+              ng serve --aot
+              ng build --prod --named-chunks
+              ng build --prod -sm
+              source-map-explorer
+
+              ng new my-awesome-project --service-worker
+
+  `
 };
 apip525 = {
-  name: '',
-  code: ``
+  name: 'Quick Caching Strategy',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+
+  import { map, switchMap, startWith } from 'rxjs/operators';
+
+
+  @Component({
+    selector: 'app-home',
+    template: \`
+                  <div *ngFor="let repository of repositories | async">
+                        {{ repository.name }} - {{ repository.description }}
+                  </div>
+    \`
+  })
+  export class HomeComponent {
+    repositories;
+
+    constructor(private http: HttpClient) {
+      const path =
+            'https://api.github.com/search/repositories?q=angular&sort=stars&order=desc';
+      this.repositories = this.http.get<any>(path).pipe(
+      map(response => response.items)
+      );
+
+      this.repositories.subscribe(itemList => {
+          localStorage['itemListCache'] = JSON.stringify(itemList);
+      });
+
+      this.repositories = this.repositories.pipe(
+        startWith(JSON.parse(localStorage['itemListCache'] | '[]'))
+      );
+
+     }
+
+  }
+
+  `
 };
 apip526 = {
   name: '',
