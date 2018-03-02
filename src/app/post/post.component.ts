@@ -25048,20 +25048,603 @@ apip525 = {
   `
 };
 apip526 = {
-  name: '',
-  code: ``
+  name: 'Lifecycle Hooks',
+  code: `
+
+  import { Component, ElementRef, AfterContentInit } from '@angular/core';
+
+  @Component({
+    selector: 'app-tab',
+    template: \`
+              <div class="tab">
+                  <button class="tablink" (click)="openTab($event, 'Berlin')">Berlin</button>
+                  <button class="tablink" (click)="openTab($event, 'London')">London</button>
+                  <button class="tablink" (click)="openTab($event, 'Paris')">Paris</button>
+              </div>
+              <div id="Berlin" class="tabcontent">
+                  <h3>Berlin</h3>
+                  <p>Berlin is the capital city of Germany.</p>
+              </div>
+              <div id="London" class="tabcontent">
+                  <h3>London</h3>
+                  <p>London is the capital city of England.</p>
+              </div>
+              <div id="Paris" class="tabcontent">
+                  <h3>Paris</h3>
+                  <p>Paris is the capital city of France.</p>
+              </div>
+    \`,
+    styles: [\`
+      div.tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+      }
+      div.tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+      }
+      div.tab button:hover {
+        background-color: #ddd;
+      }
+      div.tab button.active {
+        background-color: #ccc;
+      }
+      .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+      }
+
+    \`]
+  })
+  export class TabComponent implements AfterContentInit {
+
+    tabContents: Array<HTMLElement>;
+    tabLinks: Array<HTMLElement>;
+
+    constructor(private el: ElementRef) { }
+
+    ngAfterContentInit() {
+      this.tabContents = this.el.nativeElement.querySelectorAll('.tabcontent');
+      this.tabLinks = this.el.nativeElement.querySelectorAll('.tablink');
+
+      this.tabContents[0].style.display = 'block';
+      this.tabLinks[0].className = ' active';
+    }
+
+    openTab(event, cityName) {
+      for (let i = 0; i < this.tabContents.length; i++) {
+        this.tabContents[i].style.display = 'none';
+      }
+      for (let i = 0; i < this.tabLinks.length; i++) {
+        this.tabLinks[i].className = this.tabLinks[i].className.replace(' active', '');
+      }
+
+      this.el.nativeElement.querySelector(\`#\${cityName}\`).style.display = 'block';
+      event.currentTarget.className += ' active';
+    }
+
+  }
+
+****************************************************************************************
+
+import { Component, OnInit } from '@angular/core';
+
+
+@Component({
+  selector: 'app-root',
+  template: \`
+          <div class="container">
+                <h1>{{ title }}</h1>
+                <h4 *ngIf="loading">Please wait ...</h4>
+                <app-tab></app-tab>
+                <ul>
+                      <li *ngFor="let item of items">
+                            {{ item }}
+                      </li>
+                </ul>
+          </div>
+  \`,
+  styles: [\`
+      .container {
+        width: 800px;
+        margin: auto;
+      }
+      ul {
+        display: flex;
+        justify-content: space-between;
+      }
+  \`]
+})
+export class AppComponent implements OnInit  {
+  title = 'Angular TypeScript 2.x';
+  items: Array<string> = [];
+  loading = false;
+
+  ngOnInit() {
+    this.loading = true;
+    setTimeout(() => {
+    this.items = ['Computer', 'Mobile', 'Watch', 'Passport', 'Keys', 'Cash'];
+    this.loading = false;
+      }, 3000);
+  }
+
+}
+
+  `
 };
 apip527 = {
-  name: '',
-  code: ``
+  name: 'Component Communication',
+  code: `
+
+  import { Component, Input } from '@angular/core';
+
+  @Component({
+    selector: 'app-comment-item',
+    template: \`
+              <h3>{{ comment.author }}</h3>
+              <p>{{ comment.content }}</p>
+    \`,
+    styles: [\`
+          :host {
+            display: block;
+          }
+
+          :host:hover {
+            background: #e1e1e1;
+            cursor: pointer;
+          }
+
+    \`]
+  })
+  export class CommentItemComponent {
+
+          private _comment;
+
+          get comment() {
+            return this._comment;
+          }
+
+          @Input()
+          set comment(comment) {
+            this._comment = Object.assign(comment, { author: comment.author.toUpperCase() });
+          }
+
+  }
+
+  ****************************************************************************************
+
+  import { Component, Input, EventEmitter, Output } from '@angular/core';
+
+  @Component({
+    selector: 'app-comment-list',
+    template: \`
+
+              <app-comment-item *ngFor="let comment of comments"
+                                 [comment]="comment"
+                                 (click)="showComment(comment)">
+              </app-comment-item>
+    \`
+  })
+  export class CommentListComponent {
+        @Input() comments;
+        @Output() onShowComment = new EventEmitter();
+
+
+        showComment(comment) {
+          this.onShowComment.emit(comment);
+        }
+
+  }
+
+  ****************************************************************************************
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-counter',
+    template: \`
+              <h5>
+                    {{ counter }}
+              </h5>
+    \`
+  })
+  export class CounterComponent {
+
+    counter = 0;
+
+    increment() {
+      this.counter++;
+    }
+
+    decrement() {
+      this.counter--;
+    }
+
+  }
+
+  ****************************************************************************************
+
+  import { Component, ViewChild } from '@angular/core';
+
+  import { CounterComponent } from './counter/counter.component';
+
+@Component({
+  selector: 'app-root',
+  template: \`
+          <div class="container">
+                <h2>Comments</h2>
+          <app-comment-list
+                          [comments]="comments"
+                          (onShowComment)="onShowComment($event)">
+          </app-comment-list>
+                <h2>Counter</h2>
+          <app-counter></app-counter>
+          <button (click)="counterComponent.increment()">++</button>
+          <button (click)="counterComponent.decrement()">---</button>
+          </div>
+  \`,
+  styles: [\`
+      .container {
+        width: 800px;
+        margin: auto;
+      }
+  \`]
+})
+export class AppComponent  {
+      @ViewChild(CounterComponent) counterComponent: CounterComponent;
+
+      comments = [
+            {
+              author: 'Nils',
+              content: 'Angular is awesome.'
+            },
+            {
+              author: 'Carmen',
+              content: 'I have fallen in love with Angular.'
+            },
+            {
+              author: 'Hans',
+              content: 'The Angular CLI rocks.'
+            }
+      ];
+
+      onShowComment(comment) {
+        alert(comment.content);
+      }
+
+}
+
+  `
 };
 apip528 = {
-  name: '',
-  code: ``
+  name: 'Services',
+  code: `
+
+  import { Injectable } from '@angular/core';
+  import { Subject } from 'rxjs/Subject';
+
+
+  @Injectable()
+  export class CommentService {
+
+    private commentSelectedSource = new Subject<any>();
+    commentSelected$ = this.commentSelectedSource.asObservable();
+
+    private comments: Array<any> = [
+            {
+              author: 'Flash',
+              content: 'The will to win is nothing without the will to prepare.'
+            },
+            {
+              author: 'Wonderwoman',
+              content: 'I have met my hero, she is me.'
+            },
+            {
+              author: 'Wolverine',
+              content: 'Somebody may beat me, but they are going to have to bleed to do it.'
+            }
+    ];
+
+    getAll() {
+      return this.comments;
+    }
+
+    remove(commentToRemove) {
+      const index = this.comments.findIndex(comment =>
+                comment.author === commentToRemove.author
+      );
+      this.comments.splice(index, 1);
+      return this.comments;
+    }
+
+    show(comment) {
+      this.commentSelectedSource.next(comment);
+    }
+
+    parse(comment: string) {
+      const commentArr = comment.split(':');
+      const parsedComment = {
+        author: commentArr[0].trim(),
+        content: commentArr[1].trim()
+      };
+      return parsedComment;
+    }
+
+    add(comment) {
+      this.comments.unshift(comment);
+    }
+
+  }
+
+  ****************************************************************************************
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { CommentService } from './../comment.service';
+
+@Component({
+  selector: 'app-comment-detail',
+  template: \`
+
+          <div class="card" *ngIf="comment.author">
+                  <div class="card-header">{{ comment.author }}</div>
+                  <div class="card-body">
+                        {{ comment.content }}
+                  </div>
+          </div>
+  \`
+})
+export class CommentDetailComponent implements OnInit {
+
+  comment: any = {
+    author: '',
+    content: ''
+  };
+
+  constructor(private commentService: CommentService) { }
+
+  ngOnInit() {
+    this.commentService.commentSelected$.subscribe(comment => {
+            this.comment = comment;
+    });
+  }
+
+}
+
+  ****************************************************************************************
+
+  import { Component, OnInit} from '@angular/core';
+
+  import { CommentService } from './../comment.service';
+
+@Component({
+  selector: 'app-comment-list',
+  template: \`
+                <button class="btn btn-primary" (click)="prompt()">
+                    Add Comment
+                </button>
+                <div class="list-group" style="margin-top: 5px;">
+                      <a href="#" class="list-group-item"
+                                  *ngFor="let comment of comments"
+                                  (dblclick)="remove(comment)"
+                                  (click)="show(comment)">
+                      <h4 class="list-group-item-heading">{{ comment.author }}</h4>
+                      <h4 class="list-group-item-text">{{ comment.content }}</h4>
+                    </a>
+                </div>
+
+  \`
+})
+export class CommentListComponent implements OnInit {
+
+      comments: any[];
+
+      constructor(private commentService: CommentService) { }
+
+      ngOnInit() {
+        this.comments = this.commentService.getAll();
+      }
+
+      remove(comment) {
+        this.commentService.remove(comment);
+      }
+
+      show(comment) {
+        this.commentService.show(comment);
+      }
+
+      prompt() {
+        const commentString = window.prompt('Please enter username and content: ',
+        'username: content');
+        const parsedComment = this.commentService.parse(commentString);
+        this.commentService.add(parsedComment);
+      }
+
+}
+
+
+  ****************************************************************************************
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <div class="container">
+                  <h2 class="text-center">Comments</h2>
+                  <div class="col-md-4 col-md-offset-2">
+                        <app-comment-list></app-comment-list>
+                  </div>
+                  <div class="col-md-4">
+                        <app-comment-detail></app-comment-detail>
+                  </div>
+            </div>
+    \`,
+    styles: [\`
+        h2 {
+          color: palevioletred;
+        }
+    \`]
+  })
+  export class AppComponent  { }
+
+  `
 };
 apip529 = {
-  name: '',
-  code: ``
+  name: 'Template-DRIVEN Form',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Flight } from '../flight';
+
+  @Component({
+    selector: 'app-flight-form',
+    template: \`
+
+            <form #flightForm="ngForm" (ngSubmit)="submitForm()">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" class="form-control"
+                           [(ngModel)]="flightModel.fullName"
+                           name="fullName" #name="ngModel" required minlength="6">
+                    <div *ngIf="name.invalid && (name.dirty || name.touched)"
+                                class="text-danger">
+                            <div *ngIf="name.errors.required">
+                                Name is required.
+                            </div>
+                            <div *ngIf="name.errors.minlength">
+                              Name must be at least 6 characters long.
+                            </div>
+                        </div>
+                </div>
+                <div class="row">
+                      <div class="col-md-6">
+                      <label for="from">From</label>
+                      <select type="text" id="from" class="form-control"
+                              [(ngModel)]="flightModel.from" name="from">
+                          <option *ngFor="let city of cities" value="{{city}}">
+                              {{ city }}
+                          </option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                      <label for="to">To</label>
+                      <select type="text" id="to" class="form-control"
+                              [(ngModel)]="flightModel.to" name="to">
+                          <option *ngFor="let city of cities" value="{{city}}">
+                              {{ city }}
+                          </option>
+                        </select>
+                      </div>
+                </div>
+                <div class="row" style="margin-top: 15px;">
+                      <div class="col-md-5">
+                            <label for="type" style="display: block;">Trip Type</label>
+                            <label class="radio-inline">
+                              <input type="radio" name="type" [(ngModel)]="flightModel.type"
+                                     value="One Way">One Way
+                            </label>
+                            <label class="radio-inline">
+                              <input type="radio" name="type" [(ngModel)]="flightModel.type"
+                                     value="Return">Return
+                            </label>
+                      </div>
+                      <div class="col-md-4">
+                            <label for="departure">Departure</label>
+                            <input type="date" id="departure" class="form-control"
+                                   [(ngModel)]="flightModel.departure" name="departure">
+                      </div>
+                      <div class="col-md-3">
+                            <label for="arrival">Arrival</label>
+                            <input type="date" id="arrival" class="form-control"
+                             [(ngModel)]="flightModel.arrival" name="arrival">
+                      </div>
+              </div>
+              <div class="row" style="margin-top: 15px;">
+                      <div class="col-md-4">
+                          <label for="adults">Adults</label>
+                          <input type="number" id="adults" class="form-control"
+                          [(ngModel)]="flightModel.adults" name="adults">
+                      </div>
+                      <div class="col-md-4">
+                          <label for="children">Children</label>
+                          <input type="number" id="children" class="form-control"
+                          [(ngModel)]="flightModel.children" name="children">
+                      </div>
+                      <div class="col-md-4">
+                          <label for="infants">Infants</label>
+                          <input type="number" id="infants" class="form-control"
+                          [(ngModel)]="flightModel.infants" name="infants">
+                      </div>
+              </div>
+              <div class="form-group" style="margin-top: 15px;">
+                    <button class="btn btn-primary btn-block" [disabled]="!flightForm.valid">
+                      Submit
+                    </button>
+              </div>
+            </form>
+
+
+    \`
+  })
+  export class FlightFormComponent {
+
+    flightModel: Flight;
+
+    cities: string[] = [
+      'Berlin',
+      'Hamburg',
+      'Stuttgart',
+      'Munich',
+      'London',
+      'Paris',
+      'Amsterdam',
+      'Brussels',
+      'Barcelona',
+      'New York',
+      'San Francisco',
+      'Rio de Janeiro',
+      'Cape Town',
+      'Sydney',
+      'Tokyo'
+    ];
+
+    constructor() {
+      this.flightModel = new Flight('', '', '', '', 0, '', '', 0, 0);
+    }
+
+    submitForm() {
+      console.log(this.flightModel);
+    }
+
+  }
+
+  *******************************************************************************
+
+  export class Flight {
+
+    constructor(public fullName: string,
+                public from: string,
+                public to: string,
+                public type: string,
+                public adults: number,
+                public departure: string,
+                public arrival: string,
+                public children?: number,
+                public infants?: number) { }
+  }
+
+  `
 };
 apip530 = {
   name: '',

@@ -145,6 +145,11 @@
       "id": 29,
       "title": "Angular Up && Running",
       "date": "03/01/2018"
+    },
+    {
+      "id": 30,
+      "title": "Angular TypeScript 2.x",
+      "date": "03/02/2018"
     }
 	]
 }
