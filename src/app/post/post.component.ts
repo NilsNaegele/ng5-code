@@ -25647,24 +25647,432 @@ apip529 = {
   `
 };
 apip530 = {
-  name: '',
-  code: ``
+  name: 'Events',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <div class="container" (keypress)="showKey($event)" tabindex="1">
+                    <div class="row">
+                        <h3 class="text-center">
+                              {{ counter }}
+                        </h3>
+                        <div class="buttons">
+                            <div class="btn btn-danger" (click)="increment()">
+                                Increment
+                            </div>
+                            <div class="btn btn-success" (dblclick)="decrement()">
+                                Decrement
+                            </div>
+                        </div>
+                    </div>
+                    <div class="key-bg" *ngIf="keyPressed">
+                          <h1>{{ key }}</h1>
+                    </div>
+            </div>
+    \`,
+    styles: [\`
+      .container {
+        padding-top: 100px;
+        height: 100%;
+        outline: none;
+        position: relative;
+      }
+      .buttons {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+      }
+      .buttons div:first-child {
+        margin-right: 15px;
+      }
+      .key-bg {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+        background: #fff;
+        opacity: 0.7;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .key-bg h1 {
+        font-size: 150px;
+      }
+    \`]
+  })
+  export class AppComponent  {
+
+    counter = 0;
+    keyPressed = false;
+    key = '';
+
+    increment() {
+      this.counter++;
+    }
+
+    decrement() {
+      this.counter <= 0 ? this.counter = 0 : this.counter--;
+    }
+
+    showKey($event) {
+      this.keyPressed = true;
+      this.key = $event.key.toUpperCase();
+      console.log(this.key);
+      setTimeout(() => {
+        this.keyPressed = false;
+      }, 500);
+    }
+
+  }
+
+  `
 };
 apip531 = {
-  name: '',
-  code: ``
+  name: 'Directives',
+  code: `
+
+  import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+
+  @Directive({
+    selector: '[appWhen]'
+  })
+  export class WhenDirective {
+    private hasView = false;
+    @Input() set appWhen(condition: boolean) {
+      if (condition && !this.hasView) {
+        this.viewContainerRef.createEmbeddedView(this.templateRef);
+        this.hasView = true;
+      } else if (!condition && this.hasView) {
+        this.viewContainerRef.clear();
+        this.hasView = false;
+      }
+    }
+
+    constructor(private templateRef: TemplateRef<any>,
+                private viewContainerRef: ViewContainerRef) { }
+
+  }
+
+  *********************************************************************************
+
+
+  import { Directive, OnInit, Input, ElementRef, HostListener } from '@angular/core';
+
+@Directive({
+  selector: '[appUiButton]'
+})
+export class UiButtonDirective implements OnInit {
+  @Input() bgColor: string;
+  @Input() hoverBgColor: string;
+
+  constructor(private el: ElementRef) { }
+
+
+  ngOnInit() {
+    console.log(this.bgColor);
+    Object.assign(this.el.nativeElement.style, {
+          backgroundColor: this.bgColor || '#ff00a6',
+          padding: '7px 15px',
+          fontSize: '16px',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px'
+    });
+
+  }
+
+  @HostListener('mouseenter') onMouseEnter() {
+    console.log(this.bgColor);
+    this.el.nativeElement.style.backgroundColor = this.hoverBgColor || '#000';
+  }
+
+  @HostListener('mouseleave') onMouseLeave() {
+    this.el.nativeElement.style.backgroundColor = this.bgColor || '#ff00a6';
+  }
+
+}
+
+*********************************************************************************
+
+import { Component } from '@angular/core';
+
+
+@Component({
+  selector: 'app-root',
+  template: \`
+          <h3 style="text-align:center" *appWhen="toggle">Hi, sexy Directive</h3>
+          <div class="container">
+                    <button appUiButton bgColor="red" hoverBgColor="green"
+                            (click)="updateToggle()">
+                            Click Me!!!
+                    </button>
+          </div>
+  \`,
+  styles: [\`
+    .container {
+      width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 100px;
+      display: flex;
+      justify-content: center;
+    }
+  \`]
+})
+export class AppComponent  {
+    toggle = false;
+    updateToggle() {
+      this.toggle = !this.toggle;
+    }
+
+}
+
+  `
 };
 apip532 = {
-  name: '',
-  code: ``
+  name: 'Pipes',
+  code: `
+
+  import { Pipe, PipeTransform } from '@angular/core';
+
+  @Pipe({
+    name: 'reverse'
+  })
+  export class ReversePipe implements PipeTransform {
+
+    transform(value: string, args?: any): string {
+      if (args) {
+        return value.split(' ').reverse().join(' ');
+      } else {
+        return value.split('').reverse().join('');
+      }
+    }
+
+  }
+
+  ***********************************************************************
+
+  import { Component } from '@angular/core';
+
+
+@Component({
+  selector: 'app-root',
+  template: \`
+          <div class="container">
+                  <h2>{{ 0.767 | percent }}</h2>
+                  <h2>{{ 75.989 | currency:'EUR' }}</h2>
+                  <h2>{{ 'when the going gets tough ...' | reverse:true }}</h2>
+          </div>
+  \`,
+  styles: [\`
+    .container {
+      width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 100px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+    }
+  \`]
+})
+export class AppComponent  {
+
+}
+
+  `
 };
 apip533 = {
-  name: '',
-  code: ``
+  name: 'Routing',
+  code: `
+
+  import { Routes } from '@angular/router';
+
+  import { HomeComponent } from './home/home.component';
+  import { AboutComponent } from './about/about.component';
+  import { ContactComponent } from './contact/contact.component';
+
+
+  export const routes: Routes = [
+        {
+          path: '',
+          redirectTo: '/home',
+          pathMatch: 'full'
+        },
+        {
+          path: 'home',
+          component: HomeComponent
+        },
+        {
+          path: 'about',
+          component: AboutComponent
+        },
+        {
+          path: 'contact',
+          component: ContactComponent
+        },
+        {
+          path: '**',
+          component: HomeComponent
+        }
+  ];
+
+
+  `
 };
 apip534 = {
-  name: '',
-  code: ``
+  name: 'MVC Pattern',
+  code: `
+
+  export class User {
+
+    constructor(private _email: string, private _password) { }
+
+    get email(): string {
+      return this._email;
+    }
+
+    get password(): string {
+      return this._password;
+    }
+
+    set email(email: string) {
+      this._email = email;
+    }
+
+    set password(password: string) {
+      this._password = password;
+    }
+
+  }
+***************************************************************************
+
+import { User } from './user';
+import { ApiService } from './api.service';
+
+export class UserModel {
+
+      private user: User;
+      private _loading = false;
+
+      constructor(private apiService: ApiService) { }
+
+      signin(email: string, password: string) {
+
+          this._loading = true;
+
+          this.apiService.getUser(new User(email, password)).then(
+            user => {
+              this.user = user;
+              this._loading = false;
+            }
+          );
+      }
+
+      signup(email: string, password: string) {
+        this._loading = true;
+        this.apiService.postUser(new User(email, password)).then(
+          user => {
+            this.user = user;
+            this._loading = false;
+          }
+        );
+      }
+
+      get loading(): boolean {
+        return this._loading;
+      }
+
+}
+
+***************************************************************************
+
+import { Injectable } from '@angular/core';
+import { User } from './user';
+
+
+@Injectable()
+export class ApiService {
+
+  getUser(user: User): Promise<User> {
+
+      return new Promise<User>(
+        (resolve, reject) => {
+          return user;
+        });
+  }
+
+  postUser(user: User): Promise<User> {
+
+      return new Promise<User>(
+        (resolve, reject) => {
+          return user;
+        });
+  }
+
+}
+
+***************************************************************************
+
+import { Component } from '@angular/core';
+
+import { UserModel } from './user.model';
+import { ApiService } from './api.service';
+
+@Component({
+  selector: 'app-root',
+  template: \`
+
+      <form (ngSubmit)="onSignin(this.email1.value, this.password1.value);">
+
+          Email: <input name="email" type="text" #email1>
+          Password: <input name="password" type="password" #password1>
+          <input [hidden]="userModel.loading" type="submit">
+          <i [hidden]="!userModel.loading" class="fa fa-spinner"
+              aria-hidden="true">loading</i>
+      </form>
+
+      <h1>Signup</h1>
+
+      <form (ngSubmit)="onSignup(this.email2.value, this.password2.value);">
+
+          email: <input name="email" type="text" #email2>
+          password: <input name="password" type="password" #password2>
+          <input [hidden]="userModel.loading" type="submit">
+          <i [hidden]="!userModel.loading" class="fa fa-spinner"
+              aria-hidden="true">loading</i>
+      </form>
+  \`
+})
+export class AppComponent  {
+
+    userModel: UserModel;
+
+    constructor(apiService: ApiService) {
+      this.userModel = new UserModel(apiService);
+    }
+
+    onSignin(email: string, password: string) {
+      console.log(email, password);
+      this.userModel.signin(email, password);
+      return false;
+    }
+
+    onSignup(email: string, password: string) {
+      this.userModel.signup(email, password);
+      return false;
+    }
+
+}
+
+  `
 };
 apip535 = {
   name: '',
