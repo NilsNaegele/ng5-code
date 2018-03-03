@@ -26075,44 +26075,409 @@ export class AppComponent  {
   `
 };
 apip535 = {
-  name: '',
-  code: ``
+  name: 'Interpolation',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              <p>{{ title.length }}</p>
+              <p>Reversed: {{ getReversed(title) }}</p>
+    \`
+  })
+  export class AppComponent  {
+            title = 'Angular 5 Projects';
+            getReversed(str: string): string {
+              let reversed = '';
+              for (let i = str.length; i >= 0; i--) {
+                reversed += str.substring(i, i + 1);
+              }
+              return reversed;
+            }
+  }
+
+  `
 };
 apip536 = {
-  name: '',
-  code: ``
+  name: 'Attribute Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Car } from './car';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              <ul>
+                    <li *ngFor="let car of cars">
+                          <span [attr.id]="car.id"
+                                [attr.data-desc]="car.make + ' ' +  car.model"
+                          [attr.data-article]="car.article">
+                          {{ car.year }}&nbsp;
+                          {{ car.make }}&nbsp;
+                          {{ car.model }}&nbsp;
+                          <button (click)="showCar($event)">View</button>
+                          </span>
+                    </li>
+              </ul>
+    \`
+  })
+  export class AppComponent  {
+            title = 'Angular 5 Projects';
+
+        cars = [
+          new Car('car1', 2018, 'porsche', '911',
+                                           'https://en.wikipedia.org/wiki/Porsche_911'),
+          new Car('car2', 2017, 'bmw', 'x3', 'https://en.wikipedia.org/wiki/BMW_X3'),
+          new Car('car3', 2016, 'audi', 'r8', 'https://en.wikipedia.org/wiki/Audi_R8')
+        ];
+
+        showCar(event) {
+          const desc = event.target.parentElement.dataset.desc;
+          if (window.confirm(\`Ok will redirect to an article about \${desc}.
+                              Cancel will load this web site.\`)) {
+                                window.location.href =
+                                event.target.parentElement.dataset.article;
+                              }
+        }
+
+  }
+
+  `
 };
 apip537 = {
-  name: '',
-  code: ``
+  name: 'NgModel',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              <p>
+                  Foreground: <input [(ngModel)]="fg">
+              </p>
+              <p>
+                  Background: <input [(ngModel)]="bg">
+              </p>
+              <div [ngStyle]="{'color': fg, 'background-color': bg, 'padding': '5px'}">
+                Test
+              </div>
+    \`
+  })
+  export class AppComponent  {
+            title = 'Angular 5 Projects';
+
+            fg = '#ffffff';
+            bg = '#000000';
+
+  }
+
+  `
 };
 apip538 = {
-  name: '',
-  code: ``
+  name: 'ViewChild',
+  code: `
+
+  import { Component, AfterViewInit, ViewChild } from '@angular/core';
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              <input #box type="text" (input)="textInput($event)" value="">
+              <hr>
+              Upper-Case: {{ upperCase }}
+              <br>
+              Lower-Case: {{ lowerCase }}
+    \`
+  })
+  export class AppComponent implements AfterViewInit  {
+            title = 'Angular 5 Projects';
+
+            upperCase = '';
+            lowerCase = '';
+
+            @ViewChild('box')  inputBox;
+
+            textInput(event) {
+              this.upperCase = event.target.value.toUpperCase();
+              this.lowerCase = event.target.value.toLowerCase();
+            }
+
+            ngAfterViewInit() {
+              this.inputBox.nativeElement.focus();
+            }
+
+  }
+
+  `
 };
 apip539 = {
-  name: '',
-  code: ``
+  name: 'NgIf',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+
+              <div *ngIf="this.showName" class="box">
+                    Name: Nils
+              </div>
+              <div *ngIf="!this.showName" class="box">
+                    Address: Berlin
+              </div>
+              <button (click)="toggle()">Toggle</button>
+    \`,
+    styles: [\`
+          div.box {
+            width: 200px;
+            padding: 20px;
+            margin: 20px;
+            border: 1px solid black;
+            color: white;
+            background-color: green;
+          }
+    \`]
+  })
+  export class AppComponent {
+            title = 'Angular 5 Projects';
+
+            showName = true;
+
+            toggle() {
+              this.showName = !this.showName;
+            }
+
+  }
+
+  `
 };
 apip540 = {
-  name: '',
-  code: ``
+  name: 'NgFor',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+
+              <div *ngFor="let technology of technologies; let i = index;">
+                      <span>({{ i + 1 }}): {{ technology }}</span>
+              </div>
+    \`
+  })
+  export class AppComponent {
+            title = 'Angular 5 Projects';
+
+           technologies = ['Angular 5', 'Angular CLI 1.7', 'Angular Material 5'];
+
+  }
+
+  `
 };
 apip541 = {
-  name: '',
-  code: ``
+  name: 'NgSwitch',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+
+              <select [(ngModel)]="selection">
+                  <option *ngFor="let option of options">
+                      {{ option }}
+                  </option>
+              </select>
+
+              <div [ngSwitch]="selection">
+                      <div class="block1" *ngSwitchCase="options[0]">Angular 5</div>
+                      <div class="block2" *ngSwitchCase="options[1]">Angular CLI 1.7</div>
+                      <div class="block3" *ngSwitchDefault>Angular Material 5</div>
+              </div>
+    \`,
+    styles: [\`
+      .block1 {
+        background-color: #d5f4e6;
+        margin: 10px;
+        padding: 10px;
+      }
+      .block2 {
+        background-color: #d5f4ff;
+        margin: 10px;
+        padding: 10px;
+      }
+      .block3 {
+        background-color: #d5cce6;
+        margin: 10px;
+        padding: 10px;
+      }
+    \`]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+
+           selection = 'technologies';
+           options = ['Angular 5', 'Angular CLI 1.7', 'Angular Material 5'];
+
+  }
+
+  `
 };
 apip542 = {
-  name: '',
-  code: ``
+  name: 'NgClass',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+
+              <div *ngFor="let animal of animals">
+                    <span [ngClass]="{'selected': animal === selectedAnimal,
+                          'unselected': animal !== selectedAnimal }"
+                          (click)="onAnimalClicked($event)">
+                          {{ animal }}
+                    </span>
+              </div>
+    \`,
+    styles: [\`
+      .selected {
+        background-color: red;
+        color: white;
+        padding: 10px;
+        margin: 10px;
+      }
+      .unselected {
+        background-color: white;
+        margin: 10px;
+        padding: 10px;
+      }
+    \`]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+
+           selectedAnimal = 'giraffe';
+           animals = ['rabbit', 'zebra', 'giraffe', 'cheetah'];
+
+           onAnimalClicked(event: Event) {
+             const clickedAnimal = event.srcElement.innerHTML.trim();
+             this.selectedAnimal = clickedAnimal;
+           }
+
+  }
+
+  `
 };
 apip543 = {
-  name: '',
-  code: ``
+  name: 'NgStyle',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+
+              <div *ngFor="let animal of animals">
+                    <div [ngStyle]="getAnimalStyle(animal)"
+                          (click)="onAnimalClicked($event)">
+                          {{ animal }}
+                    </div>
+              </div>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+
+           selectedAnimal = 'giraffe';
+           animals = ['rabbit', 'zebra', 'giraffe', 'cheetah'];
+
+           onAnimalClicked(event: Event) {
+             const clickedAnimal = event.srcElement.innerHTML.trim();
+             this.selectedAnimal = clickedAnimal;
+           }
+
+           getAnimalStyle(animal) {
+             const isSelected = (animal === this.selectedAnimal);
+             return {
+               'padding': '10px',
+               'margin': '10px',
+               'color': isSelected ? '#ffffff' : '#000000',
+               'background-color': isSelected ? '#ff0000' : '#ffffff'
+             };
+           }
+
+  }
+
+  `
 };
 apip544 = {
-  name: '',
-  code: ``
+  name: 'Directive',
+  code: `
+
+  import { Directive, Input, ElementRef, Renderer, OnInit } from '@angular/core';
+
+  @Directive({
+    selector: '[appSizer]'
+  })
+  export class SizerDirective implements OnInit {
+    @Input() appSizer: string;
+
+    constructor(private elementRef: ElementRef, private renderer: Renderer) { }
+
+    ngOnInit() {
+      this.renderer.setElementStyle(this.elementRef.nativeElement,
+                                                   'font-size', this.appSizer);
+    }
+
+  }
+
+  ***********************************************************************************
+  import { Component } from '@angular/core';
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <div appSizer="72px">{{ title }}</div>
+  \`
+})
+export class AppComponent {
+         title = 'Angular 5 Projects';
+
+}
+
+  `
 };
 apip545 = {
   name: '',
