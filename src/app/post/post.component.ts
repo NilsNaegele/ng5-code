@@ -27647,44 +27647,599 @@ apip566 = {
   `
 };
 apip567 = {
-  name: '',
-  code: ``
+  name: 'UseClass',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Watch {
+    getTime(): string {
+      return new Date() + '';
+    }
+  }
+
+  export class Rolex extends Watch {
+    getTime(): string {
+      return 'Rolex Time: ' + super.getTime();
+    }
+  }
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <h3>
+                      {{ watch.getTime() }}
+                </h3>
+    \`,
+    providers: [{
+      provide: Watch,
+      useClass: Rolex
+    }]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+           constructor(public watch: Watch) { }
+
+  }
+
+  `
 };
 apip568 = {
-  name: '',
-  code: ``
+  name: 'UseFactory',
+  code: `
+
+  import { Component, Injectable } from '@angular/core';
+
+  @Injectable()
+  export class LoggingService {
+    constructor(private dateAndTime: boolean) {
+      console.log('LoggingService: constructor');
+    }
+    log(message: string) {
+      console.log(this.dateAndTime ? new Date() + ': ' + message : ': ' + message);
+    }
+  }
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+    \`,
+    providers: [ provideLoggingService() ]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+           constructor(private loggingService: LoggingService) {
+             loggingService.log('hi baby');
+           }
+
+  }
+
+  export const LOGGING_USE_DATE = true;
+
+  export function provideLoggingService() {
+    return {
+      provide: LoggingService,
+      useFactory: loggingFactory
+    };
+  }
+
+  export function loggingFactory() {
+    return new LoggingService(LOGGING_USE_DATE);
+  }
+
+  `
 };
 apip569 = {
-  name: '',
-  code: ``
+  name: 'CardFactory',
+  code: `
+
+  import { Component, Injectable } from '@angular/core';
+
+  @Injectable()
+  export class CardService {
+    constructor(public suite: string, public rank: string) { }
+
+    toString(): string {
+      return 'Card is ' + this.rank + ' of ' + this.suite;
+    }
+  }
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <h3>{{ cardTitle }}</h3>
+    \`,
+    providers: [{
+      provide: CardService,
+      useFactory: cardFactory
+    }]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+           cardTitle = '';
+           constructor(private cardService: CardService) {
+            this.cardTitle = cardService.toString();
+           }
+
+  }
+
+  export function cardFactory() {
+    const suite = Math.floor(Math.random() * 4);
+    const suiteName =
+          suite === 0 ? 'Clubs' : suite === 1 ? 'Diamonds' :
+          suite === 2 ? 'Hearts' : 'Spades';
+    const rank = Math.floor(Math.random() * 15);
+    const rankName =
+          rank === 0 ? 'Ace' : rank === 1 ? 'Joker' :
+          rank === 2 ? 'King' : rank === 3 ? 'Queen' :
+          (rank - 3).toString();
+    return new CardService(suiteName, rankName);
+  }
+
+  `
 };
 apip570 = {
-  name: '',
-  code: ``
+  name: 'Injector',
+  code: `
+
+  import { Component, Injector } from '@angular/core';
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <h3>{{ lanTitle }}</h3>
+    \`,
+    providers: [{
+      provide: 'language',
+      useValue: 'de'
+    }]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+           lanTitle = '';
+           constructor(private injector: Injector) {
+            this.lanTitle = 'Language is: ' + injector.get('language');
+           }
+  }
+
+  `
 };
 apip571 = {
-  name: '',
-  code: ``
+  name: 'NgBootstrap RadioGroup',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <div style="padding: 10px">
+                    <h2>Please select your car:</h2>
+                    <div [(ngModel)]="model" ngbRadioGroup name="radioBasic">
+                          <label ngbButtonLabel class="btn-primary">
+                            <input ngbButton type="radio" value="Audi"> Audi
+                          </label>
+                          <label ngbButtonLabel class="btn-primary">
+                            <input ngbButton type="radio" value="BMW"> BMW
+                          </label>
+                          <label ngbButtonLabel class="btn-primary">
+                            <input ngbButton type="radio" value="Mercedes"> Mercedes
+                          </label>
+                          <label ngbButtonLabel class="btn-primary">
+                            <input ngbButton type="radio" value="Porsche"> Porsche
+                          </label>
+                          <label ngbButtonLabel class="btn-primary">
+                            <input ngbButton type="radio" value="All"> All
+                          </label>
+                    </div>
+                    <hr>
+                    Your Selection: {{ model }}
+                </div>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+           model = 'BMW';
+
+  }
+
+  `
 };
 apip572 = {
-  name: '',
-  code: ``
+  name: 'Angular Material DatePicker',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <mat-form-field>
+                    <input matInput [matDatepicker]="picker" placeholder="Choose a date">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker touchUi="true" #picker></mat-datepicker>
+                </mat-form-field>
+
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip573 = {
-  name: '',
-  code: ``
+  name: 'Routing Basic',
+  code: `
+
+  import { NgModule, Component } from '@angular/core';
+  import { RouterModule, Routes, Router, ActivatedRoute } from '@angular/router';
+
+
+  @Component({
+    selector: 'app-hawaii',
+    template: \`
+          <h2>Hawaii</h2>
+          <img src="https://slice-of-pineapple.jpg">
+    \`
+  })
+  export class HawaiiComponent { }
+
+********************************************************************************
+
+  @Component({
+    selector: 'app-everything',
+    template: \`
+          <h2>Everything</h2>
+          Size: {{ size }}
+          <img src="https://pizza-hawaii.png">
+    \`
+  })
+  export class EverythingComponent {
+    size: string;
+
+    constructor(private route: ActivatedRoute) {
+      this.route.params.subscribe((params: any) => this.size = params['size']);
+    }
+  }
+
+  ********************************************************************************
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <h2>Pizzas</h2>
+                <a [routerLink]="['hawaii']">Hawaii</a>
+                <a [routerLink]="['everything', 'small']">Everything Small</a>
+                <a [routerLink]="['everything', 'large']">Everything Large</a>
+                <router-outlet></router-outlet>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+  }
+
+  ********************************************************************************
+
+  const appRoutes: Routes = [
+        { path: '', redirectTo: '/hawaii', pathMatch: 'full' },
+        { path: 'hawaii', component: HawaiiComponent },
+        { path: 'everything/:size', component: EverythingComponent }
+  ];
+
+  @NgModule({
+    imports: [ RouterModule.forRoot(appRoutes)],
+    exports: [ RouterModule ]
+  })
+  export class AppRoutingModule { }
+
+  `
 };
 apip574 = {
-  name: '',
-  code: ``
+  name: 'Routing Load Children',
+  code: `
+
+  import { NgModule, Component } from '@angular/core';
+  import { RouterModule, Routes, Router, ActivatedRoute } from '@angular/router';
+
+
+
+  @Component({
+    selector: 'app-hawaii',
+    template: \`
+          <h2>Hawaii</h2>
+          <img src="slice-of-pineapple.jpg">
+    \`
+  })
+  export class HawaiiComponent { }
+
+*****************************************************************************
+
+  @Component({
+    selector: 'app-other',
+    template: \`
+          <div>
+              <h2>Other Menu Items</h2>
+              <a [routerLink]="['pasta']" routerLinkActive="active">Pasta</a>
+              <a [routerLink]="['calzone']" routerLinkActive="active">Calzone</a>
+              <router-outlet></router-outlet>
+              <br>
+              <br>
+          </div>
+    \`
+  })
+  export class OtherComponent {}
+
+  *****************************************************************************
+
+  @Component({
+    selector: 'app-pasta',
+    template: \`
+              <div>
+                <h2>Pasta</h2>
+                <img src="https://spaghetti.jpg">
+              </div>
+    \`
+  })
+  export class NestedPastaComponent {}
+
+  *****************************************************************************
+
+  @Component({
+    selector: 'app-calzone',
+    template: \`
+              <div>
+                <h2>Calzone</h2>
+                <img src="https://calzone.jpg">
+              </div>
+    \`
+  })
+  export class NestedCalzoneComponent {}
+
+  *****************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <h2>Delivery Menu</h2>
+                <a [routerLink]="['hawaii']" routerLink="active">Hawaii</a>
+                <a [routerLink]="['other']" routerLink="active">Other Menu Items</a>
+                <router-outlet></router-outlet>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+  }
+
+  *****************************************************************************
+
+  const appRoutes: Routes = [
+        { path: '', redirectTo: '/hawaii', pathMatch: 'full' },
+        { path: 'hawaii', component: HawaiiComponent },
+        { path: 'other', component: OtherComponent, children: [
+          { path: '', redirectTo: 'pasta', pathMatch: 'full' },
+          { path: 'pasta', component: NestedPastaComponent },
+          { path: 'calzone', component: NestedCalzoneComponent }
+        ]
+      }
+  ];
+
+  @NgModule({
+    imports: [ RouterModule.forRoot(appRoutes)],
+    exports: [ RouterModule ]
+  })
+  export class AppRoutingModule { }
+
+  `
 };
 apip575 = {
-  name: '',
-  code: ``
+  name: 'Routing Navigation',
+  code: `
+
+  import { NgModule, Component } from '@angular/core';
+  import { RouterModule, Routes, Router } from '@angular/router';
+  import { Location } from '@angular/common';
+
+
+  @Component({
+    selector: 'app-first-component',
+    template: \`
+              <h1>{{ title }}</h1>
+    \`
+  })
+  export class FirstComponent {
+    title = 'Component 1';
+  }
+
+  @Component({
+    selector: 'app-second-component',
+    template: \`
+              <h1>{{ title }}</h1>
+    \`
+  })
+  export class SecondComponent {
+    title = 'Component 2';
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <button (click)="firstComponent()">First Component</button>
+                <button (click)="secondComponent()">Second Component</button>
+                <button (click)="back()">Go Back</button>
+
+                <router-outlet></router-outlet>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+          constructor(private router: Router, private location: Location) {}
+
+          firstComponent() {
+            this.router.navigate(['firstComponent']).then(result => {
+                    console.log('navigation result: ' + result);
+            });
+          }
+
+          secondComponent() {
+            this.router.navigateByUrl('/secondComponent');
+          }
+
+          back() {
+            this.location.back();
+          }
+  }
+
+
+  const appRoutes: Routes = [
+        { path: 'firstComponent', component: FirstComponent },
+        { path: 'secondComponent', component: SecondComponent },
+    ];
+
+  @NgModule({
+    imports: [ RouterModule.forRoot(appRoutes)],
+    exports: [ RouterModule ]
+  })
+  export class AppRoutingModule { }
+
+  `
 };
 apip576 = {
-  name: '',
-  code: ``
+  name: 'Route Guard',
+  code: `
+
+  import { NgModule, Component, Injectable, ViewChild } from '@angular/core';
+  import { RouterModule, Routes, Router, CanActivate } from '@angular/router';
+  import { Location } from '@angular/common';
+
+  @Injectable()
+  export class UserService {
+    private _authenticated = false;
+
+    get authenticated(): boolean {
+      return this._authenticated;
+    }
+
+    set authenticated(value: boolean) {
+      this._authenticated = value;
+    }
+
+    authenticate(name: string, password: string): void {
+      if ((name === 'user') && (password === 'password')) {
+        this._authenticated = true;
+      }
+    }
+
+  }
+
+  @Injectable()
+  export class ActivateService implements CanActivate {
+
+        constructor(private userService: UserService) { }
+
+        canActivate() {
+          return this.userService.authenticated;
+        }
+  }
+
+
+  @Component({
+    selector: 'app-non-authenticated-component',
+    template: \`
+            <div>
+              <h2>Non-authenticated</h2>
+              <p>This component can be accessed without authentication</p>
+            </div>
+    \`
+  })
+  export class NonAuthenticatedComponent { }
+
+  @Component({
+    selector: 'app-authenticated-component',
+    template: \`
+            <div>
+              <h2>Authenticated</h2>
+              <p>This component cannot be accessed without authentication</p>
+            </div>
+    \`
+  })
+  export class AuthenticatedComponent { }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <span *ngIf="!userService.authenticated">
+                User: <input type="input" #name>
+                Password: <input type="input" #password>
+                <input type="button" (click)="logIn()" value="LogIn">
+                </span>
+                Authenticated: {{ userService.authenticated }}
+                <hr>
+                <a [routerLink]="['non-authenticated']">Non-Authenticated</a>
+                <a [routerLink]="['authenticated']">Authenticated</a>
+                <router-outlet></router-outlet>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+           loggedIn = false;
+           @ViewChild('name') name;
+           @ViewChild('password') password;
+
+          constructor(public userService: UserService) {}
+
+          logIn() {
+            this.userService.authenticate(this.name.nativeElement.value,
+                                          this.password.nativeElement.value);
+          }
+  }
+
+
+  const appRoutes: Routes = [
+        { path: 'authenticated', component: AuthenticatedComponent,
+                                 canActivate: [ActivateService] },
+        { path: '**', component: NonAuthenticatedComponent },
+    ];
+
+  @NgModule({
+    imports: [ RouterModule.forRoot(appRoutes)],
+    exports: [ RouterModule ],
+    providers: [ActivateService, UserService ]
+  })
+  export class AppRoutingModule { }
+
+  `
 };
 apip577 = {
   name: '',
