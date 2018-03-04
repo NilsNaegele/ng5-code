@@ -26442,7 +26442,7 @@ apip543 = {
   `
 };
 apip544 = {
-  name: 'Directive',
+  name: 'Sizer Directive',
   code: `
 
   import { Directive, Input, ElementRef, Renderer, OnInit } from '@angular/core';
@@ -26480,52 +26480,590 @@ export class AppComponent {
   `
 };
 apip545 = {
-  name: '',
-  code: ``
+  name: 'Hoverer Directive',
+  code: `
+
+  import { Directive, Input, ElementRef, Renderer } from '@angular/core';
+
+  @Directive({
+    selector: '[appHoverer]',
+    host: {
+      '(mouseenter)': 'onMouseEnter()',
+      '(mouseleave)':'onMouseLeave()'
+    }
+  })
+  export class HovererDirective {
+    @Input() appHoverer: string;
+
+
+    constructor(private elementRef: ElementRef,
+                private renderer: Renderer) { }
+
+    onMouseEnter() {
+      this.renderer.setElementStyle(this.elementRef.nativeElement, 'color', this.appHoverer);
+    }
+
+    onMouseLeave() {
+      this.renderer.setElementStyle(this.elementRef.nativeElement, 'color', 'black');
+    }
+
+  }
+
+  *************************************************************************************
+
+  import { Component } from '@angular/core';
+
+
+@Component({
+  selector: 'app-root',
+  template: \`
+            <h1 appHoverer="red">{{ title }}</h1>
+  \`
+})
+export class AppComponent {
+         title = 'Angular 5 Projects';
+
+}
+
+  `
 };
 apip546 = {
-  name: '',
-  code: ``
+  name: 'Input Binding',
+  code: `
+
+  import { Component, Input} from '@angular/core';
+
+  export interface Car {
+    make: string;
+    model: string;
+  }
+
+  @Component({
+    selector: 'app-car',
+    template: \`
+            <p>
+                  {{ car.make }} : {{ car.model }}
+            </p>
+    \`
+  })
+  export class CarComponent  {
+    @Input() car: Car;
+
+  }
+
+*************************************************************************
+
+
+import { Component } from '@angular/core';
+
+import { Car } from './car/car.component';
+
+@Component({
+  selector: 'app-root',
+  template: \`
+            <h1>{{ title }}</h1>
+            <app-car *ngFor="let car of cars" [car]="car"></app-car>
+  \`
+})
+export class AppComponent {
+         title = 'Angular 5 Projects';
+
+         cars: Array<Car> = [
+              { make: 'Audi', model: 'A8' },
+              { make: 'BMW', model: 'X3' },
+              { make: 'Porsche', model: '911' }
+         ];
+
+}
+
+  `
 };
 apip547 = {
-  name: '',
-  code: ``
+  name: 'NgContent',
+  code: `
+
+  import { Component, ContentChildren } from '@angular/core';
+
+  @Component({
+    selector: 'app-technology',
+    template: \`
+          <div>
+                &nbsp;-&nbsp;<ng-content></ng-content>
+          </div>
+    \`
+  })
+  export class TechnologyComponent { }
+
+  @Component({
+    selector: 'app-paragraph',
+    template: \`
+          <div>
+              <ng-content></ng-content>
+              <p *ngIf="technology">Number of technologies: {{ technology.length }}</p>
+          </div>
+    \`,
+    styles: [\`
+          div {
+            border: 1px solid #c0c0c0;
+            margin: 10px;
+            padding: 10px;
+          }
+          p {
+            margin: 5px 0;
+          }
+    \`]
+  })
+  export class ParagraphComponent {
+    @ContentChildren(TechnologyComponent) technology;
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              <app-paragraph>Single Page Application Frameworks
+                <app-technology>Angular 5</app-technology>
+                <app-technology>React 16</app-technology>
+                <app-technology>Vue 2</app-technology>
+              </app-paragraph>
+              <app-paragraph>CSS Frameworks
+                <app-technology>Angular Material 5</app-technology>
+                <app-technology>Bootstrap 4</app-technology>
+                <app-technology>Materialize 1 Alpha</app-technology>
+              </app-paragraph>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+
+  }
+
+  `
 };
 apip548 = {
-  name: '',
-  code: ``
+  name: 'NgOnChanges',
+  code: `
+
+  import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+
+  @Component({
+    selector: 'app-name',
+    template: \`
+          <p *ngFor="let change of changes">
+                {{ change }}
+          </p>
+    \`
+  })
+  export class NameComponent implements OnChanges {
+    @Input() name;
+    changes: string[] = [''];
+
+    ngOnChanges(changes: SimpleChanges) {
+      this.changes.push(JSON.stringify(changes));
+    }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              Change this field: <input [(ngModel)]="name">
+              <hr>
+              History
+              <app-name [name]="name"></app-name>
+
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+           name = '';
+
+  }
+
+  `
 };
 apip549 = {
-  name: '',
-  code: ``
+  name: 'NgOnit',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              <p *ngFor="let log of logs">
+                    {{ log }}
+              </p>
+    \`
+  })
+  export class AppComponent implements OnInit {
+           title = 'Angular 5 Projects';
+           logs: Array<string> = [ new Date() + '' ];
+
+           constructor() {
+             for (let i = 0; i < 1000; i++) {
+               console.log(i);
+             }
+           }
+
+           ngOnInit() {
+            this.logs.push(new Date() + '');
+           }
+
+  }
+
+  `
 };
 apip550 = {
-  name: '',
-  code: ``
+  name: 'NgDoCheck',
+  code: `
+
+  import { Component, Input, DoCheck, IterableDiffers } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-numbers',
+    template: \`
+            {{ numbers }}
+            <br>
+            <p *ngFor="let change of changes">
+                      {{ change }}
+            </p>
+    \`,
+    styles: [\`
+          p {
+            padding: 0;
+            margin: 0;
+          }
+    \`]
+  })
+  export class NumbersComponent implements DoCheck {
+    @Input() numbers: string[];
+    changes: Array<string> = [];
+    differ;
+
+    constructor(private differs: IterableDiffers) {
+      this.differ = differs.find([]).create(null);
+    }
+
+    ngDoCheck() {
+      const differences = this.differ.diff(this.numbers);
+      if (differences) {
+        if (differences.forEachAddedItem) {
+            differences.forEachAddedItem((item) => {
+                if ((item) && (item.item)) {
+                  this.changes.push('added ' + item.item);
+                }
+            });
+        }
+        if (differences.forEachRemovedItem) {
+          differences.forEachRemovedItem((item) => {
+            if ((item) && (item.item)) {
+              this.changes.push('removed ' + item.item);
+            }
+          });
+        }
+      }
+    }
+  }
+
+**************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              Enter Array (comma-separated):
+              <input [(ngModel)]="numbers">
+              <br>
+              <app-numbers [numbers]="numbers.split(',')"></app-numbers>
+
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+           numbers = '';
+
+  }
+
+  `
 };
 apip551 = {
-  name: '',
-  code: ``
+  name: 'ContentChildren',
+  code: `
+
+  import { Component, Input, AfterContentInit,
+                      ContentChildren, QueryList } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-member',
+    template: \`
+           <p [style.backgroundColor]="getBackgroundColor()">
+           <ng-content></ng-content>
+    \`,
+    styles: [\`
+          p {
+            padding: 5px;
+          }
+    \`]
+  })
+  export class MemberComponent {
+         selected = false;
+         getBackgroundColor() {
+           return this.selected ? '#FFCCCC' : '#CCFFFF';
+         }
+
+  }
+
+  **************************************************************************
+
+  @Component({
+    selector: 'app-crew',
+    template: \`
+              <p><ng-content></ng-content></p>
+    \`
+  })
+  export class CrewComponent implements AfterContentInit {
+          @ContentChildren(MemberComponent) members: QueryList<MemberComponent>;
+
+          ngAfterContentInit() {
+            this.members.first.selected = true;
+          }
+  }
+
+  **************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+                  <app-crew>
+                    <app-member>Carmen</app-member>
+                    <app-member>Barbie</app-member>
+                    <app-member>Maria</app-member>
+                    <app-member>Susanne</app-member>
+                    <app-member>Hanne</app-member>
+                    <app-member>Gina</app-member>
+                    <app-member>Nils</app-member>
+                  </app-crew>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+
+  }
+
+  `
 };
 apip552 = {
-  name: '',
-  code: ``
+  name: 'ContentChild',
+  code: `
+
+  import { Component, ContentChild, AfterContentChecked } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-card',
+    template: \`
+           <ng-content></ng-content>
+    \`
+  })
+  export class CardComponent {}
+
+  **************************************************************************
+
+  const BMW_X3 = 'BMW X3';
+  const MERCEDES_PICKUP_X3 = 'Mercedes Pick-Up X3';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              <app-card>{{ car }}</app-card>
+              <button (click)="pickCar()">Pick a Car</button>
+    \`
+  })
+  export class AppComponent implements AfterContentChecked {
+           title = 'Angular 5 Projects';
+           car = BMW_X3;
+
+           @ContentChild(CardComponent) contentChild: CardComponent;
+
+           ngAfterContentChecked() {
+             console.log('content inside card has been checked: ' + this.car);
+           }
+
+           pickCar() {
+             this.car = this.car === BMW_X3 ? MERCEDES_PICKUP_X3 : BMW_X3;
+           }
+
+  }
+
+  `
 };
 apip553 = {
-  name: '',
-  code: ``
+  name: 'ViewChild',
+  code: `
+
+  import { Component, ViewChild, AfterViewInit } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              Input: <input #box (keypress)="0"> {{ box.value }}
+    \`
+  })
+  export class AppComponent implements AfterViewInit {
+           title = 'Angular 5 Projects';
+           @ViewChild('box') inputBox;
+
+           ngAfterViewInit() {
+             // viewchild variables are available in this method
+             // set initial focus
+             this.inputBox.nativeElement.focus();
+           }
+
+  }
+
+  `
 };
 apip554 = {
-  name: '',
-  code: ``
+  name: 'AfterViewChecked',
+  code: `
+
+  import { Component, ViewChild, AfterViewChecked } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              <input [(ngModel)]="input">
+              <br>
+              {{ input }}
+              <br>
+              <div #message></div>
+    \`
+  })
+  export class AppComponent implements AfterViewChecked {
+           title = 'Angular 5 Alpha Projects, are we there yet?';
+           @ViewChild('message') message;
+           input = '';
+
+           ngAfterViewChecked() {
+             console.log('AfterViewChecked');
+             if (isNaN(parseInt(this.input, 10))) {
+               this.message.nativeElement.innerHTML = 'Input not numeric';
+             } else {
+               this.message.nativeElement.innerHTML = 'Input is numeric';
+             }
+
+           }
+
+  }
+
+  `
 };
 apip555 = {
-  name: '',
-  code: ``
+  name: 'OnInit, OnDestroy',
+  code: `
+
+  import { Component, OnInit, OnDestroy } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+              <h3>{{ count }}</h3>
+    \`
+  })
+  export class AppComponent implements OnInit, OnDestroy {
+           title = 'Angular 5 Alpha Projects, are we there yet?';
+           interval: any;
+           count = 0;
+
+           ngOnInit() {
+             this.interval = setInterval(() => this.count++ );
+           }
+
+           ngOnDestroy() {
+             clearInterval(this.interval);
+             delete this.interval;
+           }
+
+  }
+
+  `
 };
 apip556 = {
-  name: '',
-  code: ``
+  name: 'Input, Output, EventEmitter',
+  code: `
+
+  import { Component, Input, Output, EventEmitter } from '@angular/core';
+
+  export interface Car {
+    make: string;
+    model: string;
+  }
+
+  ************************************************************************
+
+  @Component({
+        selector: 'app-car',
+        template: \`
+                <p>
+                    {{ car.make }} : {{ car.model }}
+                    <button (click)="onDelete(car)">Delete</button>
+                </p>
+        \`
+  })
+  export class CarComponent {
+        @Input() car: Car;
+        @Output() carDelete = new EventEmitter<Car>();
+
+        onDelete(car) {
+          this.carDelete.emit(car);
+        }
+
+  }
+
+  ************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+
+              <app-car *ngFor="let car of cars"
+                       (carDelete)="delete(car)" [car]="car">
+              </app-car>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects, are we there yet?';
+
+           cars: Array<Car> = [
+              { make: 'Audi', model: 'A8' },
+              { make: 'BMW', model: 'M4' },
+              { make: 'Ford', model: 'Mustang' }
+           ];
+
+           delete(car: Car) {
+             console.log('Deleting car: ' + JSON.stringify(car));
+           }
+
+  }
+
+  `
 };
 apip557 = {
   name: '',
