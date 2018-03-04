@@ -26685,7 +26685,7 @@ apip548 = {
   `
 };
 apip549 = {
-  name: 'NgOnit',
+  name: 'NgOnInit',
   code: `
 
   import { Component, OnInit } from '@angular/core';
