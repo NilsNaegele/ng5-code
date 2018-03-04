@@ -27066,44 +27066,585 @@ apip556 = {
   `
 };
 apip557 = {
-  name: '',
-  code: ``
+  name: 'Component Nesting',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+        selector: 'app-customer',
+        template: \`
+                <div class="customer">
+                        [customer]
+                </div>
+        \`,
+        styles: [\`
+            .customer {
+              background-color: #fefbd8;
+              margin: 10px;
+              padding: 10px;
+            }
+        \`]
+  })
+  export class CustomerComponent { }
+
+  ************************************************************************
+
+  @Component({
+    selector: 'app-customer-list',
+    template: \`
+            <div class="customerList">
+                <p>
+                    [customer list]
+                </p>
+            </div>
+            <app-customer></app-customer>
+            <app-customer></app-customer>
+            <app-customer></app-customer>
+    \`,
+    styles: [\`
+        .customerList {
+          background-color: #80ced6;
+          margin: 10px;
+          padding: 10px;
+        }
+    \`]
+  })
+  export class CustomerListComponent { }
+
+  ************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+
+              <div class="app">
+                [app]
+                  <app-customer-list>
+                  </app-customer-list>
+              </div>
+    \`,
+    styles: [\`
+          .app {
+            background-color: #d5f4e6;
+            margin: 10px;
+            padding: 10px;
+          }
+    \`]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip558 = {
-  name: '',
-  code: ``
+  name: 'Nested Components With Input',
+  code: `
+
+  import { Component, Input } from '@angular/core';
+
+
+  @Component({
+        selector: 'app-customer',
+        template: \`
+                <div class="customer">
+                     {{ customer.name }} {{ customer.city }}
+                </div>
+        \`,
+        styles: [\`
+            .customer {
+              background-color: #fefbd8;
+              margin: 10px;
+              padding: 10px;
+            }
+        \`]
+  })
+  export class CustomerComponent {
+    @Input() customer;
+  }
+
+  ************************************************************************
+
+  @Component({
+    selector: 'app-customer-list',
+    template: \`
+            <div class="customerList">
+                <p>
+                    [customer list]
+                </p>
+              <app-customer *ngFor="let customer of customerList"
+                          [customer]="customer">
+              </app-customer>
+            </div>
+    \`,
+    styles: [\`
+        .customerList {
+          background-color: #80ced6;
+          margin: 10px;
+          padding: 10px;
+        }
+    \`]
+  })
+  export class CustomerListComponent {
+
+        customerList = [
+            { name: 'Carmen', city: 'Amsterdam' },
+            { name: 'Igor', city: 'San Francisco' },
+            { name: 'Nils', city: 'Berlin'}
+        ];
+
+  }
+
+  ************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+
+              <div class="app">
+                [app]
+                  <app-customer-list>
+                  </app-customer-list>
+              </div>
+    \`,
+    styles: [\`
+          .app {
+            background-color: #d5f4e6;
+            margin: 10px;
+            padding: 10px;
+          }
+    \`]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip559 = {
-  name: '',
-  code: ``
+  name: 'Nested Components With Input, Output && EventEmitter',
+  code: `
+
+  import { Component, Input, Output, EventEmitter } from '@angular/core';
+
+
+  @Component({
+        selector: 'app-customer',
+        template: \`
+                <div class="customer" (click)="onClicked()">
+                     {{ customer.name }} {{ customer.city }}
+                </div>
+        \`,
+        styles: [\`
+            .customer {
+              background-color: #fefbd8;
+              margin: 10px;
+              padding: 10px;
+            }
+        \`]
+  })
+  export class CustomerComponent {
+    @Input() customer;
+    @Output() clicked: EventEmitter<string> = new EventEmitter<string>();
+    onClicked() {
+      this.clicked.emit(this.customer.name);
+    }
+  }
+
+  ************************************************************************
+
+  @Component({
+    selector: 'app-customer-list',
+    template: \`
+            <div class="customerList">
+                <p>
+                    [customer list]
+                </p>
+              <app-customer *ngFor="let customer of customerList"
+                          [customer]="customer" (clicked)="onCustomerClicked($event)">
+              </app-customer>
+            </div>
+    \`,
+    styles: [\`
+        .customerList {
+          background-color: #80ced6;
+          margin: 10px;
+          padding: 10px;
+        }
+    \`]
+  })
+  export class CustomerListComponent {
+
+        customerList = [
+            { name: 'Carmen', city: 'Amsterdam' },
+            { name: 'Igor', city: 'San Francisco' },
+            { name: 'Nils', city: 'Berlin'}
+        ];
+
+        onCustomerClicked(customerName: string) {
+          alert('Customer Clicked: ' + customerName);
+        }
+
+  }
+
+  ************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1>{{ title }}</h1>
+
+              <div class="app">
+                [app]
+                  <app-customer-list>
+                  </app-customer-list>
+              </div>
+    \`,
+    styles: [\`
+          .app {
+            background-color: #d5f4e6;
+            margin: 10px;
+            padding: 10px;
+          }
+    \`]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip560 = {
-  name: '',
-  code: ``
+  name: 'ViewChild, ElementRef, AfterViewInit',
+  code: `
+
+  import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+              <h1 #title></h1>
+              The title is: {{ title.innerHTML }}
+
+    \`,
+    styles: [\`
+          h1 {
+            background-color: #d5f4e6;
+            margin: 10px;
+            padding: 10px;
+          }
+    \`]
+  })
+  export class AppComponent implements AfterViewInit {
+           @ViewChild('title') titleRef: ElementRef;
+
+           ngAfterViewInit() {
+             this.titleRef.nativeElement.innerHTML = 'Are we there yet?';
+           }
+
+  }
+
+  `
 };
 apip561 = {
-  name: '',
-  code: ``
+  name: 'ViewChildren, AfterViewInit',
+  code: `
+
+  import { Component, ViewChildren, AfterViewInit } from '@angular/core';
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+              <p #paragraph1>The will to win is nothing without the will to prepare.
+                              I have met my hero, he is me. Code with passion.
+                              It is the quality of the effect you have on others
+                              that determines your growth. Fail fast. Fail often.
+              </p>
+              <p #paragraph2>It is at the borders of pain and suffering that the
+                             the men are separated from the boys.
+                              Think big, think positive. Growth.
+                              Code, exercise, eat, sleep. Repeat. Improve, improve, improve!
+              </p>
+              <p *ngIf="note">{{ note }}</p>
+    \`,
+    styles: [\`
+          p {
+            background-color: #FFE5CC;
+            text-align: center;
+            padding: 15px;
+          }
+    \`]
+  })
+  export class AppComponent implements AfterViewInit {
+           @ViewChildren('paragraph1, paragraph2') paragraphs;
+           title = 'Angular 5 Alpha Projects';
+           note = '';
+
+           ngAfterViewInit() {
+             setTimeout(() => this.note = 'Number of Paragraphs: ' + this.paragraphs.length);
+           }
+  }
+
+  `
 };
 apip562 = {
-  name: '',
-  code: ``
+  name: 'NgContent Transclusion',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-paragraph',
+    template: \`
+          <p>
+              <ng-content></ng-content>
+          </p>
+    \`,
+    styles: [\`
+          p {
+            border: 3px solid #c0c0c0;
+          }
+    \`]
+  })
+  export class ParagraphComponent { }
+
+  ************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+              <p>
+              <app-paragraph>The will to win is nothing without the will to prepare.
+                              I have met my hero, he is me. Code with passion.
+                              It is the quality of the effect you have on others
+                              that determines your growth. Fail fast. Fail often.
+              </app-paragraph>
+              <app-paragraph>It is at the borders of pain and suffering that the
+                             the men are separated from the boys.
+                              Think big, think positive. Growth.
+                              Code, exercise, eat, sleep. Repeat. Improve, improve, improve!
+              </app-paragraph>
+              </p>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip563 = {
-  name: '',
-  code: ``
+  name: 'ContentChild',
+  code: `
+
+  import { Component, ContentChild } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-paragraph',
+    template: \`
+          <div>
+            <strong>{{ paraTitle.nativeElement.innerHTML }}</strong>
+            <p>
+                <ng-content></ng-content>
+            </p>
+          </div>
+    \`,
+    styles: [\`
+          p {
+            border: 3px solid #c0c0c0;
+          }
+    \`]
+  })
+  export class ParagraphComponent {
+    @ContentChild('paraTitle') paraTitle;
+  }
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+              <p>
+                <app-paragraph><title #paraTitle>1st Paragraph</title>
+                              The will to win is nothing without the will to prepare.
+                              I have met my hero, he is me. Code with passion.
+                              It is the quality of the effect you have on others
+                              that determines your growth. Fail fast. Fail often.
+                </app-paragraph>
+                <app-paragraph><title #paraTitle>2nd Paragraph</title>
+                              It is at the borders of pain and suffering that the
+                              the men are separated from the boys.
+                              Think big, think positive. Growth.
+                              Code, exercise, eat, sleep. Repeat. Improve, improve, improve!
+                </app-paragraph>
+              </p>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip564 = {
-  name: '',
-  code: ``
+  name: 'Injectable',
+  code: `
+
+  import { Component, Input, Injectable, OnInit } from '@angular/core';
+
+  @Injectable()
+  export class CarService {
+
+          constructor() {
+            console.log('CarService: constructor');
+          }
+
+          isSuperCharged(car: string) {
+            return car === 'Porsche 911' ? 'yes' : 'no';
+          }
+  }
+
+  ************************************************************************
+
+  @Component({
+        selector: 'app-car',
+        template: \`
+                <h3>
+                    {{ name }} is SuperCharged: {{ superCharged }}
+                </h3>
+        \`,
+        providers: [ CarService ]
+  })
+  export class CarComponent implements OnInit {
+    @Input() name;
+    superCharged = '';
+    constructor(private carService: CarService) { }
+
+    ngOnInit() {
+      this.superCharged = this.carService.isSuperCharged(this.name);
+    }
+  }
+
+  ************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+              <app-car name="BMW X3"></app-car>
+              <app-car name="Porsche 911"></app-car>
+              <app-car name="Audi A8"></app-car>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip565 = {
-  name: '',
-  code: ``
+  name: 'Service Injected In Root Component',
+  code: `
+
+  import { Component, Input, Injectable, OnInit } from '@angular/core';
+
+  @Injectable()
+  export class CarService {
+
+          constructor() {
+            console.log('CarService: constructor');
+          }
+
+          isSuperCharged(car: string) {
+            return car === 'Porsche 911' ? 'yes' : 'no';
+          }
+  }
+
+  @Component({
+        selector: 'app-car',
+        template: \`
+                <h3>
+                    {{ name }} is SuperCharged: {{ superCharged }}
+                </h3>
+        \`
+  })
+  export class CarComponent implements OnInit {
+    @Input() name;
+    superCharged = '';
+    constructor(private carService: CarService) { }
+
+    ngOnInit() {
+      this.superCharged = this.carService.isSuperCharged(this.name);
+    }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+              <app-car name="BMW X3"></app-car>
+              <app-car name="Porsche 911"></app-car>
+              <app-car name="Audi A8"></app-car>
+    \`,
+    providers: [ CarService ]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip566 = {
-  name: '',
-  code: ``
+  name: 'Service Injected In AppModule',
+  code: `
+
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { FormsModule } from '@angular/forms';
+  import { HttpClientModule } from '@angular/common/http';
+
+  import { AppComponent, CarComponent, CarService } from './app.component';
+
+
+  @NgModule({
+    declarations: [
+      AppComponent,
+      CarComponent
+    ],
+    imports: [
+      BrowserModule,
+      FormsModule,
+      HttpClientModule
+    ],
+    providers: [ CarService ],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule {
+
+  }
+
+  `
 };
 apip567 = {
   name: '',
