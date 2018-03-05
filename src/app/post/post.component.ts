@@ -28242,44 +28242,571 @@ apip576 = {
   `
 };
 apip577 = {
-  name: '',
-  code: ``
+  name: 'Observable Of',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import { Subscription } from 'rxjs/Subscription';
+  import 'rxjs/add/observable/of';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+           constructor() {
+             const array: Array<string> = ['event1', 'event2', 'event3'];
+             const observable = Observable.of(array);
+             const subscription = observable.subscribe(
+               (x) => console.log('Next: ' + x),
+               (err) => console.log('Error: ' + err),
+               () => console.log('Completed')
+             );
+           }
+  }
+
+  `
 };
 apip578 = {
-  name: '',
-  code: ``
+  name: 'Observable Range',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import { Subscription } from 'rxjs/Subscription';
+  import 'rxjs/add/observable/range';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+
+           constructor() {
+             const observable = Observable.range(0, 1000);
+             const subscription = observable.subscribe(
+               (value) => console.log(\`Next: \${value} \`),
+               (error) => console.log(\`Error: \${error} \`),
+               () => console.log(\`Completed\`)
+             );
+           }
+  }
+
+  `
 };
 apip579 = {
-  name: '',
-  code: ``
+  name: 'Subject',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import { Subject } from 'rxjs/Subject';
+  import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                Search: <input type="text" (keyup)="onChange($event.target.value)">
+                <div *ngFor="let log of logs">Search: {{ log }}</div>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+
+           searchText: string;
+           searchSubject: Subject<string>;
+           logs: Array<string> = [];
+
+           constructor() {
+             this.searchSubject = new Subject<string>();
+             this.searchSubject.pipe(
+               debounceTime(300),
+               distinctUntilChanged()
+             ).subscribe(searchText => this.logs.push(searchText));
+           }
+
+           onChange(searchText: string) {
+             this.searchSubject.next(searchText);
+           }
+  }
+
+  `
 };
 apip580 = {
-  name: '',
-  code: ``
+  name: 'Observable FromEvent',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+
+  import 'rxjs/add/observable/merge';
+  import 'rxjs/add/observable/fromEvent';
+  import 'rxjs/add/operator/bufferTime';
+  import 'rxjs/add/operator/filter';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                Search: <input type="text">
+                <div *ngFor="let log of logs">Search: {{ log }}</div>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+           logs: string[] = [];
+
+           constructor() {
+             const observable = Observable.merge(
+                Observable.fromEvent(document, 'keydown'),
+                Observable.fromEvent(document, 'click'),
+                Observable.fromEvent(document, 'mousemove'),
+                Observable.fromEvent(document, 'scroll'),
+                Observable.fromEvent(document, 'touchstart')
+             );
+
+             const idleEventObservable = observable.bufferTime(1000)
+                   .filter((arr) => {
+                     return arr.length === 0;
+                   })
+                   .subscribe(() => this.logs.push('idle'));
+
+           }
+  }
+
+  `
 };
 apip581 = {
-  name: '',
-  code: ``
+  name: 'HttpClient',
+  code: `
+
+  import { Component, Injectable, OnInit } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+
+  export class Language {
+    name: string;
+    code: string;
+    longCode: string;
+  }
+
+  @Injectable()
+  export class SwaggerService {
+
+    constructor(private http: HttpClient) { }
+
+    getLanguages() {
+      return this.http.get<Language[]>('https://languagetool.org/api/v2/languages');
+    }
+
+  }
+
+****************************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                  <h2>Countries</h2>
+                    <ul>
+                        <li *ngFor="let language of languages">
+                              {{ language.name }} {{ language.code }}
+                        </li>
+                    </ul>
+    \`,
+    providers: [ SwaggerService ]
+  })
+  export class AppComponent implements OnInit {
+           title = 'Angular 5 Projects';
+           languages: Language[] = [];
+
+           constructor(private swaggerService: SwaggerService) { }
+
+           ngOnInit() {
+             this.swaggerService.getLanguages().subscribe(
+               response => this.languages = response,
+               error => console.log(error)
+             );
+           }
+
+  }
+
+  `
 };
 apip582 = {
-  name: '',
-  code: ``
+  name: 'HttpHeaders',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+
+  import { Observable } from 'rxjs/Observable';
+  import { of } from 'rxjs/observable/of';
+  import { catchError, map, tap } from 'rxjs/operators';
+
+
+  const maKey = '10WYjpdztcmsheZU9AWLNQcE9g9wp1qdRkFjsneaEp2Yf68nYZ';
+  const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'X-Mashape-Key': maKey
+    })
+  };
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+
+                <input [(ngModel)]="search" placeholder="City">
+                <button (click)="doSearchConcatUrl()">Search (Concatenated URL)</button>
+                <button (click)="doSearchOptionParameters()">
+                      Search (Parameters Object)
+                </button>
+                <button (click)="doSearchOptionSearch()">Search (Search Object)</button>
+                <p>{{ result }}</p>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+           search = 'Berlin';
+           result = '';
+
+           constructor(private http: HttpClient) { }
+
+           doSearchConcatUrl() {
+            const concatenatedUrl =
+                            'https://trailapi-trailapi.p.mashape.com?q[city_cont]='
+                                     + encodeURIComponent(this.search);
+            return this.http.get<any[]>(concatenatedUrl, httpOptions).subscribe(
+              response => this.result = JSON.stringify(response),
+              error => catchError(this.handleError<any[]>('doSearchConcatUrl', []))
+            );
+           }
+
+           doSearchOptionParameters() {
+            httpOptions.headers.append('params', ['q[city_cont]', this.search]);
+             return
+             this.http.get<any[]>('https://trailapi-trailapi.p.mashape.com?q[city_cont]='
+             + encodeURIComponent(this.search), httpOptions).subscribe(
+              response => this.result = JSON.stringify(response),
+              error => catchError(this.handleError<any[]>('doSearchOptionParameters', []))
+            );
+           }
+
+           doSearchOptionSearch() {
+            httpOptions.headers.append('search', ['q[city_cont]', this.search]);
+             return
+             this.http.get<any[]>('https://trailapi-trailapi.p.mashape.com?q[city_cont]='
+             + encodeURIComponent(this.search), httpOptions).subscribe(
+              response => this.result = JSON.stringify(response),
+              error => catchError(this.handleError<any[]>('doSearchOptionSearch', []))
+            );
+           }
+
+
+           private handleError<T>(operation = 'operation', result?: T) {
+             return (error: any): Observable<T> => {
+               console.log(\`\${operation} failed: \${error.message}\`);
+               return of(result as T);
+             };
+           }
+
+  }
+
+  `
 };
 apip583 = {
-  name: '',
-  code: ``
+  name: 'HttpClient GET Strongly Typed',
+  code: `
+
+  import { Component, OnInit, ViewChild } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+
+
+  export class Post {
+    userId: number;
+    id: number;
+    title: string;
+    body: string;
+  }
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <ul>
+                    <li *ngFor="let post of posts">
+                          {{ post.title }}
+                          <button (click)="show(post.id)">Show</button>
+                    </li>
+                </ul>
+                <div #modal class="modal">
+                      <div class="modal-content">
+                            <span class="close" (click)="close()">&times;</span>
+                            <h3>{{ post.title }}</h3>
+                            <p>{{ post.body }}</p>
+                      </div>
+                </div>
+    \`
+  })
+  export class AppComponent implements OnInit {
+           title = 'Angular 5 Projects';
+           @ViewChild('modal') modal: any;
+           private apiURL = 'http://jsonplaceholder.typicode.com/posts';
+           posts: Post[] = [];
+           post = {};
+
+
+           constructor(private http: HttpClient) { }
+
+           ngOnInit() {
+             return this.http.get<Post[]>(this.apiURL)
+                             .subscribe(response => this.posts = response);
+           }
+
+           show(id: number) {
+             this.http.get<Post>(\`\${this.apiURL}/\${id}\`)
+                      .subscribe(response => {
+                        this.post = response;
+                        this.modal.nativeElement.style.display = 'block';
+                      });
+           }
+
+           close() {
+             this.modal.nativeElement.style.display = 'none';
+           }
+
+  }
+
+  `
 };
 apip584 = {
-  name: '',
-  code: ``
+  name: 'HttpClient POST',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+
+
+  export class Post {
+    title: string;
+    body: string;
+  }
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <div>
+                  Title:
+                  <br>
+                  <input type="text" [(ngModel)]="addTitle" size="50">
+                  <br>
+                  <br>
+                  Body:
+                  <br>
+                  <textarea [(ngModel)]="body" rows="2" cols="50"></textarea>
+                  <br>
+                  <button (click)="add()">Add</button>
+                </div>
+
+                <p><strong>You Added:</strong></p>
+                <p *ngIf="added.length === 0">None</p>
+                <p *ngFor="let add of added">
+                        {{ add.title }}, {{ add.body }}
+                </p>
+    \`,
+    styles: [\`
+          div {
+            padding: 20px;
+            background-color: #C0C0C0;
+          }
+    \`]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Projects';
+
+           private apiURL = 'http://jsonplaceholder.typicode.com/posts';
+           addTitle = '';
+           body = '';
+           added = new Array<Post>();
+
+           constructor(private http: HttpClient) { }
+
+          add() {
+            const requestBody: Post = {
+                title: this.addTitle || '[Unspecified]',
+                body: this.body || '[Unspecified]'
+            };
+
+            this.http.post<Post>(this.apiURL, requestBody).subscribe(response => {
+              this.added.push(response);
+            });
+          }
+
+  }
+
+  `
 };
 apip585 = {
-  name: '',
-  code: ``
+  name: 'HttpClient Pipe Map',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+
+  import { catchError, map, tap } from 'rxjs/operators';
+
+  export class Post {
+    private _title: string;
+    private _body: string;
+
+    constructor(title: string, body: string) {
+      const titleNAN = title || '';
+      const bodyNAN = body || '';
+      this._title = titleNAN.length > 10 ? titleNAN.substring(0, 9) : titleNAN;
+      this._body = bodyNAN.length > 20 ? bodyNAN.substring(0, 19) : bodyNAN;
+    }
+
+    get title(): string {
+      return this._title;
+    }
+
+    get body(): string {
+      return this._body;
+    }
+
+
+  }
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <ul>
+                      <li *ngFor="let post of posts">
+                          <strong>{{ post.title }}:</strong> {{ post.body }}
+                      </li>
+                </ul>
+    \`
+  })
+  export class AppComponent implements OnInit {
+           title = 'Angular 5 Projects';
+
+           private apiURL = 'http://jsonplaceholder.typicode.com/posts';
+           posts: Post[] = [];
+
+           constructor(private http: HttpClient) { }
+
+            ngOnInit() {
+              return this.http.get<Post[]>(this.apiURL).pipe(
+                map(
+                  response => {
+                    const tempArray: Post[] = [];
+                    for (const item of response){
+                      const post = new Post(item.title, item.body);
+                      tempArray.push(post);
+                    }
+                    return tempArray;
+                  }
+                ))
+                .subscribe(response => this.posts = response
+              );
+            }
+
+  }
+
+  `
 };
 apip586 = {
-  name: '',
-  code: ``
+  name: 'HttpClient Service',
+  code: `
+
+  import { Component, Injectable, OnInit } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+
+  import { Observable } from 'rxjs/Observable';
+  import { catchError, map, tap } from 'rxjs/operators';
+
+  export class Post {
+    userId: number;
+    id: number;
+    title: string;
+    body: string;
+  }
+
+  @Injectable()
+  export class JSONService {
+
+    private apiURL = 'http://jsonplaceholder.typicode.com/post';
+
+    constructor(private http: HttpClient) { }
+
+    getAllPosts(): Observable<Post[]> {
+      return this.http.get<Post[]>(this.apiURL);
+    }
+
+  }
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <ul>
+                      <li *ngFor="let post of posts">
+                          <strong>{{ post.title }}:</strong> {{ post.body }}
+                      </li>
+                </ul>
+                <div *ngIf="error">
+                    Error: {{ error.status }}: {{ error.statusText }}
+                </div>
+    \`,
+    styles: [\`
+            div {
+              font-size: 30px;
+              padding: 5px;
+              background-color: red;
+              color: white;
+            }
+
+    \`],
+    providers: [ JSONService ]
+  })
+  export class AppComponent implements OnInit {
+           title = 'Angular 5 Projects';
+           error: any;
+           posts: Post[] = [];
+
+           constructor(private jsonService: JSONService) { }
+
+           ngOnInit() {
+             this.jsonService.getAllPosts().subscribe(
+               response => {
+                 this.posts = response;
+               },
+             error => {
+               this.error = error;
+             });
+           }
+
+  }
+
+
+  `
 };
 apip587 = {
   name: '',
