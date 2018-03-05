@@ -29328,7 +29328,7 @@ apip594 = {
                       Euro Currency: {{ 5125.76 | currency:'EUR' }}
                   </p>
                   <p>
-                      Precentage: {{ 0.75 | percent }}
+                      Percentage: {{ 0.75 | percent }}
                   </p>
                   <p>
                       Date: {{ cpDate | date }}
