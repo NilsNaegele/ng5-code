@@ -28805,48 +28805,622 @@ apip586 = {
 
   }
 
-
   `
 };
 apip587 = {
-  name: '',
-  code: ``
+  name: 'Async Pipe',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+
+  import { Observable } from 'rxjs/Observable';
+  import { catchError, map, tap } from 'rxjs/operators';
+
+  export class Post {
+    userId: number;
+    id: number;
+    title: string;
+    body: string;
+  }
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <h2>Posts Titles</h2>
+                <p>{{ results | async }}</p>
+    \`
+  })
+  export class AppComponent implements OnInit {
+           title = 'Angular 5 Projects';
+
+           private apiURL = 'http://jsonplaceholder.typicode.com/posts';
+           results: any;
+
+           constructor(private http: HttpClient) { }
+
+           ngOnInit() {
+             this.results = this.http.get<Post[]>(this.apiURL).pipe(
+               map(response => {
+                  let titles = '';
+                  for (const item of response) {
+                    titles += item.title;
+                  }
+                  return titles;
+               })
+             );
+           }
+  }
+
+  `
 };
 apip588 = {
-  name: '',
-  code: ``
+  name: 'NgForm && JSON Pipe',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { NgForm } from '@angular/forms';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <form #myForm="ngForm" novalidate>
+                    <p>First Name: <input name="firstName" ngModel required></p>
+                    <p>Last Name: <input name="lastName" ngModel required></p>
+                    Valid: {{ myForm.valid }}
+                    <br>
+                    Data: {{ myForm.value | json }}
+                </form>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+  }
+
+
+  `
 };
 apip589 = {
-  name: '',
-  code: ``
+  name: 'Template-DRIVEN Form',
+  code: `
+
+  import { Component, ViewChild } from '@angular/core';
+
+  import { NgForm } from '@angular/forms';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <form #techForm="ngForm" novalidate (ngSubmit)="onSubmit()">
+                    <legend>MeetUp</legend>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" name="name"
+                               placeholder="Name" [(ngModel)]="name" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="password">Password</label>
+                      <input type="password" class="form-control" name="password"
+                           placeholder="Password" [(ngModel)]="password" required>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="form-check">
+                        <div>
+                              <label>MeetUp Time</label>
+                        </div>
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="time"
+                                    value="7AM" [(ngModel)]="time" required>
+                                    7AM
+                          </label>
+                      </div>
+                      <div class="form-check">
+                        <label class="form-check-label">
+                          <input type="radio" class="form-check-input" name="time"
+                                  value="10AM" [(ngModel)]="time" required>
+                                  10AM
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <label class="form-check-label">
+                          <input type="radio" class="form-check-input" name="time"
+                                value="1PM" [(ngModel)]="time" required>
+                                1PM
+                        </label>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="textarea">Technology</label>
+                      <textarea class="form-control" name="technology" rows="3"
+                                [(ngModel)]="technology" required>
+                      </textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary"
+                            [disabled]="!techForm.valid">
+                    Submit
+                    </button>
+                    Valid: {{ techForm.valid }}
+                    <br>
+                    Data: {{ techForm.value | json }}
+                </form>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+           @ViewChild('techForm') techForm: NgForm;
+
+           name = 'Nils-Holger Nägele';
+           password = '';
+           time = '';
+           technology = '';
+
+           onSubmit() {
+             console.log('Submitting form data: ' + JSON.stringify(this.techForm.value));
+
+           }
+  }
+
+  `
 };
 apip590 = {
-  name: '',
-  code: ``
+  name: 'Form Validation',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { NgForm } from '@angular/forms';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <form #myForm="ngForm" novalidate>
+                <p><label>First Name</label>
+                    <input type="text" name="firstName" ngModel
+                           #firstName="ngModel" required>
+                      <span class="error" *ngIf="firstName.touched &&
+                           firstName.hasError('required')">
+                        First name is required.
+                      </span>
+                </p>
+                <p><label>Last Name</label>
+                    <input type="text" name="lastName" ngModel
+                          #lastName="ngModel" required>
+                      <span class="error" *ngIf="lastName.touched &&
+                            lastName.hasError('required')">
+                        Last name is required.
+                      </span>
+                </p>
+                <p><label>Email</label>
+                    <input type="email" name="email" ngModel #email="ngModel" required>
+                      <span class="error"
+                            *ngIf="email.touched && email.hasError('required')">
+                        Email is required.
+                      </span>
+                </p>
+                <button (click)="onSubmit()" [disabled]="!myForm.valid">Submit</button>
+                </form>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+           onSubmit() {
+             console.log('Submitted');
+
+           }
+
+  }
+
+  `
 };
 apip591 = {
-  name: '',
-  code: ``
+  name: 'Reactive Forms FormGroup',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { FormGroup, FormControl, FormControlName, Validators } from '@angular/forms';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <form #myForm [formGroup]="formGroup"
+                      (ngSubmit)="onSubmit(myForm)" novalidate>
+                <label>
+                    Name:
+                    <input formControlName="name">
+                </label>
+                <br>
+                <label>
+                  Location:
+                    <input formControlName="location">
+                </label>
+                <br>
+                <input type="submit" value="Submit" [disabled]="!formGroup.valid">
+                </form>
+    \`
+  })
+  export class AppComponent implements OnInit {
+           title = 'Angular 5 Alpha Projects';
+
+           formGroup: FormGroup;
+
+           onSubmit(form) {
+             console.log('Submitted');
+           }
+
+           ngOnInit() {
+             this.formGroup = new FormGroup({
+               name: new FormControl('', Validators.required),
+               location: new FormControl('', Validators.required)
+             });
+           }
+
+  }
+
+  `
 };
 apip592 = {
-  name: '',
-  code: ``
+  name: 'Reactive Forms FormArray',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { FormGroup, FormArray, FormControlName,
+           FormBuilder, Validators } from '@angular/forms';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <form [formGroup]="purchaseForm" novalidate
+                      (ngSubmit)="onSubmit(purchaseForm)">
+                <div formGroupName="name">
+                  <b>Name</b>
+                  <br/>
+                  <label>First Name
+                    <input type="text" formControlName="firstName">
+                    <small *ngIf="name.controls.firstName.touched &&
+                            !name.controls.firstName.valid">
+                    First Name is Required.
+                    </small>
+                  </label>
+                  <br/>
+                  <label>Last Name
+                    <input type="text" formControlName="lastName">
+                    <small *ngIf="name.controls.lastName.touched &&
+                            !name.controls.lastName.valid">
+                    Last Name is Required.
+                    </small>
+                  </label>
+                </div>
+                <br/>
+                <div formGroupName="address">
+                  <b>Address</b>
+                  <br/>
+                  <label class="left">Address #1
+                    <input type="text" formControlName="address1">
+                    <small *ngIf="address.controls.address1.touched &&
+                           !address.controls.address1.valid">
+                    Address is Required.
+                    </small>
+                  </label>
+                  <br/>
+                  <label>Address #2
+                    <input type="text" formControlName="address2">
+                  </label>
+                  <br/>
+                  <label>City
+                    <input type="text" formControlName="city">
+                    <small *ngIf="address.controls.city.touched &&
+                            !address.controls.city.valid">
+                    City is Required.
+                    </small>
+                  </label>
+                  <br/>
+                  <label>Country
+                    <select formControlName="country">
+                      <option>Germany</option>
+                      <option>Netherlands</option>
+                      <option>USA</option>
+                    </select>
+                    <small *ngIf="address.controls.country.touched &&
+                            !address.controls.country.valid">
+                    Country is Required.
+                    </small>
+                  </label>
+                  <br/>
+                  <label>Zip Code
+                    <input type="number" formControlName="zip">
+                    <small *ngIf="address.controls.zip.touched &&
+                            !address.controls.zip.valid">
+                    Zip Code is Required.
+                    </small>
+                  </label>
+                </div>
+                <br/>
+                <div formArrayName="items">
+                  <b>Items</b>
+                  <br/>
+                  <p [formGroupName]="i" *ngFor="let item of items.controls; let i = index">
+                    <label>Name: <input type="text" formControlName="name" size="30">
+                      <small *ngIf="item.controls.name.touched && !item.controls.name.valid">
+                      Name is Required.
+                      </small>
+                    </label>
+                    <label>Quantity: <input type="number" formControlName="quantity"
+                                      min="1" max="100">
+                      <small *ngIf="item.controls.quantity.touched &&
+                                    !item.controls.quantity.valid">
+                      Quantity is Required.
+                      </small>
+                    </label>
+                    <label>Price: <input type="number" formControlName="price"
+                                  min="0.1" max="10000" step=".1">
+                      <small *ngIf="item.controls.price.touched &&
+                                    !item.controls.price.valid">
+                      Price is Required.
+                      </small>
+                    </label>
+                  </p>
+                </div>
+                <br/>
+                <div>
+                  <input type="button" value="Add Item" (click)="addItem()"/>
+                  <input type="submit" value="Submit" [disabled]="!purchaseForm.valid"/>
+                </div>
+              </form>
+    \`,
+    styles: [\`
+          div {
+            background-color: #f2f2f2;
+            padding: 15px;
+            margin: 5px;
+          }
+    \`]
+  })
+  export class AppComponent implements OnInit {
+           title = 'Angular 5 Alpha Projects';
+
+           purchaseForm: FormGroup;
+           name: FormGroup;
+           address: FormGroup;
+           items: FormArray;
+
+           constructor(private formBuilder: FormBuilder) { }
+
+           ngOnInit() {
+             this.name = this.formBuilder.group({
+                  firstName: ['', [Validators.required]],
+                  lastName: ['', [ Validators.required]]
+             });
+             this.address = this.formBuilder.group({
+                  address1: ['', [Validators.required]],
+                  address2: [''],
+                  city: ['', [Validators.required]],
+                  country: ['', [Validators.required]],
+                  zip: ['', [Validators.required, Validators.minLength(5),
+                            Validators.maxLength(5)]]
+             });
+             this.items = this.formBuilder.array(
+               [this.createFormItemGroup()]
+             );
+             this.purchaseForm = this.formBuilder.group({
+               name: this.name,
+               address: this.address,
+               items: this.items
+             });
+           }
+
+           createFormItemGroup() {
+             return this.formBuilder.group({
+               name: ['', Validators.required],
+               quantity: ['', Validators.required],
+               price: ['', Validators.required]
+             });
+           }
+
+           addItem() {
+              this.items.push(this.createFormItemGroup());
+           }
+
+           deleteItem(index) {
+             delete this.items[index];
+           }
+
+           onSubmit(form) {
+            console.log('Submitted');
+          }
+
+  }
+
+  `
 };
 apip593 = {
-  name: '',
-  code: ``
+  name: 'Reactive Forms AbstractControl',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+  import { FormGroup, FormControl, FormControlName,
+           AbstractControl, Validators } from '@angular/forms';
+
+  export function validateNotAudi(control: AbstractControl) {
+    return (control.value.toLowerCase() !== 'audi') ? null :
+            { validateNotAudi: { valid: false } };
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <form #myForm [formGroup]="formGroup" novalidate
+                      (ngSubmit)="onSubmit(myForm)">
+                    <label>Make:
+                          <input formControlName="make">
+                    </label>
+                    <br>
+                    <label>Model:
+                          <input formControlName="model">
+                    </label>
+                    <br>
+                    <input type="submit" value="Submit" [disabled]="!formGroup.valid">
+                </form>
+    \`
+  })
+  export class AppComponent implements OnInit {
+           title = 'Angular 5 Alpha Projects';
+
+           formGroup: FormGroup;
+
+           ngOnInit() {
+              this.formGroup = new FormGroup({
+                make: new FormControl('', [Validators.required, validateNotAudi]),
+                model: new FormControl('', Validators.required)
+              });
+           }
+
+           onSubmit(form: FormGroup) {
+             console.log('Submitted');
+           }
+
+  }
+
+  `
 };
 apip594 = {
-  name: '',
-  code: ``
+  name: 'Built-In Pipes',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                  <p>
+                      Lowercase: {{ 'The Will To Win Is Nothing Without
+                                     The Will To Prepare.' | lowercase }}
+                  </p>
+                  <p>
+                      Uppercase: {{ 'The Will To Win Is Nothing Without
+                                     The Will To Prepare.' | uppercase }}
+                  </p>
+                  <p>
+                      Currency: {{ 5125.76 | currency }}
+                  </p>
+                  <p>
+                      Euro Currency: {{ 5125.76 | currency:'EUR' }}
+                  </p>
+                  <p>
+                      Precentage: {{ 0.75 | percent }}
+                  </p>
+                  <p>
+                      Date: {{ cpDate | date }}
+                  </p>
+                  <p>
+                      Long Date: {{ cpDate | date:'fullDate' }}
+                  </p>
+                  <p>
+                      Special Date Format: {{ cpDate | date:'dd-MM-yyyy HH:mm:ss z':'+0100' }}
+                  </p>
+
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+           cpDate = new Date();
+  }
+
+  `
 };
 apip595 = {
-  name: '',
-  code: ``
+  name: 'Reverse Pipe',
+  code: `
+
+  import { Component, Pipe, PipeTransform } from '@angular/core';
+
+  @Pipe({
+    name: 'reverse'
+  })
+  export class ReversePipe implements PipeTransform {
+
+        transform(value: string, args?: any): string {
+          let spaces = 0;
+          if (args) {
+            spaces = parseInt(args, 10);
+          }
+
+          let reversed = '';
+          for (let i = value.length - 1; i >= 0; i--) {
+            reversed += value.substring(i, i + 1);
+            reversed += Array(spaces + 1).join(' ');
+          }
+          return reversed;
+        }
+
+  }
+
+  **********************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <p>My name is {{ name | reverse }}</p>
+                <p>My name is {{ name | reverse:10 }}</p>
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+           name = 'Nils-Holger Nägele';
+  }
+
+  `
 };
 apip596 = {
-  name: '',
-  code: ``
+  name: 'Event Binding Incrementor',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <h3>{{ counter }}</h3>
+                <button class="btn btn-primary" (click)="increment()">
+                    Increment
+                </button>
+
+    \`
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+           counter = 0;
+
+           increment() {
+             this.counter++;
+           }
+  }
+
+  `
 };
 apip597 = {
   name: '',
