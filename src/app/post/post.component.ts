@@ -29596,40 +29596,243 @@ apip600 = {
   `
 };
 apip601 = {
-  name: '',
-  code: ``
+  name: 'Interpolation',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>Hello {{ name }}, how are you today?</h1>
+    \`
+  })
+  export class AppComponent {
+           name = 'Angular 5';
+
+  }
+
+  `
 };
 apip602 = {
-  name: '',
-  code: ``
+  name: 'Arrow Functions',
+  code: `
+
+  const result = [100, 200, 300].reduce((total, current) => total + current, 0);
+
+  console.log(result);
+
+  const even = [13, 119, 64, 75].filter(el => !(el % 2));
+
+  console.log(even);
+
+  const data = [10, 3, 55, 18, 1];
+
+  let sorted = data.sort((a, b) => {
+    let diff = a - b;
+    if (diff !== 0) {
+      return diff;
+    }
+    return a - b;
+  });
+
+  console.log(sorted);
+
+  `
 };
 apip603 = {
-  name: '',
-  code: ``
+  name: 'Decorators',
+  code: `
+
+  class Man {
+    @nonenumerable
+    get babyCount() {
+      return 42;
+    }
+  }
+
+  function nonenumerable(target, name, descriptor) {
+    descriptor.enumerable = false;
+    return descriptor;
+  }
+
+  const man = new Man();
+
+  for (let prop in man) {
+    if (prop in man) {
+    console.log(prop);
+    }
+  }
+
+  console.log(man.babyCount);
+
+  `
 };
 apip604 = {
-  name: '',
-  code: ``
+  name: 'Classes',
+  code: `
+
+  class Human {
+    static totalPeople = 0;
+    private _name: string;
+
+    constructor(name: string) {
+      this._name = name;
+      Human.totalPeople += 1;
+    }
+
+    get name(): string {
+      return this._name;
+    }
+
+    set name(value) {
+      this._name = value;
+    }
+
+    talk() {
+      return \`Hi, I'm \${this.name}!\`;
+    }
+
+  }
+
+  class Engineer extends Human {
+    private _languages: string[] = [];
+
+    constructor(name: string, languages: string[]) {
+      super(name);
+      this._languages = languages;
+    }
+
+    get languages() {
+      return this._languages;
+    }
+
+    talk() {
+      return \`\${super.talk()} and I know \${this.languages.join(', ')}.\`;
+    }
+  }
+
+  const engine = new Engineer('Nils', ['JavaScript', 'HTML', 'CSS']);
+
+  console.log(engine.talk());
+  console.log(Engineer.totalPeople);
+
+  `
 };
 apip605 = {
-  name: '',
-  code: ``
+  name: 'Hello World',
+  code: `
+
+          console.log('Hello Carmen, how are you today?');
+          console.info('Sending you all my love from Berlin to Amsterdam.');
+          console.error('Fix all bugs. Catch all errors.');
+
+  `
 };
 apip606 = {
-  name: '',
-  code: ``
+  name: 'Let',
+  code: `
+
+  let fns = [];
+
+  for (let i = 0; i <= 10; i += 1) {
+    fns.push(() => console.log(i));
+  }
+
+  fns.forEach(fn => fn());
+
+  `
 };
 apip607 = {
-  name: '',
-  code: ``
+  name: 'Modules',
+  code: `
+
+  // math.ts
+
+  export default function cube(x) {
+    return Math.pow(x, 3);
+  }
+
+  export function square(x) {
+    return Math.pow(x, 2);
+  }
+
+  export function log(x) {
+    return Math.log(x);
+  }
+
+  export const PI = Math.PI;
+  export const E = Math.E;
+
+  ************************************************************
+
+  // AppComponent
+
+  import { square, log, E, PI } from './math';
+  import cube from './math';
+
+  console.log(square(8));
+  console.log(E);
+  console.log(Math.log(E));
+  console.log(PI);
+  console.log(cube(2));
+
+  `
 };
 apip608 = {
-  name: '',
-  code: ``
+  name: 'Object Literals',
+  code: `
+
+  // simple object
+
+  const selector = 'app-hi-baby';
+  const templateUrl = 'app-hi-baby.html';
+
+  const Component = {
+    selector: selector,
+    templateUrl: templateUrl
+  };
+
+  // enhanced object literal
+
+  const selector = 'app-hi-baby';
+  const templateUrl = 'app-hi-baby.html';
+
+  const Component = {
+    selector,
+    templateUrl
+  };
+
+  `
 };
 apip609 = {
-  name: '',
-  code: ``
+  name: 'Structural Typing',
+  code: `
+
+  interface Nameable {
+    name: string;
+  }
+
+  class Giraffe {
+    name: string;
+  }
+
+  class Car {
+    name: string;
+    cylinders: string;
+  }
+
+  const formatName = (obj: Nameable) => \`The name is \${obj.name}.\`;
+
+  const giraffe = new Giraffe();
+  giraffe.name = 'Cookie-Monster';
+  console.log(formatName(giraffe));
+
+  const car = new Car();
+  car.name = 'Mercedes PICK-UP X3';
+  console.log(formatName(car));
+
+  `
 };
 apip610 = {
   name: '',
