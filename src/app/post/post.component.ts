@@ -29835,36 +29835,754 @@ apip609 = {
   `
 };
 apip610 = {
-  name: '',
-  code: ``
+  name: 'TabComponent with ViewChildren',
+  code: `
+
+  import { Component, Output, EventEmitter,
+           ContentChildren, QueryList, AfterContentInit } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-tab-title',
+    template: \`
+            <div class="tab-title" (click)="handleClick()">
+                    <ng-content></ng-content>
+            </div>
+
+    \`,
+    styles: [\`
+        .tab-title {
+          display: inline-block;
+          cursor: pointer;
+          padding: 5px;
+          border: 1px solid #ccc;
+        }
+    \`]
+  })
+  export class TabTitleComponent {
+      @Output() selected = new EventEmitter<TabTitleComponent>();
+
+      handleClick() {
+        this.selected.emit(this);
+      }
+  }
+
+  ********************************************************************
+
+  @Component({
+    selector: 'app-tab-content',
+    template: \`
+          <div class="tab-content" [hidden]="!isActive">
+                <ng-content></ng-content>
+          </div>
+    \`,
+    styles: [\`
+        .tab-content {
+          border-top: none;
+          padding: 5px;
+          border: 1px solid #ccc;
+        }
+
+    \`]
+  })
+  export class TabContentComponent {
+    isActive = false;
+  }
+
+  ********************************************************************
+
+  @Component({
+    selector: 'app-tabs',
+    template: \`
+            <div class="tab">
+              <div class="tab-nav">
+                    <ng-content select="app-tab-title"></ng-content>
+              </div>
+                    <ng-content select="app-tab-content"></ng-content>
+            </div>
+    \`,
+    styles: [\`
+          .tab {
+            display: inline-block;
+          }
+          .tab-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+          }
+
+    \`]
+  })
+  export class TabsComponent implements AfterContentInit {
+    @Output() changed = new EventEmitter<number>();
+
+    @ContentChildren(TabTitleComponent) tabTitles: QueryList<TabTitleComponent>;
+    @ContentChildren(TabContentComponent) tabContents: QueryList<TabContentComponent>;
+
+    active: number;
+
+    ngAfterContentInit() {
+      this.tabTitles.map(t => t.selected).forEach((t, i) => {
+        t.subscribe(() => {
+        this.select(i);
+          });
+      });
+      this.active = 0;
+      this.select(0);
+    }
+
+    select(index: number) {
+      let contents: TabContentComponent[] = this.tabContents.toArray();
+
+      contents[this.active].isActive = false;
+      this.active = index;
+      contents[this.active].isActive = true;
+      this.changed.emit(index);
+    }
+
+  }
+
+  ********************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>Hello {{ name }}, how are you today?</h1>
+
+                <app-tabs (changed)="tabChanged($event)">
+                  <app-tab-title>Berlin</app-tab-title>
+                  <app-tab-content>Technological Hub Europe</app-tab-content>
+                  <app-tab-title>Amsterdam</app-tab-title>
+                  <app-tab-content>Dutch Free Thinkers, Innovators</app-tab-content>
+                  <app-tab-title>San Francisco</app-tab-title>
+                  <app-tab-content>Technological Hub Americas</app-tab-content>
+                </app-tabs>
+    \`
+  })
+  export class AppComponent {
+           name = 'Angular 5';
+           tabChanged(tab) {
+             console.log(tab);
+           }
+
+  }
+
+  `
 };
 apip611 = {
-  name: '',
-  code: ``
+  name: 'Basic TabComponent',
+  code: `
+
+  import { Component, Output, Input, Inject, Host,
+           EventEmitter, forwardRef } from '@angular/core';
+
+
+
+  @Component({
+    selector: 'app-tab',
+    template: \`
+          <div [hidden]="!isActive">
+                <ng-content></ng-content>
+          </div>
+    \`
+  })
+  export class TabComponent {
+    @Input() title: string;
+    isActive: boolean;
+
+    constructor(@Inject(forwardRef(() => TabsComponent))
+                @Host() private tabs: TabsComponent) {
+          this.tabs.addTab(this);
+    }
+
+
+  }
+
+**************************************************************************
+
+  @Component({
+    selector: 'app-tabs',
+    template: \`
+            <div class="tab">
+              <ul class="tab-header">
+                <li *ngFor="let tab of tabs; let idx = index;"
+                    [class.is-active]="active === idx" (click)="select(idx)">
+                      {{ tab.title }}
+                </li>
+              </ul>
+              <div class="tab-content">
+                    <ng-content></ng-content>
+              </div>
+            </div>
+    \`,
+    styles: [\`
+          .tab {
+            display: inline-block;
+          }
+          .tab-header {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+          }
+          .tab-header .is-active {
+            background-color: #eee;
+          }
+          .tab-header li {
+            display: inline-block;
+            cursor: pointer;
+            padding: 5px;
+            border: 1px solid #ccc;
+          }
+          .tab-content {
+            border: 1px solid #ccc;
+            border-top: none;
+            padding: 5px;
+          }
+    \`]
+  })
+  export class TabsComponent {
+    @Output() private changed = new EventEmitter<TabComponent>();
+    tabs: TabComponent[];
+    active: number;
+
+    constructor() {
+      this.tabs = [];
+      this.active = 0;
+    }
+
+    addTab(tab: TabComponent) {
+      if (this.tabs.length === this.active) {
+        tab.isActive = true;
+      }
+      this.tabs.push(tab);
+    }
+
+    select(index: number) {
+      this.tabs[this.active].isActive = false;
+      this.active = index;
+      this.tabs[this.active].isActive = true;
+      this.changed.emit(this.tabs[index]);
+    }
+
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>Hello {{ name }}, how are you today?</h1>
+
+                <app-tabs (changed)="tabChanged($event)">
+                  <app-tab title="Germany">Greatest nation on earth.</app-tab>
+                  <app-tab title="Holland">Dynamic Dutch.</app-tab>
+                  <app-tab title="USA">Big, awesome country.</app-tab>
+                </app-tabs>
+    \`
+  })
+  export class AppComponent {
+           name = 'Angular 5';
+           tabChanged(tab) {
+             console.log(tab);
+           }
+
+  }
+
+  `
 };
 apip612 = {
-  name: '',
-  code: ``
+  name: 'Change Detection Strategy OnPush',
+  code: `
+
+  import { Component, Output, Input,
+           EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+
+  import * as Immutable from 'immutable';
+
+  export interface Todo {
+    completed: boolean;
+    label: string;
+  }
+
+  @Component({
+    selector: 'app-input-box',
+    template: \`
+            <input #todoInput [placeholder]="inputPlaceholder">
+            <button (click)="emitText(todoInput.value); todoInput.value = '';">
+                      {{ buttonLabel }}
+            </button>
+    \`
+  })
+  export class InputBoxComponent {
+            @Input() inputPlaceholder: string;
+            @Input() buttonLabel: string;
+            @Output() inputText = new EventEmitter<string>();
+
+
+            emitText(text: string) {
+              this.inputText.emit(text);
+            }
+  }
+
+  @Component({
+    selector: 'app-todo-list',
+    template: \`
+                <ul>
+                      <li *ngFor="let todo of todos; let i = index;"
+                          [class.completed]="todo.get('completed')">
+                          <input type="checkbox" [checked]="todo.get('completed')"
+                                 (change)="toggleCompletion(i)">
+                          {{ todo.get('label') }}
+                      </li>
+                </ul>
+    \`,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: [\`
+        ul li {
+          list-style: none;
+        }
+        .completed {
+          text-decoration: line-through;
+        }
+    \`]
+  })
+  export class TodoListComponent {
+        @Input() todos;
+        @Output() toggle = new EventEmitter<number>();
+
+        toggleCompletion(index: number) {
+          this.toggle.emit(index);
+        }
+
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>Hello {{ name }}, how are you today?</h1>
+                <p>
+                      Add a new Todo:
+                      <app-input-box inputPlaceholder="New Todo..." buttonLabel="Add One"
+                                     (inputText)="addTodo($event)">
+                      </app-input-box>
+                </p>
+                <p>What needs to be done?</p>
+                <app-todo-list [todos]="todos" (toggle)="toggleCompletion($event)">
+                </app-todo-list>
+
+    \`
+  })
+  export class AppComponent {
+           name = 'Angular 5';
+
+           todos = Immutable.fromJS([{
+             label: 'Create new NG Apps',
+             completed: false
+           }, {
+             label: 'Write new NG Tutorials',
+             completed: false
+           }, {
+             label: '1 NG Blog post a day',
+             completed: false
+           }, {
+            label: 'Code Angular Documentation',
+            completed: false
+          }, {
+            label: 'Review Angular Source Code',
+            completed: false
+          }, {
+            label: 'Write Angular 5 Love Affair GitBook',
+            completed: false
+          }, {
+            label: 'Code Angular Material Documentation',
+            completed: false
+          }, {
+            label: 'Code Firebase, AngularFire2 Samples',
+            completed: false
+          }, {
+            label: 'Check out ng-bootstrap',
+            completed: false
+          }, {
+            label: 'Save The World ...',
+            completed: false
+          }
+          ]);
+
+          addTodo(label: string) {
+            this.todos = this.todos.push(Immutable.fromJS({
+              label,
+              completed: false
+            }));
+          }
+
+          toggleCompletion(index: number) {
+            this.todos = this.todos.update(index, todo => {
+              return Immutable.fromJS({
+                label: todo.get('label'),
+                completed: !todo.get('completed')
+              });
+            });
+          }
+  }
+
+  `
 };
 apip613 = {
-  name: '',
-  code: ``
+  name: 'Lifecycle Hooks',
+  code: `
+
+  import { Component, Input, OnInit, OnChanges, DoCheck,
+           AfterViewInit, AfterViewChecked, AfterContentInit,
+           AfterContentChecked, OnDestroy } from '@angular/core';
+
+  @Component({
+    selector: 'app-panel',
+    template: '<ng-content></ng-content> {{ title }}: ({{ caption }})'
+  })
+  export class PanelComponent implements OnInit, OnChanges, DoCheck,
+               AfterContentInit, AfterContentChecked, AfterViewInit,
+               AfterViewChecked, OnDestroy {
+          @Input() title: string;
+          @Input() caption: string;
+
+          ngOnInit() {
+            console.log('Initialized');
+          }
+
+          ngOnChanges(changes) {
+            console.log('On Changes', changes);
+          }
+
+          ngDoCheck() {
+            console.log('Do Check');
+          }
+
+          ngAfterContentInit() {
+            console.log('After Content Init');
+          }
+
+          ngAfterContentChecked() {
+            console.log('After Content Checked');
+          }
+
+          ngAfterViewInit() {
+            console.log('After View Init');
+          }
+
+          ngAfterViewChecked() {
+            console.log('After View Checked');
+          }
+
+          ngOnDestroy() {
+            console.log('Destroyed');
+          }
+
+  }
+
+****************************************************************************
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>Hello {{ name }}, how are you today?</h1>
+
+                <button (click)="toggle()">Toggle</button>
+                <div *ngIf="counter % 2 === 0">
+                  <app-panel title="Coding strong" caption="How's life?">
+                    Hi baby!
+                  </app-panel>
+                </div>
+    \`
+  })
+  export class AppComponent {
+           name = 'Angular 5';
+
+           counter = 0;
+           toggle() {
+             this.counter++;
+           }
+
+  }
+
+  `
 };
 apip614 = {
-  name: '',
-  code: ``
+  name: 'NgContent',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-sexy-button',
+    template: '<button><ng-content></ng-content></button>'
+  })
+  export class SexyButtonComponent { }
+
+  @Component({
+    selector: 'app-panel',
+    template: \`
+              <div class="panel">
+                  <div class="panel-title">
+                          <ng-content select=".panel-title"></ng-content>
+                  </div>
+                  <div class="panel-content">
+                        <ng-content select=".panel-content"></ng-content>
+                  </div>
+              </div>
+    \`,
+    styles: [
+      \`
+        .panel {
+          width: auto;
+          display: inline-block;
+          border: 1px solid black;
+        }
+        .panel-title {
+          border-bottom: 1px solid black;
+          background-color: #eee;
+        }
+        .panel-content, .panel-title {
+          padding: 5px;
+        }
+      \`
+    ]
+  })
+  export class PanelComponent { }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>Hello {{ name }}, how are you today?</h1>
+
+                <app-sexy-button><i>I will be projected</i></app-sexy-button>
+                <br>
+                <app-panel>
+                    <section class="panel-title">
+                              The will to win is nothing
+                              without the will to prepare.
+                    </section>
+                    <section class="panel-content">
+                              It is at the borders of pain and
+                              suffering that the men are separated
+                              from the boys. Go, run a marathon.
+                    </section>
+                </app-panel>
+    \`
+  })
+  export class AppComponent {
+           name = 'Angular 5';
+
+  }
+
+  `
 };
 apip615 = {
-  name: '',
-  code: ``
+  name: 'NgFor Syntax Sugar',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>Hello {{ name }}, how are you today?</h1>
+
+                <p>What needs to be done?</p>
+                <ul>
+                      <li *ngFor="let todo of todos" (click)="handle()">
+                            {{ todo }}
+                      </li>
+                </ul>
+
+    \`
+  })
+  export class AppComponent {
+           name = 'Angular 5';
+
+           todos: string[];
+           handle() {
+             alert(42);
+           }
+
+           constructor() {
+             this.todos = ['Create new NG Apps', 'Write new NG Tutorials',
+                           '1 NG Blog Post a day'];
+           }
+  }
+
+  `
 };
 apip616 = {
-  name: '',
-  code: ``
+  name: 'NgFor Desugared',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>Hello {{ name }}, how are you today?</h1>
+
+                <p>What needs to be done?</p>
+                <ul>
+                      <ng-template ngFor let-todo [ngForOf]="todos">
+                           <li>{{ todo }}</li>
+                      </ng-template>
+                </ul>
+
+    \`
+  })
+  export class AppComponent {
+           name = 'Angular 5';
+
+           todos: string[];
+
+           constructor() {
+             this.todos = ['Create new NG Apps', 'Write new NG Tutorials',
+                           '1 NG Blog Post a day'];
+           }
+  }
+
+  `
 };
 apip617 = {
-  name: '',
-  code: ``
+  name: 'TemplateRef',
+  code: `
+
+  import {Component, Output, Input, EventEmitter,
+          TemplateRef, ContentChild } from '@angular/core';
+
+
+  export interface Todo {
+    completed: boolean;
+    label: string;
+  }
+
+  *****************************************************************
+
+  @Component({
+    selector: 'app-input-box',
+    template: \`
+     <input #todoInput [placeholder]="inputPlaceholder">
+     <button (click)="emitText(todoInput.value); todoInput.value = '';">
+               {{ buttonLabel }}
+     </button>
+  \`
+  })
+  export class InputBoxComponent {
+    @Input() inputPlaceholder: string;
+    @Input() buttonLabel: string;
+    @Output() inputText = new EventEmitter<string>();
+
+
+    emitText(text: string) {
+      this.inputText.emit(text);
+    }
+  }
+
+  *****************************************************************
+
+  @Component({
+    selector: 'app-todo-list',
+    template: \`
+         <ul>
+               <ng-template ngFor let-todo [ngForOf]="todos"
+                [ngForTemplate]="itemsTemplate">
+               </ng-template>
+         </ul>
+  \`
+  })
+  export class TodoListComponent {
+    @Input() todos;
+    @Input() itemsTemplate: TemplateRef<any>;
+    @Output() toggle = new EventEmitter<Todo>();
+
+  }
+
+  *****************************************************************
+
+  @Component({
+    selector: 'app-todo-container',
+    template: \`
+                <p>
+                    Add a new Todo:
+                  <app-input-box inputPlaceholder="New Todo..." buttonLabel="Add One"
+                        (inputText)="addTodo($event)">
+                  </app-input-box>
+                </p>
+                <p>What needs to be done?</p>
+                <app-todo-list [todos]="todos" [itemsTemplate]="itemsTemplate">
+                </app-todo-list>
+    \`
+  })
+  export class TodoContainerComponent {
+    @ContentChild(TemplateRef) itemsTemplate: TemplateRef<any>;
+    todos: Todo[] = [{
+      label: 'Create new NG Apps',
+      completed: false
+    }, {
+      label: 'Write new NG Tutorials',
+      completed: false
+    }, {
+      label: '1 NG Blog post a day',
+      completed: false
+    }, {
+      label: 'Code Angular Documentation',
+      completed: false
+    }, {
+      label: 'Review Angular Source Code',
+      completed: false
+    }, {
+      label: 'Write Angular 5 Love Affair GitBook',
+      completed: false
+    }, {
+      label: 'Code Angular Material Documentation',
+      completed: false
+    }, {
+      label: 'Code Firebase, AngularFire2 Samples',
+      completed: false
+    }, {
+      label: 'Check out ng-bootstrap',
+      completed: false
+    }
+    ];
+
+    addTodo(label: string) {
+        this.todos.push({
+        label,
+        completed: false
+        });
+    }
+
+  }
+
+  *****************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         <h1>Hello {{ name }}, how are you today?</h1>
+
+         <app-todo-container>
+                <ng-template let-todo let-i="index">
+                    {{ i + 1 }}. <input type="checkbox" [checked]="todo.completed"
+                                  (change)="todo.completed = !todo.completed;">
+                    <span [class.completed]="todo.completed">
+                    {{ todo.label }}
+                    </span>
+                    <br>
+                </ng-template>
+         </app-todo-container>
+  \`
+  })
+  export class AppComponent {
+    name = 'Angular 5';
+  }
+
+  `
 };
 apip618 = {
   name: '',
