@@ -29423,26 +29423,399 @@ apip596 = {
   `
 };
 apip597 = {
-  name: '',
-  code: ``
+  name: 'HttpClient Search',
+  code: `
+
+  import { Component, Injectable } from '@angular/core';
+  import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+
+
+  const maKey = 'XXWYjpdztcmsheZU9AWLNQcE9g9wp1qdRkFjsneaEp2Yf68YZZ';
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'X-Mashape-Key': maKey
+      })
+    };
+
+  @Injectable()
+  export class TrailAPIService {
+
+    constructor(private http: HttpClient) { }
+
+    search(term) {
+      const concatenatedUrl =
+      'https://trailapi-trailapi.p.mashape.com?q[city_cont]='
+               + encodeURIComponent(term);
+      return this.http.get<any[]>(concatenatedUrl, httpOptions);
+    }
+
+  }
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+
+                <h2>Trail Finder</h2>
+                <input [(ngModel)]="searchTerm" placeholder="City">
+                <button (click)="doSearch()">Find Me a Trail</button>
+                <div class="notFound" *ngIf="searched && !result">
+                  We could not find a trail here. :(
+                </div>
+                <div class="found" *ngIf="searched && result">
+                      <p>Name: {{ result?.name }}</p>
+                      <p>State: {{ result?.state }}</p>
+                      <p>Directions: {{ result?.directions }}</p>
+                      <p>Activities:</p>
+                      <ul *ngIf="result.activities">
+                        <li *ngFor="let activitiy of result.activities">
+                              {{ activity?.activity_type_name }} {{ activity?.description }}
+                        </li>
+                      </ul>
+                </div>
+    \`,
+    providers: [ TrailAPIService ],
+    styles: [\`
+      .found {
+          border: 1px solid black;
+          background-color: #8be591;
+          color: black;
+          margin: 10px;
+          padding: 10px;
+      }
+      .notFound {
+        border: 1px solid black;
+        background-color: #d13449;
+        color: white;
+        margin: 10px;
+        padding: 10px;
+      }
+      \`
+    ]
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+
+           searchTerm = 'Berlin';
+           searched = false;
+           result = '';
+
+           constructor(private trailService: TrailAPIService) { }
+
+           doSearch() {
+            this.trailService.search(this.searchTerm).subscribe(
+              response => {
+                if ((response) && (response.places) && (response.places.length)
+                               && (response.places.length > 0)) {
+                      this.result = response.places[0];
+                } else {
+                  this.result = undefined;
+                }
+              },
+              error => console.log(error),
+              () => this.searched = true
+            );
+           }
+  }
+
+  `
 };
 apip598 = {
-  name: '',
-  code: ``
+  name: 'ViewEncapsulation Emulated (Default)',
+  code: `
+
+  import { Component, ViewEncapsulation } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+    \`,
+    styles: [\`
+      h1 {
+        color: red;
+      }
+    \`],
+    encapsulation: ViewEncapsulation.Emulated
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+  }
+
+  `
 };
 apip599 = {
-  name: '',
-  code: ``
+  name: 'Best Case ViewEncapsulation Native (Create ShadowRoot)',
+  code: `
+
+  import { Component, ViewEncapsulation } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+    \`,
+    styles: [\`
+      h1 {
+        color: red;
+      }
+    \`],
+    encapsulation: ViewEncapsulation.Native
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+  }
+
+  `
 };
 apip600 = {
-  name: '',
-  code: ``
+  name: 'ViewEncapsulation None (Global CSS Styles override)',
+  code: `
+
+  import { Component, ViewEncapsulation } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+    \`,
+    styles: [\`
+      h1 {
+        color: red;
+      }
+    \`],
+    encapsulation: ViewEncapsulation.None
+  })
+  export class AppComponent {
+           title = 'Angular 5 Alpha Projects';
+  }
+
+  `
 };
 apip601 = {
   name: '',
   code: ``
 };
 apip602 = {
+  name: '',
+  code: ``
+};
+apip603 = {
+  name: '',
+  code: ``
+};
+apip604 = {
+  name: '',
+  code: ``
+};
+apip605 = {
+  name: '',
+  code: ``
+};
+apip606 = {
+  name: '',
+  code: ``
+};
+apip607 = {
+  name: '',
+  code: ``
+};
+apip608 = {
+  name: '',
+  code: ``
+};
+apip609 = {
+  name: '',
+  code: ``
+};
+apip610 = {
+  name: '',
+  code: ``
+};
+apip611 = {
+  name: '',
+  code: ``
+};
+apip612 = {
+  name: '',
+  code: ``
+};
+apip613 = {
+  name: '',
+  code: ``
+};
+apip614 = {
+  name: '',
+  code: ``
+};
+apip615 = {
+  name: '',
+  code: ``
+};
+apip616 = {
+  name: '',
+  code: ``
+};
+apip617 = {
+  name: '',
+  code: ``
+};
+apip618 = {
+  name: '',
+  code: ``
+};
+apip619 = {
+  name: '',
+  code: ``
+};
+apip620 = {
+  name: '',
+  code: ``
+};
+apip621 = {
+  name: '',
+  code: ``
+};
+apip622 = {
+  name: '',
+  code: ``
+};
+apip623 = {
+  name: '',
+  code: ``
+};
+apip624 = {
+  name: '',
+  code: ``
+};
+apip625 = {
+  name: '',
+  code: ``
+};
+apip626 = {
+  name: '',
+  code: ``
+};
+apip627 = {
+  name: '',
+  code: ``
+};
+apip628 = {
+  name: '',
+  code: ``
+};
+apip629 = {
+  name: '',
+  code: ``
+};
+apip630 = {
+  name: '',
+  code: ``
+};
+apip631 = {
+  name: '',
+  code: ``
+};
+apip632 = {
+  name: '',
+  code: ``
+};
+apip633 = {
+  name: '',
+  code: ``
+};
+apip634 = {
+  name: '',
+  code: ``
+};
+apip635 = {
+  name: '',
+  code: ``
+};
+apip636 = {
+  name: '',
+  code: ``
+};
+apip637 = {
+  name: '',
+  code: ``
+};
+apip638 = {
+  name: '',
+  code: ``
+};
+apip639 = {
+  name: '',
+  code: ``
+};
+apip640 = {
+  name: '',
+  code: ``
+};
+apip641 = {
+  name: '',
+  code: ``
+};
+apip642 = {
+  name: '',
+  code: ``
+};
+apip643 = {
+  name: '',
+  code: ``
+};
+apip644 = {
+  name: '',
+  code: ``
+};
+apip645 = {
+  name: '',
+  code: ``
+};
+apip646 = {
+  name: '',
+  code: ``
+};
+apip647 = {
+  name: '',
+  code: ``
+};
+apip648 = {
+  name: '',
+  code: ``
+};
+apip649 = {
+  name: '',
+  code: ``
+};
+apip650 = {
+  name: '',
+  code: ``
+};
+apip651 = {
+  name: '',
+  code: ``
+};
+apip652 = {
+  name: '',
+  code: ``
+};
+apip653 = {
+  name: '',
+  code: ``
+};
+apip654 = {
+  name: '',
+  code: ``
+};
+apip655 = {
+  name: '',
+  code: ``
+};
+apip656 = {
   name: '',
   code: ``
 };
