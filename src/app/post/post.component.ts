@@ -30585,16 +30585,239 @@ apip617 = {
   `
 };
 apip618 = {
-  name: '',
-  code: ``
+  name: 'Todo App',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  export interface Todo {
+    completed: boolean;
+    label: string;
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         <h1>Hello {{ name }}, how are you today?</h1>
+
+         <p>Add a new Todo:
+                <input #newTodo type="text">
+                <button (click)="addTodo(newTodo.value); newTodo.value = ''">Add</button>
+         </p>
+         <p>What needs to be done?</p>
+
+         <ul>
+                <li *ngFor="let todo of todos; let idx = index;"
+                            [class.completed]="todo.completed">
+                        <input type="checkbox" [checked]="todo.completed"
+                            (change)="toggleCompletion(idx)">
+                        {{ todo.label }}
+                        <button (click)="removeTodo(idx)">x</button>
+                </li>
+         </ul>
+
+  \`,
+  styles: [\`
+      ul li {
+        list-style: none;
+      }
+      .completed {
+        text-decoration: line-through;
+      }
+  \`]
+  })
+  export class AppComponent {
+    name = 'Angular 5';
+
+    todos: Todo[] = [{
+      label: 'Create new NG Apps',
+      completed: false
+    }, {
+      label: 'Write new NG Tutorials',
+      completed: false
+    }, {
+      label: '1 NG Blog post a day',
+      completed: false
+    }, {
+      label: 'Code Angular Documentation',
+      completed: false
+    }, {
+      label: 'Review Angular Source Code',
+      completed: false
+    }, {
+      label: 'Write Angular 5 Love Affair GitBook',
+      completed: false
+    }, {
+      label: 'Code Angular Material Documentation',
+      completed: false
+    }, {
+      label: 'Code Firebase, AngularFire2 Samples',
+      completed: false
+    }, {
+      label: 'Check out ng-bootstrap',
+      completed: false
+    }
+    ];
+
+    addTodo(label: string) {
+      this.todos.push({label: label, completed: false});
+    }
+
+    removeTodo(idx) {
+      this.todos.splice(idx, 1);
+    }
+
+    toggleCompletion(idx) {
+      let todo = this.todos[idx];
+      todo.completed = !todo.completed;
+    }
+
+  }
+
+  `
 };
 apip619 = {
-  name: '',
-  code: ``
+  name: 'Tooltip Directive',
+  code: `
+
+  import { Component, Directive, Input, HostListener, ElementRef } from '@angular/core';
+
+  export class Overlay {
+    private el: HTMLElement;
+
+    constructor() {
+      const el = document.createElement('div');
+      el.className = 'tooltip';
+      this.el = el;
+    }
+
+    close() {
+      this.el.hidden = true;
+    }
+
+    open(el, text) {
+      this.el.innerHTML = text;
+      this.el.hidden = false;
+      const rect = el.nativeElement.getBoundingClientRect();
+      this.el.style.left = rect.left + 'px';
+      this.el.style.top = rect.top + 'px';
+    }
+
+    attach(target) {
+      target.appendChild(this.el);
+    }
+
+    detach() {
+      this.el.parentNode.removeChild(this.el);
+    }
+  }
+
+  ******************************************************************
+
+  export class OverlayMock {
+    constructor() {}
+    close() { }
+    open(el, text) { }
+    attach(target) { }
+    detach() { }
+  }
+
+  ******************************************************************
+
+  @Directive({
+    selector: '[appTooltip]'
+  })
+  export class TooltipDirective {
+    @Input() appTooltip: string;
+
+    constructor(private el: ElementRef, private overlay: Overlay) {
+      this.overlay.attach(el.nativeElement);
+    }
+
+    @HostListener('mouseenter')
+    onMouseEnter() {
+      this.overlay.open(this.el, this.appTooltip);
+    }
+
+    @HostListener('mouseleave')
+    onMouseLeave() {
+      this.overlay.close();
+    }
+
+  }
+
+  ******************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         <h1>Hello {{ name }}, how are you today?</h1>
+         <div appTooltip="Hi baby"></div>
+  \`
+  })
+  export class AppComponent {
+    name = 'Angular 5';
+
+  }
+
+  `
 };
 apip620 = {
-  name: '',
-  code: ``
+  name: 'ViewChild && ContentChild',
+  code: `
+
+  import { Component, ViewChildren, ContentChildren, QueryList,
+           AfterViewInit, AfterContentInit } from '@angular/core';
+
+  @Component({
+    selector: 'app-user-badge',
+    template: '<h2>View Child</h2>'
+  })
+  export class UserBadgeComponent { }
+
+
+  @Component({
+    selector: 'app-user-rating',
+    template: '<h2>Content Child</h2>'
+  })
+  export class UserRatingComponent { }
+
+  @Component({
+    selector: 'app-user-panel',
+    template: '<app-user-badge></app-user-badge><ng-content></ng-content>'
+  })
+  export class UserPanelComponent implements AfterViewInit, AfterContentInit {
+    @ViewChildren(UserBadgeComponent) viewChildren: QueryList<UserBadgeComponent>;
+    @ContentChildren(UserRatingComponent) contentChildren: QueryList<UserRatingComponent>;
+
+    ngAfterViewInit() {
+      // view children are initialized
+    }
+
+    ngAfterContentInit() {
+      // content children are initialized
+    }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         <h1>Hello {{ name }}, how are you today?</h1>
+         <app-user-panel>
+              <app-user-rating>
+              </app-user-rating>
+         </app-user-panel>
+  \`
+  })
+  export class AppComponent {
+    name = 'Angular 5';
+
+  }
+
+  `
 };
 apip621 = {
   name: '',
