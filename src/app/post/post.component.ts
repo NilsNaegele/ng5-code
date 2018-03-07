@@ -31455,20 +31455,180 @@ apip630 = {
   `
 };
 apip631 = {
-  name: '',
-  code: ``
+  name: 'NgModel Two-Way Data-Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <input type="text" [(ngModel)]="name">
+                <div>{{ name }}</div>
+
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+    name = '';
+
+  }
+
+  `
 };
 apip632 = {
-  name: '',
-  code: ``
+  name: 'Async Pipe',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+
+
+  @Component({
+    selector: 'app-greeter',
+    template: ' Hi {{ greetingPromise | async }}'
+  })
+  export class GreetingComponent {
+    resolve: Function;
+    greetingPromise = new Promise<string>(resolve => this.resolve = resolve);
+
+    constructor() {
+      setTimeout(() => {
+        this.resolve('Cookie-Monster');
+      }, 2000);
+    }
+  }
+
+
+  @Component({
+    selector: 'app-timer',
+    template: '{{ timer | async | date:"medium" }}'
+  })
+  export class TimerComponent {
+    timer: Observable<number>;
+
+    constructor() {
+      let counter = 0;
+      this.timer = Observable.create(observer => {
+        setInterval(() => {
+              observer.next(new Date().getTime());
+        }, 1000);
+      });
+    }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <app-greeter></app-greeter>
+                <br>
+                <app-timer></app-timer>
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip633 = {
-  name: '',
-  code: ``
+  name: 'BuiltIn Pipes',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <ul>
+                    <li>Currency Pipe - {{ currencyValue | currency:'EUR' }}</li>
+                    <li>Date Pipe - {{ dateValue | date:'longDate' }}</li>
+                    <li>Decimal Pipe - {{ decimalValue | number:'3.1-2' }}</li>
+                    <li>JSON Pipe - {{ jsObject | json }}</li>
+                    <li>UpperCasePipe - {{ lowercaseValue | uppercase }}</li>
+                    <li>LowerCasePipe - {{ uppercaseValue | lowercase }}</li>
+                    <li>PercentPipe - {{ percentValue | percent:'2.1-2' }}</li>
+                    <li>Slice Pipe - {{ array | slice:2:4 }}</li>
+                </ul>
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+    currencyValue = 42;
+    dateValue = new Date('03/07/2018');
+    decimalValue = 42.1618;
+    jsObject = { foo: 'bar' };
+    uppercaseValue = 'FOOBAR';
+    lowercaseValue = 'foobar';
+    percentValue = 42;
+    array = [1, 2, 3, 4, 5, 6, 7, 8];
+
+  }
+  `
 };
 apip634 = {
-  name: '',
-  code: ``
+  name: 'Stateful Pipe',
+  code: `
+
+  import { Component, Pipe, PipeTransform } from '@angular/core';
+  import { HttpClient } from '@angular/common/http';
+
+  import 'rxjs/add/operator/toPromise';
+
+  @Pipe({
+    name: 'fetchJson',
+    pure: false
+  })
+  export class FetchJsonPipe implements PipeTransform {
+    private data: any;
+    private prevUrl: string;
+
+    constructor(private http: HttpClient) {}
+
+    transform(url: string): any {
+      if (this.prevUrl !== url) {
+        this.http.get(url)
+            .toPromise()
+            .then(result => this.data = result);
+        this.prevUrl = url;
+      }
+      return this.data || {};
+    }
+  }
+
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+
+                <input #box type="text">
+                <button class="btn btn-primary"
+                        (click)="setUserName(box.value)">Get Avatar</button>
+                <br>
+                <img style="margin-top: 10px" width="160"
+                [src]="(('https://api.github.com/users/' + userName) | fetchJson).avatar_url">
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+    userName: string;
+    setUserName(user: string) {
+      this.userName = user;
+    }
+
+  }
+
+  `
 };
 apip635 = {
   name: '',
