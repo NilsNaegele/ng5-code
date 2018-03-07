@@ -30820,44 +30820,639 @@ apip620 = {
   `
 };
 apip621 = {
-  name: '',
-  code: ``
+  name: 'NgContent',
+  code: `
+
+  import { Component, Input } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-header',
+    template: '<header>{{ header }}</header>',
+    styles: [\`
+          header {
+            cursor: pointer;
+            border-bottom: 1px solid #ccc;
+            font-size: 1.5em;
+            background-color: #eee;
+          }
+
+    \`]
+  })
+  export class HeaderComponent {
+        @Input() header: string;
+   }
+
+  @Component({
+    selector: 'app-content',
+    template: \`
+            <section>
+                        <app-header (click)="visible = !visible" [header]="header">
+                        </app-header>
+                          <div *ngIf="visible">
+                                <ng-content select="content"></ng-content>
+                          </div>
+            </section>
+    \`,
+    styles: [\`
+        section {
+          width: 300px;
+          border: 1px solid #ccc;
+        }
+    \`]
+  })
+  export class ContentComponent {
+    @Input() header: string;
+    visible = true;
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         <h1>{{ title }}</h1>
+         <app-content header="Code Exercise Eat Sleep">
+                  <content>
+                        Code with Passion.
+                  </content>
+         </app-content>
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip622 = {
-  name: '',
-  code: ``
+  name: 'UseClass',
+  code: `
+
+  import { Component, Injectable } from '@angular/core';
+
+  export class Http { }
+
+  export class FakeHttp { }
+
+
+  @Injectable()
+  export class UserService {
+    constructor(private http: Http) {
+      console.log(this.http instanceof FakeHttp);
+    }
+  }
+
+***************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         Open browser console window
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+    constructor(private userService: UserService) {
+      console.log(userService);
+    }
+
+  }
+
+  ***************************************************************
+
+  @NgModule({
+    declarations: [
+      AppComponent
+    ],
+    imports: [
+      BrowserModule,
+      BrowserAnimationsModule,
+      FormsModule,
+      ReactiveFormsModule,
+      HttpClientModule
+    ],
+    providers: [UserService, { provide: Http, useClass: FakeHttp }],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule {
+
+  }
+
+  `
 };
 apip623 = {
-  name: '',
-  code: ``
+  name: 'UseValue UseExisting',
+  code: `
+
+  import { Component, Injectable } from '@angular/core';
+
+  export class Http { }
+
+  export class FakeHttp { }
+
+  export const fakeHttp = new FakeHttp();
+
+
+  @Injectable()
+  export class UserService {
+    constructor(public http: Http) { }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         Open browser console window
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+    constructor(private userService: UserService) {
+      console.log(userService.http === fakeHttp);
+    }
+
+  }
+
+*********************************************************************
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule
+  ],
+  providers: [
+            { provide: FakeHttp, useValue: fakeHttp },
+            { provide: Http, useExisting: FakeHttp },
+              UserService
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+  `
 };
 apip624 = {
-  name: '',
-  code: ``
+  name: 'UseFactory',
+  code: `
+
+  import { Component, Injectable, InjectionToken, Inject, Injector } from '@angular/core';
+
+  export const BUFFER_SIZE = new InjectionToken('buffer-size');
+
+  export class Buffer {
+    constructor(@Inject(BUFFER_SIZE) private size: number) { }
+  }
+
+  export class Certificate { }
+
+  export class Crypto { }
+
+
+  @Injectable()
+  export class Socket {
+    isOpen: boolean;
+    constructor(private buffer: Buffer) { }
+
+    open() {
+      this.isOpen = true;
+    }
+  }
+
+  export class TLSConnection {
+    socket: Socket;
+    crypto: Crypto;
+    certificate: Certificate;
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         Open browser console window
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+    constructor(private connection: TLSConnection) {
+      console.log(connection);
+    }
+
+  }
+
+  ******************************************************************
+
+  @NgModule({
+    declarations: [
+      AppComponent
+    ],
+    imports: [
+      BrowserModule,
+      BrowserAnimationsModule,
+      FormsModule,
+      ReactiveFormsModule,
+      HttpClientModule
+    ],
+    providers: [
+            {
+              provide: TLSConnection,
+              useFactory: (socket: Socket, certificate: Certificate, crypto: Crypto) => {
+                let connection = new TLSConnection();
+                connection.certificate = certificate;
+                connection.socket = socket;
+                connection.crypto = crypto;
+                socket.open();
+                return connection;
+              },
+              deps: [ Socket, Certificate, Crypto ]
+            },
+            { provide: BUFFER_SIZE, useValue: 42 },
+            Buffer,
+            Socket,
+            Certificate,
+            Crypto
+    ],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  `
 };
 apip625 = {
-  name: '',
-  code: ``
+  name: 'MultiProviders',
+  code: `
+
+  import { Component, Injectable, InjectionToken, Inject } from '@angular/core';
+
+  export const VALIDATOR = new InjectionToken('validator');
+
+  export type EmployeeValidator = (person: EmployeeService) => string;
+
+
+  @Injectable()
+  export class EmployeeService {
+    name: string;
+    constructor(@Inject(VALIDATOR) private validators: EmployeeValidator[]) { }
+
+    validate() {
+      return this.validators.map(v => v(this)).filter(value => !!value);
+    }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         Open browser console window
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+    constructor(private employeeService: EmployeeService) {
+      console.log(employeeService);
+    }
+
+  }
+
+  ********************************************************************
+
+  @NgModule({
+    declarations: [
+      AppComponent
+    ],
+    imports: [
+      BrowserModule,
+      BrowserAnimationsModule,
+      FormsModule,
+      ReactiveFormsModule,
+      HttpClientModule
+    ],
+    providers: [
+            {
+              provide: VALIDATOR,
+              multi: true,
+              useValue: (person: EmployeeService) => {
+                if (!person.name) {
+                  return 'Name is required.';
+                }
+              }
+            },
+            {
+              provide: VALIDATOR,
+              multi: true,
+              useValue: (person: EmployeeService) => {
+                if (!person.name || person.name.length < 3) {
+                  return 'Name should be more than 3 symbols long.';
+                }
+              }
+            },
+            EmployeeService
+    ],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  `
 };
 apip626 = {
-  name: '',
-  code: ``
+  name: 'Decorator: Optional',
+  code: `
+
+  import { Component, Optional, Injectable } from '@angular/core';
+
+  export abstract class SortingAlgorithm {
+    abstract sort(collection: BaseCollection): CollectionService;
+  }
+
+
+  export class BaseCollection {
+
+    getDefaultSort(): SortingAlgorithm {
+      // implement some generic sorting algorithm
+      return null;
+    }
+  }
+
+  @Injectable()
+  export class CollectionService extends BaseCollection {
+          sort: SortingAlgorithm;
+
+          constructor(@Optional() sort: SortingAlgorithm) {
+            super();
+            this.sort = sort || this.getDefaultSort();
+          }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         Open browser console window
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+    constructor(private collectionService: CollectionService) {
+      console.log(collectionService);
+    }
+
+  }
+
+  `
 };
 apip627 = {
-  name: '',
-  code: ``
+  name: 'Decorator: Self',
+  code: `
+
+  import { Component, Self, Injectable, Injector } from '@angular/core';
+
+
+  export abstract class Channel { }
+
+  export class Http extends Channel { }
+
+  export class WebSocket extends Channel { }
+
+
+  @Injectable()
+  export class UserService {
+    constructor(public channel: Channel) { }
+  }
+
+  export const parentInjector = Injector.create([
+    {
+      provide: Channel,
+      deps: [],
+      useFactory: () => new Http()
+    }
+  ]);
+
+  export const childInjector = Injector.create([
+          {
+            provide: Channel,
+            deps: [],
+            useFactory: () => new WebSocket()
+          },
+        {
+          provide: UserService,
+          deps: [[new Self(), Channel]],
+          useFactory: (channel: Channel) => new UserService(channel)
+        }
+  ], parentInjector);
+
+  console.log(childInjector.get(UserService).channel instanceof WebSocket);
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         Open browser console window
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip628 = {
-  name: '',
-  code: ``
+  name: 'Decorator: SkipSelf',
+  code: `
+
+  import { Component, SkipSelf, Injectable, Injector } from '@angular/core';
+
+
+  @Injectable()
+  export class ContextService {
+    constructor(@SkipSelf() public parentContext: ContextService) { }
+  }
+
+  export const parentInjector = Injector.create([
+    {
+      provide: ContextService,
+      useValue: new ContextService(null)
+    }
+  ]);
+
+  export const childInjector = Injector.create([
+          {
+            provide: ContextService,
+            deps: [[new SkipSelf(), ContextService]],
+            useFactory: (context: ContextService) => new ContextService(context)
+          }
+  ], parentInjector);
+
+  console.log(childInjector.get(ContextService).parentContext instanceof ContextService);
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+         Open browser console window
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip629 = {
-  name: '',
-  code: ``
+  name: 'ViewProviders',
+  code: `
+
+  import { Component, NgModule, ElementRef,
+           ViewChild, AfterContentInit } from '@angular/core';
+
+  import * as markdown from 'markdown';
+
+
+  export class Markdown {
+    toHTML(md) {
+      return markdown.toHTML(md);
+    }
+  }
+
+  @Component({
+    selector: 'app-markdown-panel',
+    template: \`
+            <div class="panel">
+                  <div class="panel-title-wrapper">
+                        <ng-content select=".panel-title"></ng-content>
+                  </div>
+                  <div class="panel-content-wrapper">
+                        <ng-content select=".panel-content"></ng-content>
+                  </div>
+            </div>
+    \`,
+    viewProviders: [ Markdown ],
+    styles: [\`
+        .panel {
+          width: auto;
+          display: inline-block;
+          border: 1px solid black;
+        }
+        .panel-title-wrapper {
+          border-bottom: 1px solid black;
+          background-color: #eee;
+        }
+        .panel-content-wrapper, .panel-title-wrapper {
+          padding: 5px;
+        }
+
+    \`]
+  })
+  export class MarkdownPanelComponent implements AfterContentInit {
+
+    constructor(private el: ElementRef, private md: Markdown) { }
+
+    ngAfterContentInit() {
+      let el = this.el.nativeElement;
+      let title = el.querySelector('.panel-title');
+      let content = el.querySelector('.panel-content');
+      title.innerHTML = this.md.toHTML(title.innerHTML);
+      content.innerHTML = this.md.toHTML(content.innerHTML);
+    }
+
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+                <app-markdown-panel>
+                  <section class="panel-title">### Small Title</section>
+                  <section class="panel-content">
+  ## Sample Title
+  * First Point
+  * Second Point
+  * Third Point
+                  </section>
+                </app-markdown-panel>
+
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+  }
+
+  `
 };
 apip630 = {
-  name: '',
-  code: ``
+  name: 'Injector Basics',
+  code: `
+
+  import { Component, InjectionToken, Inject, Injectable} from '@angular/core';
+
+  export const BUFFER_SIZE = new InjectionToken<number>('buffer-size');
+
+  export class Buffer {
+    constructor(@Inject(BUFFER_SIZE) private size: number) {
+      console.log(this.size);
+    }
+  }
+
+  @Injectable()
+  export class SocketService {
+    constructor(private buffer: Buffer) { }
+  }
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                Open Browser console window
+
+  \`
+  })
+  export class AppComponent {
+    title = 'Angular 5 Alpha Projects';
+
+    constructor(private socketService: SocketService) {
+      console.log(socketService);
+    }
+
+  }
+
+
+  ******************************************************************
+
+  @NgModule({
+    declarations: [
+      AppComponent
+    ],
+    imports: [
+      BrowserModule,
+      BrowserAnimationsModule,
+      FormsModule,
+      ReactiveFormsModule,
+      HttpClientModule
+    ],
+    providers: [
+          {
+            provide: BUFFER_SIZE,
+            useValue: 42
+          },
+          Buffer,
+          SocketService
+    ],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+
+  `
 };
 apip631 = {
   name: '',
