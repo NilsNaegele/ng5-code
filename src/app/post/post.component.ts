@@ -31631,44 +31631,855 @@ apip634 = {
   `
 };
 apip635 = {
-  name: '',
-  code: ``
+  name: 'Interpolation',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <h1>{{ title }}</h1>
+  \`
+  })
+  export class AppComponent {
+    title = 'Hello Angular';
+
+  }
+
+  `
 };
 apip636 = {
-  name: '',
-  code: ``
+  name: 'Event Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <div>
+                      <h1>{{ message }}</h1>
+                      <input type="text" (keypress)="displayMessage($event)">
+                </div>
+  \`
+  })
+  export class AppComponent {
+    message = 'Hello Angular';
+
+    displayMessage(onKeyPressEvent: KeyboardEvent) {
+      this.message = (<HTMLInputElement>onKeyPressEvent.target).value;
+    }
+
+  }
+
+  `
 };
 apip637 = {
-  name: '',
-  code: ``
+  name: 'Interpolation Syntax',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+                <div>
+                      <h1>{{ message }}</h1>
+                      <input type="text" value="{{ message }}">
+                </div>
+  \`
+  })
+  export class AppComponent {
+    message = 'Hello Angular';
+
+  }
+
+  `
 };
 apip638 = {
-  name: '',
-  code: ``
+  name: 'Master Detail',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Book {
+    isbn: number;
+    title: string;
+    authors: string;
+    published: string;
+    description: string;
+    coverImage: string;
+  }
+
+  *********************************************************************
+
+  export const BOOKS: Book[] = [
+    {
+      isbn: 1231786462789,
+      title: 'Learning React with Redux and Flux',
+      authors: 'Sam Slotsky',
+      published: 'February 2018',
+      description: 'Redux is a web application development architecture often used with React. In Redux, the entire state of your application is kept in a single store that can only be changed by special action objects that are specified by reducers.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V06334_Traditional_cover_low.png'
+    },
+    {
+      isbn: 4561784396345,
+      title: 'Web Development with Angular and PHP',
+      authors: 'Daniel Kmak',
+      published: 'February 2018',
+      description: 'Did you ever think of creating your own social network? In this course.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V08376_Low.png'
+    },
+    {
+      isbn: 3211783286987,
+      title: 'Data Visualization in Python by Examples',
+      authors: 'Harish Garg',
+      published: 'February 2018',
+      description: 'Data visualization is just a wise investment in your future big-data needs.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V09595_MockupCover.png'
+    }
+  ];
+
+
+  *********************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+          <div class="app-container">
+                <h3 class="title">Books List</h3>
+                <div class="border-divider"></div>
+                <div class="row">
+                     <div class="col-sm-3">
+                        <ul class="list">
+                            <li class="list-item" *ngFor="let book of booksList" (click)="getBookDetails(book.isbn)">
+                                <div class="cover-image-container">
+                                      <span class="cover-image">
+                                            <img [src]="book.coverImage" alt="cover image">
+                                      </span>
+                                </div>
+                                <div class="clear">
+                                      <h3 class="book-title">{{ book.title }}</h3>
+                                      <h4 class="book-authors">{{ book.authors }}</h4>
+                                </div>
+                            </li>
+                        </ul>
+                     </div>
+                    <div class="col-sm-9">
+                          <div class="row selected-book" *ngIf="selectedBook">
+                               <div class="col-sm-4 col-md-3 col-lg-2 pad-right">
+                                      <img [src]="selectedBook.coverImage" alt="coverImage">
+                               </div>
+                               <div class="col-sm-8 col-md-9 col-lg-10">
+                                      <h3 class="title">{{ selectedBook.title }}</h3>
+                                      <p>{{ selectedBook.authors }}</p>
+                                      <p>{{ selectedBook.published }}</p>
+                                      <p>{{ selectedBook.description }}</p>
+                               </div>
+                          </div>
+                    </div>
+                </div>
+          </div>
+  \`
+  })
+  export class AppComponent {
+    booksList: Book[] = BOOKS;
+    selectedBook: Book;
+
+    getBookDetails(isbn: number) {
+      this.selectedBook = this.booksList.find(book => book.isbn === isbn);
+    }
+
+  }
+
+  *********************************************************************
+
+  <!doctype html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>ng5-dev</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
+  </head>
+  <body>
+    <app-root>launch my baby ...</app-root>
+  </body>
+  </html>
+
+
+  *********************************************************************
+  Global Styles.CSS
+
+  body {
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    color: #333333;
+    background-color: #ffffff;
+    font-weight: 400;
+  }
+
+  .app-container {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    overflow: hidden;
+  }
+
+  .clear {
+    display: block;
+    overflow: hidden;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 1rem;
+  }
+
+  .border-divider {
+    border-bottom: 1px solid rgba(120, 130, 140, 0.13);
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .list {
+    height: 100%;
+    padding: 0;;
+    border-right: 1px solid rgba(120, 130, 140, 0.13);
+  }
+
+  .list-item {
+    list-style-type: disc;
+    display: block;
+    position: relative;
+    padding: 1rem;
+  }
+
+  .list-item:hover {
+    background-color: rgba(0, 0, 0, 0.065);
+  }
+
+  .cover-image-container {
+    float: left;
+    margin-right: 1rem;
+  }
+
+  .cover-image-container .cover-image {
+    width: 40px;
+    height: 40px;
+    line-height: 2.5rem;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .cover-image-container .cover-image img {
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+    border: 0;
+  }
+
+  .book-title {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .book-authors {
+    font-size: 0.8125rem;
+    opacity: 0.6;
+  }
+
+  .selected-book img {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .selected-book p {
+    margin-left: 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .pad-right {
+    padding-right: 0 !important;
+  }
+
+  button {
+    font-family: "Roboto", sans-serif;
+    border-radius: 0 !important;
+  }
+
+  `
 };
 apip639 = {
-  name: '',
-  code: ``
+  name: 'Property Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <div>
+                  <h1 [textContent]="message"></h1>
+                  <input type="text" [value]="message">
+            </div>
+  \`
+  })
+  export class AppComponent {
+    message = 'Hello Angular';
+
+  }
+
+  `
 };
 apip640 = {
-  name: '',
-  code: ``
+  name: 'Two-Way Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <div>
+                  <h1 [textContent]="message"></h1>
+                  <input type="text" [(ngModel)]="message">
+            </div>
+  \`
+  })
+  export class AppComponent {
+    message = 'Hello Angular';
+
+  }
+
+  `
 };
 apip641 = {
-  name: '',
-  code: ``
+  name: 'Multiple Components',
+  code: `
+
+  import { Component, Input, Output, EventEmitter } from '@angular/core';
+
+  export class Book {
+    isbn: number;
+    title: string;
+    authors: string;
+    published: string;
+    description: string;
+    coverImage: string;
+  }
+
+  ************************************************************************
+
+  export const BOOKS: Book[] = [
+    {
+      isbn: 1231786462789,
+      title: 'Learning React with Redux and Flux',
+      authors: 'Sam Slotsky',
+      published: 'February 2018',
+      description: 'Redux is a web application development architecture often used with React. In Redux, the entire state of your application is kept in a single store that can only be changed by special action objects that are specified by reducers.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V06334_Traditional_cover_low.png'
+    },
+    {
+      isbn: 4561784396345,
+      title: 'Web Development with Angular and PHP',
+      authors: 'Daniel Kmak',
+      published: 'February 2018',
+      description: 'Did you ever think of creating your own social network? In this course.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V08376_Low.png'
+    },
+    {
+      isbn: 3211783286987,
+      title: 'Data Visualization in Python by Examples',
+      authors: 'Harish Garg',
+      published: 'February 2018',
+      description: 'Data visualization is just a wise investment in your future big-data needs.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V09595_MockupCover.png'
+    }
+  ];
+
+
+  ************************************************************************
+
+  @Component({
+    selector: 'app-book-details',
+    template: \`
+              <div *ngIf="book">
+                <div class="row selected-book">
+                        <div class="col-sm-4 col-md-3 col-lg-2 pad-right">
+                          <img [src]="book.coverImage" alt="coverImage">
+                        </div>
+                        <div class="col-sm-8 col-md-9 col-lg-10">
+                            <h3 class="title">{{ book.title }}</h3>
+                                  <p>{{ book.authors }}</p>
+                                  <p>{{ book.published }}</p>
+                                  <p>{{ book.description }}</p>
+                        </div>
+                </div>
+                <div class="row">
+                      <div class="col-sm-12">
+                            <button class="btn btn-danger float-xs-right ml-3" (click)="deleteBook()">
+                                Delete
+                            </button>
+                      </div>
+                </div>
+              </div>
+    \`
+  })
+  export class BookDetailsComponent {
+    @Input() book: Book;
+    @Output() delete = new EventEmitter<number>();
+
+    deleteBook() {
+      this.delete.emit(this.book.isbn);
+    }
+  }
+
+  ************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+    <div class="app-container">
+    <h3 class="title">Books List</h3>
+    <div class="border-divider"></div>
+    <div *ngIf="booksList.length === 0" class="m3-alert alert-danger" role="alert">
+          No books available right now.
+    </div>
+    <div class="row" *ngIf="booksList.length > 0">
+         <div class="col-sm-4 col-md-3 pad-right">
+            <ul class="list">
+                <li class="list-item" *ngFor="let book of booksList"
+                                      (click)="getBookDetails(book.isbn)">
+                    <div class="cover-image-container">
+                          <span class="cover-image">
+                                <img [src]="book.coverImage" alt="cover image">
+                          </span>
+                    </div>
+                    <div class="clear">
+                          <h3 class="book-title">{{ book.title }}</h3>
+                          <h4 class="book-authors">{{ book.authors }}</h4>
+                    </div>
+                </li>
+            </ul>
+         </div>
+        <div class="col-sm-8 col-md-9">
+              <app-book-details [book]="selectedBook"
+                                (delete)="deleteBook($event)">
+              </app-book-details>
+        </div>
+    </div>
+  </div>
+  \`
+  })
+  export class AppComponent {
+    message = 'Hello Angular';
+    booksList: Book[] = BOOKS;
+    selectedBook: Book;
+
+    getBookDetails(isbn: number) {
+      this.selectedBook = this.booksList.find(book => book.isbn === isbn);
+    }
+
+    deleteBook(isbn: number) {
+      this.selectedBook = null;
+      this.booksList = this.booksList.filter(book => book.isbn !== isbn);
+    }
+
+  }
+
+  `
 };
 apip642 = {
-  name: '',
-  code: ``
+  name: 'Refactored In Service',
+  code: `
+
+  import { Component, OnInit, Injectable, Input, Output, EventEmitter } from '@angular/core';
+
+  export class Book {
+    isbn: number;
+    title: string;
+    authors: string;
+    published: string;
+    description: string;
+    coverImage: string;
+  }
+
+
+  export const BOOKS: Book[] = [
+    {
+      isbn: 1231786462789,
+      title: 'Learning React with Redux and Flux',
+      authors: 'Sam Slotsky',
+      published: 'February 2018',
+      description: 'Redux is a web application development architecture often used with React. In Redux, the entire state of your application is kept in a single store that can only be changed by special action objects that are specified by reducers.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V06334_Traditional_cover_low.png'
+    },
+    {
+      isbn: 4561784396345,
+      title: 'Web Development with Angular and PHP',
+      authors: 'Daniel Kmak',
+      published: 'February 2018',
+      description: 'Did you ever think of creating your own social network? In this course.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V08376_Low.png'
+    },
+    {
+      isbn: 3211783286987,
+      title: 'Data Visualization in Python by Examples',
+      authors: 'Harish Garg',
+      published: 'February 2018',
+      description: 'Data visualization is just a wise investment in your future big-data needs.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V09595_MockupCover.png'
+    }
+  ];
+
+  @Injectable()
+  export class BookService {
+
+          booksList: Book[] = BOOKS;
+
+          getBooks() {
+            return this.booksList;
+          }
+
+          getBook(isbn: number) {
+            return this.booksList.find(book => book.isbn === isbn);
+          }
+
+          deleteBook(isbn: number) {
+            return this.booksList.filter(book => book.isbn !== isbn);
+          }
+
+  }
+
+  @Component({
+    selector: 'app-book-details',
+    template: \`
+              <div *ngIf="book">
+                <div class="row selected-book">
+                        <div class="col-sm-4 col-md-3 col-lg-2 pad-right">
+                          <img [src]="book.coverImage" alt="coverImage">
+                        </div>
+                        <div class="col-sm-8 col-md-9 col-lg-10">
+                            <h3 class="title">{{ book.title }}</h3>
+                                  <p>{{ book.authors }}</p>
+                                  <p>{{ book.published }}</p>
+                                  <p>{{ book.description }}</p>
+                        </div>
+                </div>
+                <div class="row">
+                      <div class="col-sm-12">
+                            <button class="btn btn-danger float-xs-right ml-3"
+                                    (click)="deleteBook()">
+                                Delete
+                            </button>
+                      </div>
+                </div>
+              </div>
+    \`
+  })
+  export class BookDetailsComponent {
+    @Input() book: Book;
+    @Output() onDelete = new EventEmitter<number>();
+
+    deleteBook() {
+      this.onDelete.emit(this.book.isbn);
+    }
+  }
+
+
+  @Component({
+    selector: 'app-books-list',
+    template: \`
+    <h3 class="title">Books List</h3>
+    <div class="border-divider"></div>
+    <div *ngIf="booksList.length === 0" class="m3-alert alert-danger" role="alert">
+          No books available right now.
+    </div>
+    <div class="row" *ngIf="booksList.length > 0">
+         <div class="col-sm-4 col-md-3 pad-right">
+            <ul class="list">
+                <li class="list-item" *ngFor="let book of booksList"
+                    (click)="getBookDetails(book.isbn)">
+                    <div class="cover-image-container">
+                          <span class="cover-image">
+                                <img [src]="book.coverImage" alt="cover image">
+                          </span>
+                    </div>
+                    <div class="clear">
+                          <h3 class="book-title">{{ book.title }}</h3>
+                          <h4 class="book-authors">{{ book.authors }}</h4>
+                    </div>
+                </li>
+            </ul>
+         </div>
+        <div class="col-sm-8 col-md-9">
+              <app-book-details [book]="selectedBook" (delete)="deleteBook($event)">
+              </app-book-details>
+        </div>
+    </div>
+    \`
+  })
+  export class BooksListComponent implements OnInit {
+
+    booksList: Book[] = [];
+    selectedBook: Book;
+
+    constructor(private bookService: BookService) { }
+
+    ngOnInit() {
+      this.getBooksList();
+    }
+
+    getBooksList() {
+      this.booksList = this.bookService.getBooks();
+    }
+
+    getBookDetails(isbn: number) {
+      this.selectedBook = this.bookService.getBook(isbn);
+    }
+
+    deleteBook(isbn: number) {
+      this.selectedBook = null;
+      this.booksList = this.bookService.deleteBook(isbn);
+    }
+
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <div class="app-container">
+                  <app-books-list></app-books-list>
+            </div>
+  \`
+  })
+  export class AppComponent { }
+
+  `
 };
 apip643 = {
-  name: '',
-  code: ``
+  name: 'Service Component Injected Providers Metadata Array',
+  code: `
+
+  import { Component, OnInit, Injectable, Input, Output, EventEmitter } from '@angular/core';
+
+  export class Book {
+    isbn: number;
+    title: string;
+    authors: string;
+    published: string;
+    description: string;
+    coverImage: string;
+  }
+
+
+  export const BOOKS: Book[] = [
+    {
+      isbn: 1231786462789,
+      title: 'Learning React with Redux and Flux',
+      authors: 'Sam Slotsky',
+      published: 'February 2018',
+      description: 'Redux is a web application development architecture often used with React. In Redux, the entire state of your application is kept in a single store that can only be changed by special action objects that are specified by reducers.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V06334_Traditional_cover_low.png'
+    },
+    {
+      isbn: 4561784396345,
+      title: 'Web Development with Angular and PHP',
+      authors: 'Daniel Kmak',
+      published: 'February 2018',
+      description: 'Did you ever think of creating your own social network? In this course.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V08376_Low.png'
+    },
+    {
+      isbn: 3211783286987,
+      title: 'Data Visualization in Python by Examples',
+      authors: 'Harish Garg',
+      published: 'February 2018',
+      description: 'Data visualization is just a wise investment in your future big-data needs.',
+      coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V09595_MockupCover.png'
+    }
+  ];
+
+  @Injectable()
+  export class BookService {
+
+          booksList: Book[] = BOOKS;
+
+          getBooks() {
+            return this.booksList;
+          }
+
+          getBook(isbn: number) {
+            return this.booksList.find(book => book.isbn === isbn);
+          }
+
+          deleteBook(isbn: number) {
+            return this.booksList.filter(book => book.isbn !== isbn);
+          }
+
+  }
+
+  @Component({
+    selector: 'app-book-details',
+    template: \`
+              <div *ngIf="book">
+                <div class="row selected-book">
+                        <div class="col-sm-4 col-md-3 col-lg-2 pad-right">
+                          <img [src]="book.coverImage" alt="coverImage">
+                        </div>
+                        <div class="col-sm-8 col-md-9 col-lg-10">
+                            <h3 class="title">{{ book.title }}</h3>
+                                  <p>{{ book.authors }}</p>
+                                  <p>{{ book.published }}</p>
+                                  <p>{{ book.description }}</p>
+                        </div>
+                </div>
+                <div class="row">
+                      <div class="col-sm-12">
+                            <button class="btn btn-danger float-xs-right ml-3"
+                                    (click)="deleteBook()">
+                                Delete
+                            </button>
+                      </div>
+                </div>
+              </div>
+    \`
+  })
+  export class BookDetailsComponent {
+    @Input() book: Book;
+    @Output() onDelete = new EventEmitter<number>();
+
+    deleteBook() {
+      this.onDelete.emit(this.book.isbn);
+    }
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <div class="app-container">
+            <h3 class="title">Books List</h3>
+            <div class="border-divider"></div>
+            <div *ngIf="booksList.length === 0" class="m3-alert alert-danger" role="alert">
+                  No books available right now.
+            </div>
+            <div class="row" *ngIf="booksList.length > 0">
+                 <div class="col-sm-4 col-md-3 pad-right">
+                    <ul class="list">
+                        <li class="list-item" *ngFor="let book of booksList"
+                            (click)="getBookDetails(book.isbn)">
+                            <div class="cover-image-container">
+                                  <span class="cover-image">
+                                        <img [src]="book.coverImage" alt="cover image">
+                                  </span>
+                            </div>
+                            <div class="clear">
+                                  <h3 class="book-title">{{ book.title }}</h3>
+                                  <h4 class="book-authors">{{ book.authors }}</h4>
+                            </div>
+                        </li>
+                    </ul>
+                 </div>
+                <div class="col-sm-8 col-md-9">
+                      <app-book-details [book]="selectedBook"
+                                        (onDelete)="deleteBook($event)">
+                      </app-book-details>
+                </div>
+            </div>
+            </div>
+  \`,
+  providers: [ BookService ]
+  })
+  export class AppComponent implements OnInit {
+
+    booksList: Book[] = [];
+    selectedBook: Book;
+
+    constructor(private bookService: BookService) { }
+
+    ngOnInit() {
+      this.getBooksList();
+    }
+
+    getBooksList() {
+      this.booksList = this.bookService.getBooks();
+    }
+
+    getBookDetails(isbn: number) {
+      this.selectedBook = this.bookService.getBook(isbn);
+    }
+
+    deleteBook(isbn: number) {
+      this.selectedBook = null;
+      this.booksList = this.bookService.deleteBook(isbn);
+    }
+
+  }
+
+  `
 };
 apip644 = {
-  name: '',
-  code: ``
+  name: 'Observable Create',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+  \`
+  })
+  export class AppComponent {
+    title = 'Hello Angular';
+
+    private observable = Observable.create((observer) => {
+            observer.next(100);
+            observer.next(200);
+
+            setTimeout(() => {
+                observer.next(300);
+                observer.next(400);
+                observer.complete();
+            }, 1000);
+
+            observer.next(500);
+    });
+
+    constructor() {
+      console.log('Before subscribe');
+      this.observable.subscribe({
+            next: value => console.log(\`Got value \${value}\`),
+            error: err => console.log(\`Something went wrong \${err}\`),
+            complete: () => console.log('Complete')
+      });
+      console.log('After subscribe');
+    }
+
+  }
+
+  `
 };
 apip645 = {
   name: '',
