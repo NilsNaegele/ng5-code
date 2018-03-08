@@ -32482,40 +32482,914 @@ apip644 = {
   `
 };
 apip645 = {
-  name: '',
-  code: ``
+  name: 'MouseMove Events',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/fromEvent';
+
+  const mouseMoves = Observable.fromEvent(document, 'mousemove');
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+  \`
+  })
+  export class AppComponent {
+    title = 'Hello Angular';
+
+    constructor() {
+      mouseMoves.subscribe(event => console.log(event.clientX, event.clientY));
+    }
+
+  }
+
+  `
 };
 apip646 = {
-  name: '',
-  code: ``
+  name: 'Observable Interval',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/interval';
+
+  const interval = Observable.interval(1000);
+  const subscription = interval.subscribe(val => console.log(val));
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+  \`
+  })
+  export class AppComponent {
+    title = 'Hello Angular';
+
+    constructor() {
+
+      setTimeout(() => {
+            subscription.unsubscribe();
+      }, 10000);
+    }
+
+  }
+
+  `
 };
 apip647 = {
-  name: '',
-  code: ``
+  name: 'Pipe, Map && Filter Operators',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/interval';
+
+  import { map, filter } from 'rxjs/operators';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+  \`
+  })
+  export class AppComponent {
+    title = 'Hello Angular';
+
+    constructor() {
+      const interval = Observable.interval(1000).pipe(
+                                 map(x => x * 2),
+                                 filter(x => x % 2 === 0)
+                                );
+
+      interval.subscribe(value => console.log(value));
+
+    }
+
+  }
+
+  `
 };
 apip648 = {
-  name: '',
-  code: ``
+  name: 'Observable ViewChild Merge',
+  code: `
+
+  import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/fromEvent';
+  import 'rxjs/add/observable/merge';
+
+  import { map, filter } from 'rxjs/operators';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+            <div class="container p-4">
+                  <input #box class="form-control mt-2">
+                  <button #msgBtn class="btn btn-primary mt-3">Show Message!</button>
+                  <p class="mt-1">{{ message }}</p>
+            </div>
+  \`
+  })
+  export class AppComponent implements OnInit {
+    title = 'Hello Angular';
+    message = '';
+    @ViewChild('box') inputBox: ElementRef;
+    @ViewChild('msgBtn') messageBtn: ElementRef;
+
+    ngOnInit() {
+      const msgBtnObs$ = Observable.fromEvent(this.messageBtn.nativeElement, 'click')
+                                       .pipe(
+                                         map(event => 'Hello Angular, RxJS!')
+                                       );
+      const boxObs$ = Observable.fromEvent(this.inputBox.nativeElement, 'change')
+                                       .pipe(
+                                         map((event: Event) =>
+                                        (<HTMLInputElement>event.target).value)
+                                       );
+      Observable.merge(msgBtnObs$, boxObs$).subscribe(response => this.message = response);
+
+    }
+
+  }
+
+  `
 };
 apip649 = {
-  name: '',
-  code: ``
+  name: 'Timer',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/interval';
+
+  import { map, filter } from 'rxjs/operators';
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <h1>{{ title }}</h1>
+            <div class="container">
+                  <h4 class="p-4">
+                        TIME: {{ timer$ | async | date:'mediumTime'}}
+                  </h4>
+            </div>
+  \`
+  })
+  export class AppComponent {
+    title = 'Hello Angular';
+
+    timer$ = Observable.interval(1000).pipe(
+                        map(event => new Date())
+    );
+
+  }
+
+  `
 };
 apip650 = {
-  name: '',
-  code: ``
+  name: 'Books Search',
+  code: `
+
+  import { Component, OnInit, Injectable, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+
+  import { Observable } from 'rxjs/Observable';
+  import 'rxjs/add/observable/fromEvent';
+  import 'rxjs/add/observable/of';
+  import { filter, switchMap, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+
+
+    export class Book {
+      isbn: number;
+      title: string;
+      authors: string;
+      published: string;
+      description: string;
+      coverImage: string;
+    }
+
+
+    export const BOOKS: Book[] = [
+      {
+        isbn: 1231786462789,
+        title: 'Learning React with Redux and Flux',
+        authors: 'Sam Slotsky',
+        published: 'February 2018',
+        description: 'Redux is a web application development architecture often used with React. In Redux, the entire state of your application is kept in a single store that can only be changed by special action objects that are specified by reducers.',
+        coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V06334_Traditional_cover_low.png'
+      },
+      {
+        isbn: 4561784396345,
+        title: 'Web Development with Angular and PHP',
+        authors: 'Daniel Kmak',
+        published: 'February 2018',
+        description: 'Did you ever think of creating your own social network? In this course.',
+        coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V08376_Low.png'
+      },
+      {
+        isbn: 3211783286987,
+        title: 'Data Visualization in Python by Examples',
+        authors: 'Harish Garg',
+        published: 'February 2018',
+        description: 'Data visualization is just a wise investment in your future big-data needs.',
+        coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V09595_MockupCover.png'
+      }
+    ];
+
+    @Injectable()
+    export class BookService {
+
+            booksList: Book[] = BOOKS;
+
+            getBooks(title: string): Observable<Book[]> {
+              return Observable.of(this.filterBooks(title));
+            }
+
+            getBookTitles(title: string): Observable<string[]> {
+              return Observable.of(this.filterBooks(title).map(book => book.title));
+            }
+
+            filterBooks(title: string): Book[] {
+              return title ?
+              this.booksList.filter((book) => new RegExp(title, 'gi').test(book.title)) :
+                          [];
+            }
+
+    }
+
+    @Component({
+      selector: 'app-book-search',
+      template: \`
+      <h3 class="page-title">Books Search</h3>
+      <div class="search-container">
+        <div class="books-search-form">
+          <input type="text" #searchInput class="search-input"
+            placeholder="Book Title" [(ngModel)]="searchInputTerm">
+          <button class="btn btn-primary" (click)="searchBooks()">Search</button>
+        </div>
+        <div class="title-suggestion-list--wrapper">
+          <ul class="title-suggestion-list" #suggestions
+          [style.display]="bookTitles.length > 0 ? 'block' : 'none'">
+            <li *ngFor="let bookTitle of bookTitles">{{bookTitle}}</li>
+          </ul>
+        </div>
+      </div>
+      \`
+    })
+    export class BookSearchComponent implements OnInit {
+          @ViewChild('searchInput') searchInput: ElementRef;
+          @ViewChild('suggestions') suggestions: ElementRef;
+          bookTitles: Array<string> = [];
+          searchInputTerm = '';
+
+          @Output() search = new EventEmitter<string>();
+
+          constructor(private bookService: BookService) { }
+
+          ngOnInit() {
+            Observable.fromEvent(this.searchInput.nativeElement, 'keyup').pipe(
+              debounceTime(300),
+              distinctUntilChanged(),
+              map((event: KeyboardEvent) => (<HTMLInputElement>event.target).value),
+              switchMap(title => this.bookService.getBookTitles(title))
+            ).subscribe(bookTitles => this.bookTitles = bookTitles);
+
+            Observable.fromEvent(this.suggestions.nativeElement, 'click').pipe(
+              map((event: KeyboardEvent) => (<HTMLInputElement>event.srcElement).innerText)
+            ).subscribe(response => {
+                  this.searchInputTerm = response;
+                  this.bookTitles = [];
+            });
+          }
+
+    }
+
+    @Component({
+      selector: 'app-books-list',
+      template: \`
+      <div class="row mt-1">
+        <div class="col-sm-12">
+          <div class="row">
+             <div class="col-sm-3 book-item" *ngFor="let book of books">
+                 <div class="cover-image-container">
+                    <img [src]="book.coverImage" alt="cover image">
+                 </div>
+             </div>
+          </div>
+        </div>
+      </div>
+      \`,
+      styles: [\`
+        .book-item {
+          margin-bottom: 1rem;
+        }
+        .cover-image-container {
+          width: 100%;
+        }
+        .cover-image-container img {
+          width: 100%;
+          vertical-align: 0;
+          border: 0;
+        }
+      \`]
+    })
+    export class BooksListComponent {
+      @Input() books: Book[] = [];
+
+    }
+
+
+    @Component({
+      selector: 'app-root',
+      template: \`
+              <div class="container">
+                <app-book-search (search)="searchBook($event)"></app-book-search>
+                <app-books-list [books]="filteredBooks"></app-books-list>
+              </div>
+    \`,
+    providers: [ BookService ]
+    })
+    export class AppComponent {
+
+      filteredBooks: Book[] = [];
+
+      constructor(private bookService: BookService) { }
+
+      searchBook(title: string) {
+        this.bookService.getBooks(title).subscribe(books => this.filteredBooks = books);
+      }
+
+    }
+
+  `
 };
 apip651 = {
-  name: '',
-  code: ``
+  name: 'Forms Validations',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-registration-form',
+    template: \`
+    <div class="row m-1">
+    <div class="col-md-9">
+      <div class="box">
+        <div class="box-header">
+          <h2>Registration Form</h2>
+        </div>
+        <div class="box-divider"></div>
+        <div class="box-body">
+          <form novalidate #regFormRef="ngForm" (ngSubmit)="onSubmit(regFormRef.value)">
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                <label>First name</label>
+                <input type="text" class="form-control" name="firstName" ngModel
+                       #firstNameRef="ngModel" required
+                       minlength="3" maxlength="8">
+                <div class="error-message" *ngIf="firstNameRef.touched &&
+                     firstNameRef?.errors?.required">
+                  First Name is required.
+                </div>
+                <div class="error-message" *ngIf="firstNameRef.touched &&
+                     firstNameRef?.errors?.minlength">
+                  Enter minimum {{firstNameRef?.errors?.minlength.requiredLength}}
+                  characters, you only entered
+                  {{firstNameRef?.errors?.minlength.actualLength}} characters.
+                </div>
+              </div>
+              <div class="col-sm-6 form-group">
+                <label>Last name</label>
+                <input type="text" class="form-control" name="lastName" ngModel
+                       #lastNameRef="ngModel" required>
+                <div class="error-message" *ngIf="lastNameRef.touched &&
+                     lastNameRef?.errors?.required">
+                  Last Name is required.
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" class="form-control" name="email" ngModel
+                     #emailRef="ngModel" required
+                     [pattern]="EMAIL_REGEX">
+              <div class="error-message" *ngIf="emailRef.touched &&
+                          emailRef?.errors?.required">
+                The email is required.
+              </div>
+              <div class="error-message" *ngIf="emailRef.touched &&
+                   emailRef?.errors?.pattern">
+                Email format should be <i>nilsholger1307@gmail.com</i>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                <label>Enter Password</label>
+                <input type="password" class="form-control" name="password" ngModel
+                       #passwordRef="ngModel" required
+                       [pattern]="PASS_STRENGTH_REGEX">
+                <div class="error-message" *ngIf="passwordRef.touched &&
+                        passwordRef?.errors?.required">
+                  Password is required.
+                </div>
+                <div class="error-message" *ngIf="passwordRef.touched &&
+                     passwordRef?.errors?.pattern">
+                  Password must be minimum 8 characters, must contain at least
+                  1 lowercase alphabet, 1 uppercase alphabet, 1 numeric character,
+                  1 special character.
+                </div>
+              </div>
+              <div class="col-sm-6 form-group">
+                <label>Confirm Password</label>
+                <input type="password" class="form-control" name="confirmPassword" ngModel
+                       #confirmPassRef="ngModel"
+                       required>
+                <div class="error-message" *ngIf="confirmPassRef.touched &&
+                     confirmPassRef?.errors?.required">
+                  Confirm password is required.
+                </div>
+              </div>
+            </div>
+            <div ngModelGroup="address" #addressRef="ngModelGroup">
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <label>Street</label>
+                  <input type="text" class="form-control" name="street" ngModel
+                         #streetRef="ngModel" required>
+                  <div class="error-message" *ngIf="streetRef.touched &&
+                          streetRef?.errors?.required">
+                    Street is required.
+                  </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                  <label>City</label>
+                  <input type="text" class="form-control" name="city" ngModel
+                        #cityRef="ngModel" required>
+                  <div class="error-message" *ngIf="cityRef.touched &&
+                       cityRef?.errors?.required">
+                    City is required.
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <label>State</label>
+                  <input type="text" class="form-control" name="state" ngModel
+                          #stateRef="ngModel" required>
+                  <div class="error-message" *ngIf="stateRef.touched &&
+                       stateRef?.errors?.required">
+                    State is required.
+                  </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                  <label>Zip</label>
+                  <input type="text" class="form-control" name="zip" ngModel
+                         #zipRef="ngModel" required>
+                  <div class="error-message" *ngIf="zipRef.touched &&
+                          zipRef?.errors?.required">
+                    Zip Code is required.
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Country</label>
+                <select class="form-control" name="country" ngModel
+                        #countryRef="ngModel" required>
+                  <option value="DE">Germany</option>
+                  <option value="BE">Belgium</option>
+                  <option value="NED">Netherlands</option>
+                  <option value="UK">United Kingdom</option>
+                  <option value="US">United States of America</option>
+                </select>
+                <div class="error-message" *ngIf="countryRef.touched &&
+                      countryRef?.errors?.required">
+                  Country is required.
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 form-group">
+                <label>Gender</label>
+                <div>
+                  <label class="check-label">
+                    <input type="radio" name="gender" value="Male" ngModel
+                          #genderRef="ngModel" required>
+                    <i class="blue"></i>Male
+                  </label>
+                  <div class="spacer"></div>
+                  <label class="check-label">
+                    <input type="radio" name="gender" value="Female" ngModel
+                            #genderRef="ngModel" required>
+                    <i class="blue"></i>Female
+                  </label>
+                </div>
+                <div class="error-message"
+                     *ngIf="genderRef.touched && genderRef?.errors?.required">
+                  Gender is required.
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="check-label">
+                <input type="checkbox" name="agreement" value="" ngModel
+                       #agreementRef="ngModel" required>
+                <i class="blue"></i>I agree to the Terms of Service
+              </label>
+              <div class="error-message" *ngIf="agreementRef.touched &&
+                   agreementRef?.errors?.required">
+                Agree to the terms and conditions before registration.
+              </div>
+            </div>
+            <button type="submit" class="btn btn-secondary"
+                    [disabled]="regFormRef.invalid">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+    \`
+  })
+  export class RegistrationFormComponent {
+  EMAIL_REGEX =
+  '[a-zA-Z0-9.!#$%&’*+/=?^_\`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*';
+  PASS_STRENGTH_REGEX =
+  '(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9!@#\$%\^&\*]{8,}';
+
+  onSubmit(formValue: any) {
+    console.log(formValue);
+  }
+
+  }
+
+  ********************************************************************************
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <app-registration-form></app-registration-form>
+  \`
+  })
+  export class AppComponent {
+
+  }
+
+  `
 };
 apip652 = {
-  name: '',
-  code: ``
+  name: 'Template-DRIVEN Forms',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-registration-form',
+    template: \`
+    <div class="row m-1">
+    <div class="col-md-9">
+      <div class="box">
+        <div class="box-header">
+          <h2>Registration Form</h2>
+        </div>
+        <div class="box-divider"></div>
+        <div class="box-body">
+          <form novalidate #regFormRef="ngForm" (ngSubmit)="onSubmit(regFormRef.value)">
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                <label>First Name</label>
+                <input type="text" class="form-control" name="firstName" ngModel
+                       #firstNameRef="ngModel">
+              </div>
+              <div class="col-sm-6 form-group">
+                <label>Last Name</label>
+                <input type="text" class="form-control" name="lastName" ngModel
+                       #lastNameRef="ngModel">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" class="form-control" name="email" ngModel
+                     #emailRef="ngModel">
+            </div>
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                <label>Enter Password</label>
+                <input type="password" class="form-control" name="password" ngModel
+                       #passwordRef="ngModel">
+              </div>
+              <div class="col-sm-6 form-group">
+                <label>Confirm Password</label>
+                <input type="password" class="form-control" name="confirmPassword" ngModel
+                       #confirmPassRef="ngModel">
+              </div>
+            </div>
+            <div ngModelGroup="address" #addressRef="ngModelGroup">
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <label>Street</label>
+                  <input type="text" class="form-control" name="street" ngModel
+                         #streetRef="ngModel">
+                </div>
+                <div class="col-sm-6 form-group">
+                  <label>City</label>
+                  <input type="text" class="form-control" name="city" ngModel
+                         #cityRef="ngModel">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <label>State</label>
+                  <input type="text" class="form-control" name="state" ngModel
+                         #stateRef="ngModel">
+                </div>
+                <div class="col-sm-6 form-group">
+                  <label>Zip</label>
+                  <input type="text" class="form-control" name="zip" ngModel
+                         #zipRef="ngModel">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Country</label>
+                <select class="form-control" name="country" ngModel=""
+                        #countryRef="ngModel">
+                  <option value="DE">Germany</option>
+                  <option value="BE">Belgium</option>
+                  <option value="NED">Netherlands</option>
+                  <option value="UK">United Kingdom</option>
+                  <option value="US">United States of America</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 form-group">
+                <label>Gender</label>
+                <div>
+                  <label class="check-label">
+                    <input type="radio" name="gender" value="Male" ngModel
+                           #genderRef="ngModel">
+                    <i class="blue"></i>Male
+                  </label>
+                  <div class="spacer"></div>
+                  <label class="check-label">
+                    <input type="radio" name="gender" value="Female" ngModel
+                           #genderRef="ngModel">
+                    <i class="blue"></i>Female
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="check-label">
+                <input type="checkbox" name="agreement" value="" ngModel
+                       #agreementRef="ngModel">
+                <i class="blue"></i>I agree to the Terms of Service
+              </label>
+            </div>
+            <button type="submit" class="btn btn-secondary">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+    \`
+  })
+  export class RegistrationFormComponent {
+
+  onSubmit(formValue: any) {
+    console.log(formValue);
+  }
+
+  }
+
+
+  @Component({
+    selector: 'app-root',
+    template: \`
+            <app-registration-form></app-registration-form>
+  \`
+  })
+  export class AppComponent { }
+
+  `
 };
 apip653 = {
-  name: '',
-  code: ``
+  name: 'Reactive Forms',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+  import { FormGroup, FormControl, Validators,
+           FormBuilder, AbstractControl } from '@angular/forms';
+
+  export class CustomValidators {
+
+    static passwordStrength(control: AbstractControl) {
+          if (CustomValidators.isEmptyValue(control.value)) {
+            return null;
+          }
+          return control.value.match(/^(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9!@#\$%\^&\*]{8,}$/) ? null : { 'weakPassword': true };
+    }
+
+    static passwordMatcher(control: AbstractControl) {
+      const passWord = control.get('password').value;
+      const confirmPassword = control.get('confirmPassword').value;
+
+    if (CustomValidators.isEmptyValue(passWord) ||
+        CustomValidators.isEmptyValue(confirmPassword)) {
+      return null;
+    }
+
+    return (passWord === confirmPassword) ? null : { 'mismatch': true };
+
+    }
+
+    static isEmptyValue(value: any) {
+      return value === null || typeof value === 'string' && value.length === 0;
+    }
+
+  }
+
+************************************************************************************
+
+    @Component({
+      selector: 'app-reactive-registration-form',
+      template: \`
+      <div class="row m-1">
+      <div class="col-md-9">
+        <div class="box">
+          <div class="box-header">
+            <h2>Registration Form</h2>
+          </div>
+          <div class="box-divider"></div>
+          <div class="box-body">
+            <form novalidate [formGroup]="registrationForm"
+                  (ngSubmit)="onSubmit(registrationForm.value)">
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <label>First Name</label>
+                  <input type="text" class="form-control" formControlName="firstName">
+                </div>
+                <div class="error-message" *ngIf="registrationForm.get('firstName').touched
+                           && registrationForm.get('firstName').hasError('required')">
+                    First Name is required.
+                </div>
+                <div class="col-sm-6 form-group">
+                  <label>Last Name</label>
+                  <input type="text" class="form-control" formControlName="lastName">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" formControlName="email">
+                <div class="error-message" *ngIf="registrationForm.get('email').touched
+                            && registrationForm.get('email').hasError('required')">
+                Email is required.
+                </div>
+                <div class="error-message" *ngIf="registrationForm.get('email').touched
+                            && registrationForm.get('email').hasError('pattern')">
+                Email format should be <i>nilsholger1307@gmail.com</i>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <label>Enter Password</label>
+                  <input type="password" class="form-control" formControlName="password">
+                  <div class="error-message" *ngIf="registrationForm.get('password').touched
+                       && registrationForm.get('password').hasError('required')">
+                  Password is required.
+                  </div>
+                  <div class="error-message" *ngIf="registrationForm.get('password').touched
+                      && registrationForm.get('password').hasError('weakPassword')">
+                  Password must be minimum 8 characters, contain 1 alpha lowercase,
+                  1 alpha uppercase character, 1 numeric character, 1 special character.
+                  </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                  <label>Confirm Password</label>
+                  <input type="password" class="form-control"
+                         formControlName="confirmPassword">
+                  <div class="error-message"
+                       *ngIf="registrationForm.get('confirmPassword').touched
+                       && registrationForm.get('confirmPassword').hasError('required')">
+                  Confirm Password is required.
+                </div>
+                <div class="error-message"
+                     *ngIf="registrationForm.get('confirmPassword').touched
+                     && registrationForm.get('confirmPassword').hasError('mismatch')">
+                Passwords must match.
+                </div>
+                </div>
+              </div>
+              <div formGroupName="address">
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <label>Street</label>
+                  <input type="text" class="form-control" formControlName="street">
+                </div>
+                <div class="col-sm-6 form-group">
+                  <label>City</label>
+                  <input type="text" class="form-control" formControlName="city">
+                  <div class="error-message"
+                  *ngIf="registrationForm.get('address').get('city').touched &&
+                  registrationForm.get('address').get('city').hasError('required')">
+                    City is required.
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <label>State</label>
+                  <input type="text" class="form-control" formControlName="state">
+                  <div class="error-message"
+                    *ngIf="registrationForm.get('address').get('state').touched &&
+                     registrationForm.get('address').get('state').hasError('required')">
+                    State is required.
+                  </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                  <label>Zip</label>
+                  <input type="text" class="form-control" formControlName="zip">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Country</label>
+                <select class="form-control" formControlName="country">
+                  <option value="DE">Germany</option>
+                  <option value="NED">Netherlands</option>
+                  <option value="BE">Belgium</option>
+                  <option value="UK">United Kingdom</option>
+                  <option value="US">United States Of America</option>
+                </select>
+                <div class="error-message"
+                  *ngIf="registrationForm.get('address').get('country').touched &&
+                         registrationForm.get('address').get('country').hasError('required')">
+                  Country is required.
+                </div>
+              </div>
+            </div>
+              <button type="submit" class="btn btn-primary"
+                      [disabled]="registrationForm.invalid">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+      \`
+    })
+    export class ReactiveRegistrationFormComponent implements OnInit {
+      private EMAIL_REGEX = "^[a-z0-9!#$%&'*+\/=?^_\`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$";
+
+      registrationForm: FormGroup;
+
+      constructor(private formBuilder: FormBuilder) { }
+
+      ngOnInit() {
+        this.registrationForm = this.formBuilder.group({
+              firstName: ['Nils-Holger', Validators.required],
+              lastName: '',
+              password: ['', [Validators.required, CustomValidators.passwordStrength]],
+              confirmPassword: ['', Validators.required],
+              email: ['', [Validators.required, Validators.pattern(this.EMAIL_REGEX)]],
+              address: this.formBuilder.group({
+                street: '',
+                city: ['', Validators.required],
+                state: ['', Validators.required],
+                zip: '',
+                country: ['', Validators.required]
+              })
+        }, { validator: CustomValidators.passwordMatcher});
+      }
+
+      onSubmit(formValue: any) {
+        console.log(formValue);
+        console.log(this.registrationForm.value);
+      }
+
+    }
+
+
+    ************************************************************************************
+
+    @Component({
+      selector: 'app-root',
+      template: \`
+              <app-reactive-registration-form></app-reactive-registration-form>
+    \`
+    })
+    export class AppComponent { }
+
+  `
 };
 apip654 = {
   name: '',
