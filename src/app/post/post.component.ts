@@ -33392,14 +33392,700 @@ apip653 = {
   `
 };
 apip654 = {
-  name: '',
-  code: ``
+  name: 'HttpClient',
+  code: `
+
+  import { Component, Injectable, OnInit, Input,
+           Output, EventEmitter } from '@angular/core';
+
+  import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+  import { Observable } from 'rxjs/Observable';
+  import { of } from 'rxjs/observable/of';
+  import { catchError, map, tap } from 'rxjs/operators';
+
+
+  export class Book {
+    id: number;
+    title: string;
+    authors: string;
+    published: string;
+    description: string;
+    coverImage: string;
+  }
+
+  const httpOptions = {
+    headers: new HttpHeaders({'Content-Type': 'application/json'})
+  };
+
+  @Injectable()
+  export class BookService {
+    private booksURL = 'api/books';
+
+    constructor(private http: HttpClient) { }
+
+    getBooks(): Observable<Book[]> {
+      return this.http.get<Book[]>(this.booksURL)
+             .pipe(
+               tap(books => this.log('fetched books')),
+               catchError(this.handleError('getBooks', []))
+             );
+    }
+
+    getBook(id: number): Observable<Book> {
+        const url = \`\${this.booksURL}/\${id}\`;
+        return this.http.get<Book>(url).pipe(
+          tap(() => this.log(\`fetched hero id=\${id}\`)),
+          catchError(this.handleError<Book>(\`getBook id=\${id}\`))
+        );
+    }
+
+    deleteBook(id: number): Observable<Book> {
+          const url = \`\${this.booksURL}/\${id}\`;
+          return this.http.delete<Book>(url, httpOptions).pipe(
+            tap(() => this.log(\`deleted hero id=\${id}\`)),
+            catchError(this.handleError<Book>('deleteBook'))
+          );
+    }
+
+    private log(message: string) {
+      console.log('BookService: ' + message);
+    }
+
+    private handleError<T>(operation = 'operation', result?: T) {
+      return (error: any): Observable<T> => {
+        console.error(error);
+        this.log(\`\${operation} failed: \${error.message}\`);
+        return of (result as T);
+      };
+    }
+
+  }
+
+  @Component({
+    selector: 'app-book-details',
+    template: \`
+          <div *ngIf="book">
+                  <div class="selected-book">
+                      <div class="selected-book-cover">
+                            <img [src]="book.coverImage"
+                             alt="Cover Image" style="height:200px;">
+                      </div>
+                      <div class="selected-book-detail">
+                            <h4>{{ book.title }}</h4>
+                            <p>Authors: {{ book.authors }}</p>
+                            <p>Published: {{ book.published }}</p>
+                            <p>{{ book.description }}</p>
+                      </div>
+                  </div>
+                  <div class="action-bar">
+                        <button class="btn btn-primary"
+                                (click)="deleteBook()">Delete</button>
+                  </div>
+          </div>
+    \`
+  })
+  export class BookDetailsComponent {
+    @Input() book: Book;
+    @Output() onDelete = new EventEmitter<number>();
+
+    deleteBook() {
+      this.onDelete.emit(this.book.id);
+    }
+  }
+
+
+    @Component({
+      selector: 'app-root',
+      template: \`
+      <div class="app-container">
+      <h3 class="title">Books List</h3>
+      <div class="border-divider"></div>
+      <div class="row">
+           <div class="col-sm-3">
+              <ul class="list">
+                  <li class="list-item" *ngFor="let book of booksList"
+                      (click)="getBookDetails(book.id)">
+                      <div class="cover-image-container">
+                            <span class="cover-image">
+                                  <img [src]="book.coverImage" alt="cover image">
+                            </span>
+                      </div>
+                      <div class="clear">
+                            <h3 class="book-title">{{ book.title }}</h3>
+                            <h4 class="book-authors">{{ book.authors }}</h4>
+                      </div>
+                  </li>
+              </ul>
+           </div>
+          <div class="col-sm-9">
+             <app-book-details [book]="selectedBook" (onDelete)="deleteBook($event)">
+             </app-book-details>
+          </div>
+      </div>
+  </div>
+    \`
+    })
+    export class AppComponent implements OnInit {
+      booksList: Book[];
+      selectedBook: Book;
+
+      constructor(private bookService: BookService) { }
+
+      ngOnInit() {
+        this.getBooksList();
+      }
+
+      getBooksList() {
+        this.bookService.getBooks().subscribe(books => this.booksList = books);
+      }
+
+      getBookDetails(id: number) {
+        this.bookService.getBook(id).subscribe(book => this.selectedBook = book);
+      }
+
+      deleteBook(id: number) {
+        this.booksList = this.booksList.filter(book => book.id !== id);
+        if (this.selectedBook.id === id) {
+          this.selectedBook = null;
+        }
+        this.bookService.deleteBook(id).subscribe();
+      }
+
+    }
+
+
+    ************************************************************************************
+
+    import { InMemoryDbService } from 'angular-in-memory-web-api';
+
+    export class InMemoryDataService implements InMemoryDbService {
+
+            createDb() {
+              const books = [
+                {
+                  id: 1,
+                  title: 'Learning React with Redux and Flux',
+                  authors: 'Sam Slotsky',
+                  published: 'February 2018',
+                  description: 'Redux is a web application development architecture often used with React. In Redux, the entire state of your application is kept in a single store that can only be changed by special action objects that are specified by reducers.',
+                  coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V06334_Traditional_cover_low.png'
+                },
+                {
+                  id: 2,
+                  title: 'Web Development with Angular and PHP',
+                  authors: 'Daniel Kmak',
+                  published: 'February 2018',
+                  description: 'Did you ever think of creating your own social network? In this course.',
+                  coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V08376_Low.png'
+                },
+                {
+                  id: 3,
+                  title: 'Data Visualization in Python by Examples',
+                  authors: 'Harish Garg',
+                  published: 'February 2018',
+                  description: 'Data visualization is just a wise investment in your future big-data needs.',
+                  coverImage: 'https://d255esdrn735hr.cloudfront.net/sites/default/files/bookretailers/V09595_MockupCover.png'
+                }
+              ];
+              return { books };
+            }
+}
+
+  `
 };
 apip655 = {
+  name: 'Quick Review: Interpolation',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+          <p>{{ currentDate | date }}</p>
+          <h1>{{ title }}</h1>
+          <h3>Written by: {{ author }}</h3>
+    \`
+  })
+  export class ArticleComponent {
+        currentDate = new Date();
+        title = 'In A Perfect World: Police Reduce Criminality to Zero';
+        author = 'Nils-Holger';
+
+  }
+
+
+    @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article></app-article>
+    \`
+    })
+    export class AppComponent { }
+
+  `
+};
+apip656 = {
+  name: 'Passing Data From Parent Component Into Child Component',
+  code: `
+  import { Component, Input } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+          <p>{{ currentDate | date }}</p>
+          <h1>{{ title }}</h1>
+          <app-attribution [author]="author"></app-attribution>
+    \`
+  })
+  export class ArticleComponent {
+        currentDate = new Date();
+        title = 'In A Perfect World: Police Reduce Criminality to Zero';
+        author = 'Nils-Holger';
+
+  }
+
+  @Component({
+    selector: 'app-attribution',
+    template: \`
+            <h3>Written by: {{ author }}</h3>
+    \`
+  })
+  export class AttributionComponent {
+    @Input() author: string;
+  }
+
+
+    @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article></app-article>
+    \`
+    })
+    export class AppComponent { }
+
+  `
+};
+apip657 = {
+  name: 'Binding to Native Element Attributes',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-logo',
+    template: \`
+            <img [src]="logoUrl">
+    \`
+  })
+  export class LogoComponent {
+    logoUrl = 'https://angular.io/assets/images/logos/angular/angular.svg';
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-logo></app-logo>
+    \`
+    })
+    export class AppComponent { }
+
+  `
+};
+apip658 = {
+  name: 'Registering Handlers on Native Browser Events',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+              <h1>{{ title }}</h1>
+              <p>Shares: {{ shareCount }}</p>
+              <button (click)="share()">Share</button>
+    \`
+  })
+  export class ArticleComponent {
+        title = 'Police Arrest ALL Major Drug Traffickers';
+        shareCount = 0;
+        share(): void {
+          ++this.shareCount;
+        }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article></app-article>
+    \`
+    })
+    export class AppComponent { }
+
+  `
+};
+apip659 = {
+  name: 'Generating && Capturing Custom Events',
+  code: `
+
+  import { Component, EventEmitter, Output } from '@angular/core';
+
+  @Component({
+    selector: 'app-text-editor',
+    template: \`
+          <textarea (keyup)="emitWordCount($event)"></textarea>
+    \`
+  })
+  export class TextEditorComponent {
+    @Output() countUpdate = new EventEmitter<number>();
+
+    emitWordCount(e: HTMLElementEvent<HTMLTextAreaElement>) {
+      this.countUpdate.emit((e.target.value.match(/\S+/g) || []).length);
+    }
+
+  }
+
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+              <h1>{{ title }}</h1>
+              <p>Word count: {{ wordCount }}</p>
+              <app-text-editor (countUpdate)="updateWordCount($event)"></app-text-editor>
+    \`
+  })
+  export class ArticleComponent {
+        title = 'Police Arrest ALL Major Drug Traffickers';
+        wordCount = 0;
+
+        updateWordCount(e: number): void {
+          this.wordCount = e;
+        }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article></app-article>
+    \`
+    })
+    export class AppComponent { }
+
+
+  `
+};
+apip660 = {
+  name: 'Attaching Behavior to DOM Elements with Directives',
+  code: `
+
+  import { Component, Directive, HostListener } from '@angular/core';
+
+  @Directive({
+    selector: '[appClickToReveal]'
+  })
+  export class ClickToRevealDirective {
+    @HostListener('click', ['$event.target'])
+    reveal(target) {
+      target.style['white-space'] = 'normal';
+    }
+  }
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+              <h1 appClickToReveal>{{ title }}</h1>
+    \`,
+    styles: [\`
+          h1 {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 300px;
+          }
+    \`]
+  })
+  export class ArticleComponent {
+        title = 'Police Arrest ALL Major Drug Traffickers';
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article></app-article>
+    \`
+    })
+    export class AppComponent { }
+
+  `
+};
+apip661 = {
+  name: 'Projecting Nested Content using NgContent',
+  code: `
+
+  import { Component, Directive } from '@angular/core';
+
+  @Component({
+    selector: 'app-info-section',
+    template: \`
+          <a href="#">{{ adText }}</a>
+          <ng-content select="p"></ng-content>
+    \`
+  })
+  export class InfoSectionComponent {
+    adText = 'Hunt them down';
+  }
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+              <h1>{{ title }}</h1>
+              <app-info-section>
+                    <p>Zero Tolerance towards Criminality.</p>
+                    <p>Destruction through work.</p>
+              </app-info-section>
+    \`
+  })
+  export class ArticleComponent {
+        title = 'Police Arrest ALL Major Drug Traffickers';
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article></app-article>
+    \`
+    })
+    export class AppComponent { }
+
+  `
+};
+apip662 = {
+  name: 'NgFor && NgIf Structural Directives',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-technology-list',
+    template: \`
+              <h1>{{ title }}</h1>
+              <div *ngFor="let technology of technologies; let i = index;">
+                    <h1 *ngIf="technology.active">
+                        ({{ i + 1 }}) : {{ technology.name }}
+                    </h1>
+              </div>
+    \`
+  })
+  export class TechnologyListComponent {
+        title = 'My Technologies';
+
+        technologies: Array<Object> = [
+          { name: 'Angular 5.2.8', active: true },
+          { name: 'Angular CLI 1.7.3', active: false },
+          { name: 'Angular Material 5.2.3', active: true }
+        ];
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-technology-list></app-technology-list>
+    \`
+    })
+    export class AppComponent { }
+
+  `
+};
+apip663 = {
+  name: 'Referencing Elements with Template Variables',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+        <input #box (keyup)="0">
+        <h1>{{ box.value }}</h1>
+    \`
+  })
+  export class ArticleComponent {
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article></app-article>
+    \`
+    })
+    export class AppComponent { }
+
+  `
+};
+apip664 = {
   name: '',
   code: ``
 };
-apip656 = {
+apip665 = {
+  name: '',
+  code: ``
+};
+apip666 = {
+  name: '',
+  code: ``
+};
+apip667 = {
+  name: '',
+  code: ``
+};
+apip668 = {
+  name: '',
+  code: ``
+};
+apip669 = {
+  name: '',
+  code: ``
+};
+apip670 = {
+  name: '',
+  code: ``
+};
+apip671 = {
+  name: '',
+  code: ``
+};
+apip672 = {
+  name: '',
+  code: ``
+};
+apip673 = {
+  name: '',
+  code: ``
+};
+apip674 = {
+  name: '',
+  code: ``
+};
+apip675 = {
+  name: '',
+  code: ``
+};
+apip676 = {
+  name: '',
+  code: ``
+};
+apip677 = {
+  name: '',
+  code: ``
+};
+apip678 = {
+  name: '',
+  code: ``
+};
+apip679 = {
+  name: '',
+  code: ``
+};
+apip680 = {
+  name: '',
+  code: ``
+};
+apip681 = {
+  name: '',
+  code: ``
+};
+apip682 = {
+  name: '',
+  code: ``
+};
+apip683 = {
+  name: '',
+  code: ``
+};
+apip684 = {
+  name: '',
+  code: ``
+};
+apip685 = {
+  name: '',
+  code: ``
+};
+apip686 = {
+  name: '',
+  code: ``
+};
+apip687 = {
+  name: '',
+  code: ``
+};
+apip688 = {
+  name: '',
+  code: ``
+};
+apip689 = {
+  name: '',
+  code: ``
+};
+apip690 = {
+  name: '',
+  code: ``
+};
+apip691 = {
+  name: '',
+  code: ``
+};
+apip692 = {
+  name: '',
+  code: ``
+};
+apip693 = {
+  name: '',
+  code: ``
+};
+apip694 = {
+  name: '',
+  code: ``
+};
+apip695 = {
+  name: '',
+  code: ``
+};
+apip696 = {
+  name: '',
+  code: ``
+};
+apip697 = {
+  name: '',
+  code: ``
+};
+apip698 = {
+  name: '',
+  code: ``
+};
+apip699 = {
+  name: '',
+  code: ``
+};
+apip700 = {
+  name: '',
+  code: ``
+};
+apip701 = {
   name: '',
   code: ``
 };
