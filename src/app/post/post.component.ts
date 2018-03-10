@@ -33938,44 +33938,533 @@ apip663 = {
   `
 };
 apip664 = {
-  name: '',
-  code: ``
+  name: 'Attribute Property Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+        <input #box (keyup.enter)="setBox(box.value)" (keyup)="checkStale(box.value)">
+        <h1 [style.color]="isStale ? 'green' : 'red'">{{ myBox }}</h1>
+    \`
+  })
+  export class ArticleComponent {
+      myBox = '';
+      isStale = false;
+
+      setBox(value: string): void {
+        this.myBox = value;
+      }
+
+      checkStale(value: string): void {
+        this.isStale = value !== this.myBox;
+      }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article></app-article>
+    \`
+    })
+    export class AppComponent { }
+
+  `
 };
 apip665 = {
-  name: '',
-  code: ``
+  name: 'Component Lifecycle Hooks',
+  code: `
+
+  import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+
+
+  type HTMLElementEvent<T extends HTMLElement> = Event & {
+        target: T;
+        currentTarget: T;
+  };
+
+  @Component({
+    selector: 'app-article-list',
+    template: \`
+                <input (keyup.enter)="add($event)">
+                <app-article *ngFor="let title of titles; let idx = index;"
+                              [articleTitle]="title">
+                <button (click)="remove(idx)">x</button>
+                </app-article>
+    \`
+  })
+  export class ArticleListComponent {
+          titles: string[] = [];
+
+          add(evt: HTMLElementEvent<HTMLInputElement>): void {
+            this.titles.push(evt.target.value);
+            evt.target.value = '';
+          }
+
+          remove(index: number): void {
+            this.titles.splice(index, 1);
+          }
+  }
+
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+        <h1>
+                <ng-content></ng-content>{{ articleTitle }}
+        </h1>
+    \`
+  })
+  export class ArticleComponent implements OnInit, OnDestroy {
+      @Input() articleTitle: string;
+
+      ngOnInit() {
+          console.log('created', this.articleTitle);
+      }
+
+      ngOnDestroy() {
+        console.log('destroyed', this.articleTitle);
+      }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article-list></app-article-list>
+    \`
+    })
+    export class AppComponent { }
+
+  `
 };
 apip666 = {
-  name: '',
-  code: ``
+  name: 'Referencing Parent Component From Child Component',
+  code: `
+
+  import { Component, Input } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-feedback',
+    template: \`
+            <h1>Number of likes: {{ value }}</h1>
+            <button (click)="likeArticle()">Like this article!</button>
+    \`
+  })
+  export class FeedbackComponent {
+          @Input() value: number;
+
+          constructor(private articleComponent: ArticleComponent) { }
+
+          likeArticle(): void {
+            this.articleComponent.incrementLikes();
+          }
+  }
+
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+                <app-feedback [value]="count"></app-feedback>
+    \`
+  })
+  export class ArticleComponent {
+          count = 0;
+
+          incrementLikes(): void {
+            this.count++;
+          }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article></app-article>
+    \`
+    })
+    export class AppComponent { }
+
+  `
 };
 apip667 = {
-  name: '',
-  code: ``
+  name: 'Mutual Parent-Child Awareness ViewChild && ForwardRef',
+  code: `
+
+  import { Component, ViewChild, Input, Inject, forwardRef } from '@angular/core';
+
+  type HTMLElementEvent<T extends HTMLElement> = Event & {
+    target: T;
+    currentTarget: T;
+  };
+
+
+  @Component({
+    selector: 'app-feedback',
+    template: \`
+            <h1>Number of likes: {{ value }}</h1>
+            <button (click)="likeArticle()" [disabled]="!likeEnabled">
+              Like this article!
+            </button>
+    \`
+  })
+  export class FeedbackComponent {
+          @Input() value: number;
+          likeEnabled = false;
+
+          constructor(@Inject(forwardRef(() => ArticleComponent))
+                      private articleComponent: ArticleComponent) { }
+
+          likeArticle(): void {
+            this.articleComponent.incrementLikes();
+          }
+
+          setLikeEnabled(newEnabledStatus: boolean): void {
+            this.likeEnabled = newEnabledStatus;
+          }
+
+  }
+
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+                <input type="checkbox" (click)="changeLikesEnabled($event)">
+                <app-feedback [value]="likes"></app-feedback>
+    \`
+  })
+  export class ArticleComponent {
+          @ViewChild(FeedbackComponent) feedbackComponent: FeedbackComponent;
+          likes = 0;
+
+          incrementLikes(): void {
+            this.likes++;
+          }
+
+          changeLikesEnabled(evt: HTMLElementEvent<HTMLInputElement>): void {
+            this.feedbackComponent.setLikeEnabled(evt.target.checked);
+          }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article></app-article>
+    \`
+    })
+    export class AppComponent { }
+
+  `
 };
 apip668 = {
-  name: '',
-  code: ``
+  name: 'Mutual Parent-Child Awareness ContentChild && ForwardRef',
+  code: `
+
+  import { Component, ContentChild, Inject, forwardRef } from '@angular/core';
+
+  type HTMLElementEvent<T extends HTMLElement> = Event & {
+    target: T;
+    currentTarget: T;
+  };
+
+
+  @Component({
+    selector: 'app-feedback',
+    template: \`
+            <h1>Number of likes: {{ value }}</h1>
+            <button (click)="likeArticle()" [disabled]="!likeEnabled">
+              Like this article!
+            </button>
+    \`
+  })
+  export class FeedbackComponent {
+          value: number;
+          likeEnabled = false;
+
+          constructor(@Inject(forwardRef(() => ArticleComponent))
+                      private articleComponent: ArticleComponent) {
+            this.updateLikes();
+          }
+
+          likeArticle(): void {
+            this.articleComponent.incrementLikes();
+            this.updateLikes();
+          }
+
+          updateLikes() {
+            this.value = this.articleComponent.likes;
+          }
+
+          setLikeEnabled(newEnabledStatus: boolean): void {
+            this.likeEnabled = newEnabledStatus;
+          }
+
+  }
+
+
+  @Component({
+    selector: 'app-article',
+    template: \`
+                <input type="checkbox" (click)="changeLikesEnabled($event)">
+                <ng-content></ng-content>
+    \`
+  })
+  export class ArticleComponent {
+          @ContentChild(FeedbackComponent) feedbackComponent: FeedbackComponent;
+          likes = 0;
+
+          incrementLikes(): void {
+            this.likes++;
+          }
+
+          changeLikesEnabled(evt: HTMLElementEvent<HTMLInputElement>): void {
+            this.feedbackComponent.setLikeEnabled(evt.target.checked);
+          }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article>
+                  <app-feedback></app-feedback>
+            </app-article>
+    \`
+    })
+    export class AppComponent { }
+
+
+  `
 };
 apip669 = {
-  name: '',
-  code: ``
+  name: 'Two-Way Data-Binding With NgModel',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-article-editor',
+    template: \`
+              <input [(ngModel)]="title">
+              <input [(ngModel)]="title">
+              <input [(ngModel)]="title">
+              <h1>{{ title }}</h1>
+    \`
+  })
+  export class ArticleEditorComponent {
+          title = '';
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article-editor></app-article-editor>
+    \`
+    })
+    export class AppComponent { }
+
+  `
 };
 apip670 = {
-  name: '',
-  code: ``
+  name: 'Basic Field Validation With FormControl',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { FormControl, Validators } from '@angular/forms';
+
+
+  @Component({
+    selector: 'app-article-editor',
+    template: \`
+              <p>Article Title (required):</p>
+              <input [formControl]="titleControl">
+              <button (click)="submitTitle()">Save</button>
+              <h1>{{ title }}</h1>
+    \`
+  })
+  export class ArticleEditorComponent {
+          title = '';
+
+          titleControl = new FormControl(null, Validators.required);
+
+          submitTitle() {
+            if (this.titleControl.valid) {
+              this.title = this.titleControl.value;
+            } else {
+              alert('Title is required.');
+            }
+          }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article-editor></app-article-editor>
+    \`
+    })
+    export class AppComponent { }
+
+
+  `
 };
 apip671 = {
-  name: '',
-  code: ``
+  name: 'Bundling FormControls With FormGroup',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { FormControl, FormGroup, Validators } from '@angular/forms';
+
+
+  @Component({
+    selector: 'app-article-editor',
+    template: \`
+              <p>Title: <input [formControl]="titleControl"></p>
+              <p>Text: <input [formControl]="textControl"></p>
+              <p><button (click)="saveArticle()">Save</button></p>
+              <hr>
+              <p>Preview:</p>
+              <div style="border: 1px solid #999; margin: 50px;">
+                <h1>{{ article.title }}</h1>
+                <p>{{ article.text }}</p>
+              </div>
+    \`
+  })
+  export class ArticleEditorComponent {
+          article = { title: '', text: '' };
+
+          titleControl = new FormControl(null, Validators.required);
+          textControl = new FormControl(null, Validators.required);
+
+          articleFormGroup = new FormGroup({
+            title: this.titleControl,
+            text: this.textControl
+          });
+
+          saveArticle() {
+            if (this.articleFormGroup.valid) {
+              this.article = this.articleFormGroup.value;
+            } else {
+              console.log('Missing field(s)');
+            }
+          }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article-editor></app-article-editor>
+    \`
+    })
+    export class AppComponent { }
+
+  `
 };
 apip672 = {
-  name: '',
-  code: ``
+  name: 'Bundling FormControls With FormArray',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  import { FormControl, FormArray, Validators } from '@angular/forms';
+
+
+  @Component({
+    selector: 'app-article-editor',
+    template: \`
+              <p>Tags:</p>
+              <ul>
+                  <li *ngFor="let tag of tagControls; let idx = index;">
+                        <input [formControl]="tag">
+                  </li>
+              </ul>
+              <p><button (click)="addTag()">++</button></p>
+              <p><button (click)="saveArticle()">Save</button></p>
+    \`
+  })
+  export class ArticleEditorComponent {
+          tagControls: Array<FormControl> = [];
+          tagFormArray = new FormArray(this.tagControls);
+
+          addTag(): void {
+            this.tagFormArray.push(new FormControl(null, Validators.required));
+          }
+
+          saveArticle(): void {
+            if (this.tagFormArray.valid) {
+              alert('Valid');
+            } else {
+              alert('Missing field(s)');
+            }
+          }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article-editor></app-article-editor>
+    \`
+    })
+    export class AppComponent { }
+
+  `
 };
 apip673 = {
-  name: '',
-  code: ``
+  name: 'Basic Form with NgForm',
+  code: `
+
+  import { Component } from '@angular/core';
+  import { NgForm } from '@angular/forms';
+
+
+  @Component({
+    selector: 'app-article-editor',
+    template: \`
+            <form #form="ngForm" (ngSubmit)="saveArticle(form)">
+              <p><input ngModel name="title" placeholder="Article Title"></p>
+              <p><textarea ngModel name="text" placeholder="Article Text"></textarea></p>
+              <p><button type="submit">Save</button></p>
+            </form>
+    \`
+  })
+  export class ArticleEditorComponent {
+
+          saveArticle(myForm: NgForm) {
+            console.log(myForm.value);
+          }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article-editor></app-article-editor>
+    \`
+    })
+    export class AppComponent { }
+
+  `
 };
 apip674 = {
   name: '',
