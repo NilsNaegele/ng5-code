@@ -34467,24 +34467,180 @@ apip673 = {
   `
 };
 apip674 = {
-  name: '',
-  code: ``
+  name: 'Basic Form With FormBuilder && FormControlName',
+  code: `
+
+  import { Component, Inject } from '@angular/core';
+  import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+
+  @Component({
+    selector: 'app-article-editor',
+    template: \`
+            <form [formGroup]="articleGroup" (ngSubmit)="saveArticle()">
+                <div formGroupName="article">
+                  <p><input formControlName="title" placeholder="Article Title"></p>
+                  <p><textarea formControlName="text" placeholder="Article Text">
+                    </textarea>
+                  </p>
+                </div>
+              <p><button type="submit">Save</button></p>
+            </form>
+    \`
+  })
+  export class ArticleEditorComponent {
+          articleGroup: FormGroup;
+
+          constructor(@Inject(FormBuilder) formBuilder: FormBuilder) {
+            this.articleGroup = formBuilder.group({
+              article: formBuilder.group({
+                title: [null, Validators.required],
+                text: [null, Validators.required]
+              })
+            });
+          }
+
+          saveArticle(): void {
+            console.log(this.articleGroup.value);
+          }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <app-article-editor></app-article-editor>
+    \`
+    })
+    export class AppComponent { }
+
+  `
 };
 apip675 = {
-  name: '',
-  code: ``
+  name: 'Showing Component Properties With Interpolation',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <h1>{{ title }}</h1>
+            <h2>My favorite hero is: {{ myHero }}</h2>
+    \`
+    })
+    export class AppComponent {
+            title = 'Tour of Heroes';
+            myHero = 'Flash';
+
+    }
+
+  `
 };
 apip676 = {
-  name: '',
-  code: ``
+  name: 'Showing Array Property With NgFor',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <h1>{{ title }}</h1>
+            <h2>My favorite hero is: {{ myHero }}</h2>
+            <ul>
+                  <li *ngFor="let hero of heroes">
+                          {{ hero }}
+                  </li>
+            </ul>
+    \`
+    })
+    export class AppComponent {
+            title = 'Tour of Heroes';
+            heroes = ['Flash', 'Wonderwoman', 'Superman', 'Spiderman'];
+            myHero = this.heroes[0];
+
+    }
+
+  `
 };
 apip677 = {
-  name: '',
-  code: ``
+  name: 'Class For Data',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Hero {
+    constructor(public id: number, public name: string) { }
+  }
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <h1>{{ title }}</h1>
+            <h2>My favorite hero is: {{ myHero.name }}</h2>
+            <p>Heroes:</p>
+            <ul>
+                  <li *ngFor="let hero of heroes">
+                          {{ hero.name }}
+                  </li>
+            </ul>
+    \`
+    })
+    export class AppComponent {
+            title = 'Tour of Heroes';
+            heroes = [
+              new Hero(1, 'Flash'),
+              new Hero(3, 'Wonderwoman'),
+              new Hero(15, 'Superman'),
+              new Hero(20, 'Spiderman')
+            ];
+            myHero = this.heroes[0];
+
+    }
+
+  `
 };
 apip678 = {
-  name: '',
-  code: ``
+  name: 'Conditional Display With NgIf',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Hero {
+    constructor(public id: number, public name: string) { }
+  }
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <h1>{{ title }}</h1>
+            <h2>My favorite hero is: {{ myHero.name }}</h2>
+            <p>Heroes:</p>
+            <ul>
+                  <li *ngFor="let hero of heroes">
+                          {{ hero.name }}
+                  </li>
+            </ul>
+            <p *ngIf="heroes.length > 3">We are many heroes!</p>
+    \`
+    })
+    export class AppComponent {
+            title = 'Tour of Heroes';
+            heroes = [
+              new Hero(1, 'Flash'),
+              new Hero(3, 'Wonderwoman'),
+              new Hero(15, 'Superman'),
+              new Hero(20, 'Spiderman')
+            ];
+            myHero = this.heroes[0];
+
+    }
+
+  `
 };
 apip679 = {
   name: '',
