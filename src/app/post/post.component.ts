@@ -34643,44 +34643,575 @@ apip678 = {
   `
 };
 apip679 = {
-  name: '',
-  code: ``
+  name: 'Interpolation',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+            <p>My current technology is {{ currentTechnology.name }}</p>
+            <h3>
+                  {{ title }}
+                  <img src="{{ technologyImageUrl }}" style="height: 30px;">
+            </h3>
+            <p>The sum of 2 + 2 is {{ 2 + 2 }}</p>
+            <p>The sum of 2 + 2 is not {{ 2 + 2 + getValue() }}</p>
+    \`
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            technologies = [
+              new Technology(1, 'Angular 5.2.8'),
+              new Technology(2, 'Angular CLI 1.7.3'),
+              new Technology(3, 'Angular Material 5.2.3'),
+              new Technology(4, 'TypeScript 2.6.2')
+            ];
+            currentTechnology = this.technologies[0];
+            technologyImageUrl = 'https://angular.io/assets/images/logos/angular/angular.svg';
+            getValue(): number {
+              return 2;
+            }
+    }
+
+  `
 };
 apip680 = {
-  name: '',
-  code: ``
+  name: 'Expression Context',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+
+          <div class="context">
+                {{ title }}
+                <span [hidden]="isUnchanged">changed</span>
+          </div>
+          <ng-template>
+                  <div *ngFor="let technology of technologies">
+                          {{ technology.name }}
+                  </div>
+          </ng-template>
+          <div (keyup)="0" class="context">
+                  Type something:
+                  <input #technologyInput> {{ technologyInput.value }}
+          </div>
+
+    \`
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            technologies = [
+              new Technology(1, 'Angular 5.2.8'),
+              new Technology(2, 'Angular CLI 1.7.3'),
+              new Technology(3, 'Angular Material 5.2.3'),
+              new Technology(4, 'TypeScript 2.6.2')
+            ];
+            isUnchanged = true;
+
+    }
+
+  `
 };
 apip681 = {
-  name: '',
-  code: ``
+  name: 'Statement Context',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+          <div class="context">
+                <button (click)="deleteTechnology()">Delete technology</button>
+          </div>
+          <div class="context">
+                <button (click)="onSave($event)">Save</button>
+          </div>
+          <div class="context">
+                <button *ngFor="let technology of technologies"
+                         (click)="deleteTechnology(technology)">
+                      {{ technology.name }}
+                </button>
+          </div>
+          <div class="context">
+                  <form #technologyForm (ngSubmit)="onSubmit(technologyForm)">
+                    ...
+                  </form>
+          </div>
+    \`
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            technologies = [
+              new Technology(1, 'Angular 5.2.8'),
+              new Technology(2, 'Angular CLI 1.7.3'),
+              new Technology(3, 'Angular Material 5.2.3'),
+              new Technology(4, 'TypeScript 2.6.2')
+            ];
+            onSave(event: KeyboardEvent) {
+              let evtMessage = event ? ' Event target is ' +
+                              (<HTMLElement>event.target).textContent : '';
+              this.alert('Saved.' + evtMessage);
+              if (event) {
+                event.stopPropagation();
+              }
+            }
+            onSubmit(techForm): void {
+              console.log(techForm);
+            }
+
+            deleteTechnology(technology?: Technology): void {
+              this.alert(\`Delete \${ technology ? technology.name : 'the technology'}.\`);
+            }
+
+            private alert(msg?: string): void {
+              window.alert(msg);
+            }
+
+    }
+
+  `
 };
 apip682 = {
-  name: '',
-  code: ``
+  name: 'New Mental Model',
+  code: `
+
+  import { Component, Directive, Input, Output,
+           EventEmitter, ElementRef } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+  @Directive({
+    selector: '[appMyClick]'
+  })
+  export class ClickDirective {
+    @Output('appMyClick') clicks = new EventEmitter<string>();
+
+    toggle = false;
+
+    constructor(el: ElementRef) {
+      el.nativeElement.addEventListener('click', (event: Event) => {
+                this.toggle = !this.toggle;
+                this.clicks.emit(this.toggle ? 'Clicked!' : '');
+      });
+    }
+
+  }
+
+
+  @Component({
+    selector: 'app-technology-detail',
+    template: \`
+              <div>
+                    <img src="{{ technologyImageUrl }}">
+                    <span [style.text-decoration]="lineThrough">
+                          {{ prefix }} {{ technology?.name }}
+                    </span>
+                    <button (click)="delete()">Delete</button>
+              </div>
+    \`,
+    styles: [\`button { margin-left: 8px; }
+              div { margin: 8px 0;}
+              img { height: 24px; }
+    \`]
+  })
+  export class TechnologyDetailComponent {
+              technologyImageUrl = 'assets/angular.svg';
+              lineThrough = '';
+              @Input() technology: Technology;
+              @Input() prefix = '';
+              @Output() deleteRequest = new EventEmitter<Technology>();
+
+              delete() {
+                this.deleteRequest.emit(this.technology);
+                this.lineThrough = this.lineThrough ? '' : 'line-through';
+              }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+              <div class="special">Mental Model</div>
+              <img src="assets/angular.svg" style="height: 100px;">
+              <button disabled>Save</button>
+              <br>
+              <br>
+              <div>
+                  <div class="special">Mental Model</div>
+                  <app-technology-detail></app-technology-detail>
+              </div>
+              <br>
+              <br>
+              <div>
+                  <button [disabled]="isUnchanged">Save</button>
+              </div>
+              <br>
+              <br>
+              <div>
+                    <img [src]="technologyImageUrl" style="height: 50px;">
+                    <app-technology-detail [technology]="currentTechnology">
+                    </app-technology-detail>
+                    <div [ngClass]="{'special': isSpecial}">special</div>
+              </div>
+              <br>
+              <br>
+              <button (click)="onSave()">Save</button>
+              <app-technology-detail (deleteRequest)="deleteTechnology()">
+              </app-technology-detail>
+              <div (appMyClick)="clicked=$event">Click Me</div>
+              {{ clicked }}
+              <br>
+              <br>
+              <div>
+                  Technology Name:
+                  <input [(ngModel)]="name">
+                  {{ name }}
+              </div>
+              <br>
+              <br>
+              <button [attr.aria-label]="help">help</button>
+              <br><br>
+              <div [class.special]="isSpecial">Special</div>
+              <br><br>
+              <button [style.color]="isSpecial ? 'yellow' : 'blue'">
+                button
+              </button>
+    \`,
+    styles: [\`
+        .special { font-weight: bold; font-size: x-large; color: red; }
+    \`]
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            technologies = [
+              new Technology(1, 'Angular 5.2.8'),
+              new Technology(2, 'Angular CLI 1.7.3'),
+              new Technology(3, 'Angular Material 5.2.3'),
+              new Technology(4, 'TypeScript 2.6.2')
+            ];
+            isUnchanged = true;
+            technologyImageUrl = 'assets/angular.svg';
+            currentTechnology = this.technologies[0];
+            isSpecial = true;
+            clicked: any;
+            name = 'React 16';
+            help = 'help';
+            onSave() {
+              this.alert('Saved.');
+            }
+
+            deleteTechnology() {
+              this.alert('Delete the technology.');
+            }
+
+            private alert(msg?: string): void {
+              window.alert(msg);
+            }
+
+    }
+
+  `
 };
 apip683 = {
-  name: '',
-  code: ``
+  name: 'Property Versus Attribute Binding (Img Examples)',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                <img src="./assets/react.png"
+                     [src]="technologyImageUrl">
+                <br>
+                <br>
+                <img [src]="iconUrl">
+                <img bind-src="technologyImageUrl">
+                <img [attr.src]="reactImageUrl">
+
+                \`,
+    styles: [\`
+        .special { font-weight: bold; font-size: x-large; color: red; }
+        img { height: 100px; }
+    \`]
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            technologies = [
+              new Technology(1, 'Angular 5.2.8'),
+              new Technology(2, 'Angular CLI 1.7.3'),
+              new Technology(3, 'Angular Material 5.2.3'),
+              new Technology(4, 'TypeScript 2.6.2')
+            ];
+
+            technologyImageUrl = 'assets/angular.svg';
+            reactImageUrl = 'assets/react.png';
+            iconUrl = 'assets/flash.jpg';
+
+            private alert(msg?: string): void {
+              window.alert(msg);
+            }
+
+    }
+
+  `
 };
 apip684 = {
-  name: '',
-  code: ``
+  name: 'Buttons',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                <button>Enabled (but does nothing)</button>
+                <button disabled>Disabled</button>
+                <button disabled="false">Still disabled</button>
+                <br><br>
+                <button disabled>Disabled by attribute</button>
+                <button [disabled]="isUnchanged">Disabled by property binding</button>
+                <br><br>
+                <button bind-disabled="isUnchanged" on-click="onSave($event)">
+                        Disabled Cancel
+                </button>
+                <button [disabled]="!canSave" (click)="onSave($event)">Enabled Save</button>
+
+                \`,
+    styles: [\`
+        .special { font-weight: bold; font-size: x-large; color: red; }
+        img { height: 100px; }
+    \`]
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            isUnchanged = true;
+            canSave = true;
+            onSave(event: KeyboardEvent) {
+              let evtMessage = event ? ' Event target is ' +
+                              (<HTMLElement>event.target).textContent : '';
+              alert('Saved.' + evtMessage);
+              if (event) {
+                event.stopPropagation();
+              }
+            }
+
+    }
+
+  `
 };
 apip685 = {
-  name: '',
-  code: ``
+  name: 'Property Binding',
+  code: `
+
+  import { Component, Input, Output, EventEmitter } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+
+  @Component({
+    selector: 'app-technology-detail',
+    template: \`
+              <div>
+                    <img src="{{ technologyImageUrl }}">
+                    <span [style.text-decoration]="lineThrough">
+                          {{ prefix }} {{ technology?.name }}
+                    </span>
+                    <button (click)="delete()">Delete</button>
+              </div>
+    \`,
+    styles: [\`button { margin-left: 8px; }
+              div { margin: 8px 0;}
+              img { height: 24px; }
+    \`]
+  })
+  export class TechnologyDetailComponent {
+              technologyImageUrl = 'assets/angular.svg';
+              lineThrough = '';
+              @Input() technology: Technology;
+              @Input() prefix = '';
+              @Output() deleteRequest = new EventEmitter<Technology>();
+
+              delete() {
+                this.deleteRequest.emit(this.technology);
+                this.lineThrough = this.lineThrough ? '' : 'line-through';
+              }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                <img [src]="technologyImageUrl">
+                <button [disabled]="isUnchanged">Cancel is disabled</button>
+                <div [ngClass]="classes">[ngClass] binding to classes property</div>
+                <app-technology-detail [technology]="currentTechnology">
+                </app-technology-detail>
+                <img bind-src="technologyImageUrl">
+                <div *ngIf="false">
+                    <app-technology-detail technology="currentTechnology">
+                    </app-technology-detail>
+                </div>
+                <app-technology-detail prefix="You are my" [technology]="currentTechnology">
+                </app-technology-detail>
+
+                <p><img src="{{ technologyImageUrl }}"> is the <i>interpolated</i> image.</p>
+                <p><img [src]="technologyImageUrl"> is the <i>property bound</i> image.</p>
+
+                <p><span>"{{ title }}" is the <i>interpolated</i> title.</span></p>
+                <p>"<span [innerHTML]="title"></span>" is the <i>property bound</i> title.</p>
+
+                <p><span>"{{ evilTitle }}" is the <i>interpolated</i> evil title.</span></p>
+                <p>"<span [innerHTML]="evilTitle"></span>" is the <i>property bound</i>
+                evil title.</p>
+                \`,
+    styles: [\`
+        .special { font-weight: bold; font-size: x-large; color: red; }
+        img { height: 100px; }
+    \`]
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            technologyImageUrl = 'assets/angular.svg';
+            isUnchanged = true;
+            classes = 'special';
+            currentTechnology: Technology = { id: 1, name: 'Angular' };
+            evilTitle =
+            'Template <script>alert("where is the cookie-monster?")</script>Syntax';
+
+    }
+
+  `
 };
 apip686 = {
-  name: '',
-  code: ``
+  name: 'Attribute Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+              <table border="1">
+                <tr><td [attr.colspan]="1 + 1">One-Two</td></tr>
+                <tr><td>Three</td><td>Four</td></tr>
+              </table>
+              <button [attr.aria-label]="actionName">{{ actionName }} with Aria</button>
+              <div>
+                  <button [attr.disabled]="isUnchanged">Disabled</button>
+                  <button [attr.disabled]="!isUnchanged">Disabled as well</button>
+                  <button disabled [disabled]="false">Enabled (but inert)</button>
+              </div>
+                \`,
+    styles: [\`
+        .special { font-weight: bold; font-size: x-large; color: red; }
+        img { height: 100px; }
+    \`]
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            isUnchanged = true;
+            actionName = 'Go For It';
+
+    }
+
+  `
 };
 apip687 = {
-  name: '',
-  code: ``
+  name: 'Class Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+              <div class="good girly special">Good girly special</div>
+              <div class="good girly special" [class]="goodGirly">Good girly</div>
+              <div [class.special]="isSpecial">This class binding is special</div>
+              <div class="special" [class.special]="!isSpecial">
+                   This class binding is not so special
+              </div>
+              <div bind-class.special="isSpecial">This class binding is special too</div>
+                \`,
+    styles: [\`
+        .special { font-weight: bold; font-size: x-large; }
+        .good { color: red; }
+        .girly, .modified { font-family: "Brush Script MT"; }
+    \`]
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            goodGirly = 'good girly';
+            isSpecial = true;
+
+    }
+
+  `
 };
 apip688 = {
-  name: '',
-  code: ``
+  name: 'Style Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                <button [style.color]="isSpecial ? 'red' : 'green'">Red</button>
+                <br>
+                <button [style.background-color]="canSave ? 'green' : 'blue'">
+                        Save
+                </button>
+                <br>
+                <button [style.font-size.em]="isSpecial ? 3 : 1">Big</button>
+                <button [style.font-size.%]="!isSpecial ? 150 : 50">Small</button>
+                \`,
+    styles: [\`
+        .special { font-weight: bold; font-size: x-large; }
+        .good { color: red; }
+        .girly, .modified { font-family: "Brush Script MT"; }
+    \`]
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            isSpecial = true;
+            canSave = true;
+
+    }
+
+  `
 };
 apip689 = {
   name: '',
