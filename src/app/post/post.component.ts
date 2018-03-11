@@ -35214,12 +35214,219 @@ apip688 = {
   `
 };
 apip689 = {
-  name: '',
-  code: ``
+  name: 'Event Binding',
+  code: `
+
+  import { Component, Directive, Input,
+           Output, EventEmitter, ElementRef } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number,
+                public name: string,
+                public emotion?: string,
+                public birthdate?: Date,
+                public url?: string,
+                public rating?: number) { }
+  }
+
+
+  @Directive({
+    selector: '[appMyClick]'
+  })
+  export class ClickDirective {
+    @Output('appMyClick') clicks = new EventEmitter<string>();
+
+    toggle = false;
+
+    constructor(el: ElementRef) {
+      el.nativeElement.addEventListener('click', (event: Event) => {
+                this.toggle = !this.toggle;
+                this.clicks.emit(this.toggle ? 'Clicked!' : '');
+      });
+    }
+  }
+
+  @Component({
+    selector: 'app-technology-detail',
+    template: \`
+              <div>
+                    <img src="{{ technologyImageUrl }}">
+                    <span [style.text-decoration]="lineThrough">
+                          {{ prefix }} {{ technology?.name }}
+                    </span>
+                    <button (click)="delete()">Delete</button>
+              </div>
+    \`,
+    styles: [\`button { margin-left: 8px; }
+              div { margin: 8px 0;}
+              img { height: 24px; }
+    \`]
+  })
+  export class TechnologyDetailComponent {
+              technologyImageUrl = 'assets/angular.svg';
+              lineThrough = '';
+              @Input() technology: Technology;
+              @Input() prefix = '';
+              @Output() deleteRequest = new EventEmitter<Technology>();
+
+              delete() {
+                this.deleteRequest.emit(this.technology);
+                this.lineThrough = this.lineThrough ? '' : 'line-through';
+              }
+  }
+
+  @Component({
+    selector: 'app-big-technology-detail',
+    template: \`
+              <div class="detail">
+                    <img src="{{ technologyImageUrl }}">
+                    <div><b>{{ technology?.name }}</b></div>
+                    <div>Name: {{ technology?.name }}</div>
+                    <div>Emotion: {{ technology?.emotion }}</div>
+                    <div>Birthdate: {{ technology?.birthdate | date:'longDate' }}</div>
+                    <div>Web: <a href="{{ technology?.url }}" target="_blank">
+                              {{ technology?.url }}</a></div>
+                    <div>Rating: {{ technology?.rating }}</div>
+                    <br>
+                    <button (click)="delete()">Delete</button>
+              </div>
+    \`,
+    styles: [\`.detail { border: 1px solid black; padding: 4px; max-width: 450px; }
+              img { float: left; margin-right: 8px; height: 100px; }
+    \`]
+  })
+  export class BigTechnologyDetailComponent extends TechnologyDetailComponent {
+              @Input() technology: Technology;
+              @Output() deleteRequest = new EventEmitter<Technology>();
+
+              delete() {
+                this.deleteRequest.emit(this.technology);
+              }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                <button (click)="onSave()">Save</button>
+                <button on-click="onSave()">On Save</button>
+                <div>
+                      <div (appMyClick)="clickMessage=$event">
+                            Click with appMyClick
+                      </div>
+                      {{ clickMessage }}
+                </div>
+              <app-technology-detail (deleteRequest)="deleteTechnology($event)"
+                                     [technology]="currentTechnology">
+
+              </app-technology-detail>
+              <app-big-technology-detail (deleteRequest)="deleteTechnology($event)"
+                                          [technology]="currentTechnology">
+              </app-big-technology-detail>
+              <div class="parent-div" (click)="onClickMe($event)">Click Me!
+                        <div class="child-div">Click Me Too!!!</div>
+              </div>
+
+              <div (click)="onSave()">
+                    <button (click)="onSave($event)">Save, no propagation</button>
+              </div>
+
+              <div (click)="onSave()">
+                    <button (click)="onSave()">Save, with propagation</button>
+              </div>
+                \`,
+    styles: [\`
+        .special { font-weight: bold; font-size: x-large; }
+        .good { color: red; }
+        .girly, .modified { font-family: "Brush Script MT"; }
+    \`]
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            currentTechnology: Technology =
+            { id: 1, name: 'Angular', emotion: 'happy',
+              birthdate: new Date(2016, 8, 15),
+              url: 'https://angular.io', rating: 100 };
+            onSave(event?: KeyboardEvent) {
+              let evtMessage = event ? ' Event target is ' +
+                              (<HTMLElement>event.target).textContent : '';
+              alert('Saved.' + evtMessage);
+              if (event) {
+                event.stopPropagation();
+              }
+            }
+            clickMessage = '';
+            deleteTechnology(technology: Technology) {
+              alert(\`Delete \${technology ? technology.name : 'the technology'}.\`);
+            }
+
+            onClickMe(event: KeyboardEvent) {
+              let evtMessage = event ? ' Event target class is ' +
+                              (<HTMLElement>event.target).className : '';
+              alert('Click Me.' + evtMessage);
+            }
+    }
+
+  `
 };
 apip690 = {
-  name: '',
-  code: ``
+  name: 'Two-Way Binding',
+  code: `
+
+  import { Component, Input, Output, EventEmitter } from '@angular/core';
+
+
+  @Component({
+    selector: 'app-sizer',
+    template: \`
+              <div>
+                      <button (click)="decrement()" title="smaller">-</button>
+                      <button (click)="increment()" title="bigger">+</button>
+                      <label [style.font-size.px]="size">Font Size: {{ size }}px</label>
+              </div>
+    \`
+  })
+  export class SizerComponent {
+                @Input() size: number | string;
+                @Output() sizeChange = new EventEmitter<number>();
+
+                decrement() { this.resize(-1); }
+                increment() { this.resize(+1); }
+
+                resize(delta: number) {
+                  this.size = Math.min(42, Math.max(4, +this.size + delta));
+                  this.sizeChange.emit(this.size);
+                }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                    <h2>Two-Way Binding</h2>
+                    <div>
+                          <app-sizer [(size)]="fontSizePx"></app-sizer>
+                          <div [style.font-size.px]="fontSizePx">Resizable Text</div>
+                          <label>FontSize (px): <input [(ngModel)]="fontSizePx"></label>
+                    </div>
+                    <h3>De-Sugared Two-Way Binding</h3>
+                    <app-sizer [size]="fontSizePx"
+                               (sizeChange)="fontSizePx=$event">
+                    </app-sizer>
+                \`,
+    styles: [\`
+        .special { font-weight: bold; font-size: x-large; }
+        .good { color: red; }
+        .girly, .modified { font-family: "Brush Script MT"; }
+    \`]
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            fontSizePx = 18;
+
+    }
+
+  `
 };
 apip691 = {
   name: '',
