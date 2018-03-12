@@ -35429,47 +35429,732 @@ apip690 = {
   `
 };
 apip691 = {
-  name: '',
-  code: ``
+  name: 'NgModel (Two-Way) Binding',
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+              <h3>Result: {{ currentTechnology.name }}</h3>
+
+              <input [value]="currentTechnology.name"
+                     (input)="currentTechnology.name=$event.target.value">
+                     without NgModel
+              <br>
+              <input [(ngModel)]="currentTechnology.name">
+                     [(ngModel)]
+              <br>
+              <input bindon-ngModel="currentTechnology.name">
+              bindon-ngModel
+              <br>
+              <input [ngModel]="currentTechnology.name"
+                     (ngModelChange)="currentTechnology.name=$event">
+                     (ngModelChange)="...name=$event"
+              <br>
+              <input [ngModel]="currentTechnology.name"
+                     (ngModelChange)="setUpperCaseName($event)">
+                     (ngModelChange)="setUpperCaseName($event)"
+
+      \`
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+
+            technologies = [
+              new Technology(1, 'Angular 5.2.8'),
+              new Technology(2, 'Angular CLI 1.7.3'),
+              new Technology(3, 'Angular Material 5.2.3'),
+              new Technology(4, 'TypeScript 2.6.2')
+            ];
+            currentTechnology = this.technologies[0];
+
+            setUpperCaseName(input: string) {
+              console.log(input);
+              this.currentTechnology.name = input.toUpperCase();
+            }
+
+    }
+
+  `
 };
 apip692 = {
-  name: '',
-  code: ``
+  name: 'NgClass Binding',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+              <p>currentClasses is {{ currentClasses | json }}</p>
+              <div [ngClass]="currentClasses">This div is initially saveable,
+                                              unchanged, and special
+              </div>
+              <br>
+              <label>saveable: <input type="checkbox" [(ngModel)]="canSave"></label> |
+              <label>modified: <input type="checkbox" [value]="!isUnchanged"
+                                     (change)="isUnchanged = !isUnchanged"></label> |
+              <label>special: <input type="checkbox" [(ngModel)]="isSpecial"></label>
+              <button (click)="setCurrentClasses()">Refresh currentClasses</button>
+              <br>
+              <br>
+              <div [ngClass]="currentClasses">
+                        This div should be {{ canSave ? '' : 'not' }} saveable,
+                                           {{ isUnchanged ? 'unchanged' : 'modified' }} and,
+                                           {{ isSpecial ? '' : 'not' }} special after
+                                            clicking 'refresh'.
+              </div>
+              <br>
+              <br>
+              <div [ngClass]="isSpecial ? 'special' : ''">This div is special</div>
+              <div class="good girly special">Good girly special</div>
+              <div [ngClass]="{'good': false, 'girly': true, 'special': true }">
+                  Girly special
+              </div>
+      \`,
+      styles: [\`
+              .saveable { color: limegreen; }
+              .girly, .modified { font-family: "Brush Script MT";}
+              .special { font-weight: bold; font-size: x-large; }
+              .good { color: red; }
+      \`]
+    })
+    export class AppComponent implements OnInit {
+            title = 'Tour of Technologies';
+            currentClasses = {};
+            canSave = true;
+            isUnchanged = true;
+            isSpecial = true;
+
+            ngOnInit() {
+              this.setCurrentClasses();
+            }
+
+            setCurrentClasses() {
+              this.currentClasses = {
+                'saveable': this.canSave,
+                'modified': !this.isUnchanged,
+                'special': this.isSpecial
+              }
+            }
+    }
+
+  `
 };
 apip693 = {
-  name: '',
-  code: ``
+  name: 'NgStyle Binding',
+  code: `
+
+  import { Component, OnInit } from '@angular/core';
+
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                  <div [style.font-size]="isSpecial ? 'x-large' : 'smaller'">
+                        This div is x-large or smaller.
+                  </div>
+                  <p>currentStyles is {{ currentStyles | json }}</p>
+                  <div [ngStyle]="currentStyles">
+                        This div is initially italic, normal weight and extra large (24px).
+                  </div>
+                  <br>
+                  <label>italic: <input type="checkbox" [(ngModel)]="canSave"></label> |
+                  <label>normal: <input type="checkbox" [(ngModel)]="isUnchanged"></label> |
+                  <label>xlarge: <input type="checkbox" [(ngModel)]="isSpecial"></label>
+                  <button (click)="setCurrentStyles()">Refresh currentStyles</button>
+                  <br>
+                  <br>
+                  <div [ngStyle]="currentStyles">
+                        This div should be {{ canSave ? 'italic' : 'plain' }},
+                                           {{ isUnchanged ? 'normal-weight' : 'bold' }}, and
+                                           {{ isSpecial ? 'x-large' : 'normal size' }} after
+                                           clicking 'Refresh'.
+                  </div>
+      \`,
+      styles: [\`
+              .saveable { color: limegreen; }
+              .girly, .modified { font-family: "Brush Script MT";}
+              .special { font-weight: bold; font-size: x-large; }
+              .good { color: red; }
+      \`]
+    })
+    export class AppComponent implements OnInit {
+            title = 'Tour of Technologies';
+            currentStyles = {};
+            canSave = true;
+            isUnchanged = true;
+            isSpecial = true;
+
+            ngOnInit() {
+              this.setCurrentStyles();
+            }
+
+            setCurrentStyles() {
+              this.currentStyles = {
+                'font-style': this.canSave ? 'italic' : 'normal',
+                'font-weight': !this.isUnchanged ? 'bold' : 'normal',
+                'font-size': this.isSpecial ? '24px' : '12px'
+              }
+            }
+    }
+
+  `
 };
 apip694 = {
-  name: '',
-  code: ``
+  name: 'NgIf Binding',
+  code: `
+
+  import { Component, Input, Output, EventEmitter } from '@angular/core';
+
+
+  export class Technology {
+    constructor(public id: number, public name: string) { }
+  }
+
+
+  @Component({
+    selector: 'app-technology-detail',
+    template: \`
+              <div>
+                    <img src="{{ technologyImageUrl }}">
+                    <span [style.text-decoration]="lineThrough">
+                          {{ prefix }} {{ technology?.name }}
+                    </span>
+                    <button (click)="delete()">Delete</button>
+              </div>
+    \`,
+    styles: [\`button { margin-left: 8px; }
+              div { margin: 8px 0;}
+              img { height: 24px; }
+    \`]
+  })
+  export class TechnologyDetailComponent {
+              technologyImageUrl = 'assets/angular.svg';
+              lineThrough = '';
+              @Input() technology: Technology;
+              @Input() prefix = '';
+              @Output() deleteRequest = new EventEmitter<Technology>();
+
+              delete() {
+                this.deleteRequest.emit(this.technology);
+                this.lineThrough = this.lineThrough ? '' : 'line-through';
+              }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                <app-technology-detail
+                                      *ngIf="isActive"
+                                      [technology]="currentTechnology">
+                </app-technology-detail>
+
+                <div *ngIf="currentTechnology">Hello, {{ currentTechnology.name }}</div>
+                <div *ngIf="nullTechnology">Hello. {{ nullTechnology.name }}</div>
+
+                <ng-template [ngIf]="currentTechnology">Add {{ currentTechnology.name }}
+                             with template
+                </ng-template>
+
+                <ng-template [ngIf]="isActive">
+                          <app-technology-detail></app-technology-detail>
+                </ng-template>
+
+                <div [class.hidden]="!isSpecial">Show with class</div>
+                <div [class.hidden]="isSpecial">Hide with class</div>
+
+                <app-technology-detail [class.hidden]="isSpecial"></app-technology-detail>
+
+                <div [style.display]="isSpecial ? 'block' : 'none'">Show with style</div>
+                <div [style.display]="isSpecial ? 'none' : 'block'">Hide with style</div>
+      \`,
+      styles: [\`
+              .hidden { display: none; }
+      \`]
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            isActive = false;
+            isSpecial = true;
+            nullTechnology = null;
+            currentTechnology: Technology = { id: 1, name: 'Angular' };
+
+    }
+
+  `
 };
 apip695 = {
-  name: '',
-  code: ``
+  name: 'NgFor Binding',
+  code: `
+
+  import { Component, Input, Output, EventEmitter, OnInit,
+           AfterViewInit, ElementRef, QueryList, ViewChildren } from '@angular/core';
+
+
+  export class Technology {
+    static nextId = 0;
+    static technologies: Technology[] = [
+      new Technology(null, 'RocketXYZ Tech', 'happy', new Date(2018, 6, 15),
+                    'https://rocket.xyz.io', 200),
+      new Technology(1, 'Angular 5.2.8'),
+      new Technology(2, 'Angular CLI 1.7.3'),
+      new Technology(3, 'Angular Material 5.2.3'),
+      new Technology(4, 'TypeScript 2.7.2')
+
+
+    ];
+
+    constructor(
+      public id?: number,
+      public name?: string,
+      public emotion?: string,
+      public birthdate?: Date,
+      public url?: string,
+      public rating?: number) {
+        this.id = id ? id : Technology.nextId++;
+       }
+
+    clone(): Technology {
+      return Object.assign(new Technology(), this);
+    }
+
+
+  }
+
+
+  @Component({
+    selector: 'app-technology-detail',
+    template: \`
+              <div>
+                    <img src="{{ technologyImageUrl }}">
+                    <span [style.text-decoration]="lineThrough">
+                          {{ prefix }} {{ technology?.name }}
+                    </span>
+                    <button (click)="delete()">Delete</button>
+              </div>
+    \`,
+    styles: [\`button { margin-left: 8px; }
+              div { margin: 8px 0;}
+              img { height: 24px; }
+    \`]
+  })
+  export class TechnologyDetailComponent {
+              technologyImageUrl = 'assets/angular.svg';
+              lineThrough = '';
+              @Input() technology: Technology;
+              @Input() prefix = '';
+              @Output() deleteRequest = new EventEmitter<Technology>();
+
+              delete() {
+                this.deleteRequest.emit(this.technology);
+                this.lineThrough = this.lineThrough ? '' : 'line-through';
+              }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                    <h1>{{ title }}</h1>
+                    <div class="box">
+                        <div *ngFor="let technology of technologies">
+                              {{ technology.name }}
+                        </div>
+                    </div>
+                    <div class="box">
+                          <app-technology-detail *ngFor="let technology of technologies"
+                                                  [technology]="technology">
+                          </app-technology-detail>
+                    </div>
+                    <div class="box">
+                          <div *ngFor="let technology of technologies; let i = index;">
+                                ({{ i + 1 }}) - {{ technology.name }}
+                          </div>
+                    </div>
+                    <div class="box">
+                          <div *ngFor="let technology of technologies, let idx = index;">
+                                ({{ idx + 1 }}) - {{ technology.name }}
+                          </div>
+                    </div>
+                    <br>
+                    <button (click)="resetTechnologies()">Reset Technologies</button>
+                    <button (click)="changeIds()">Change Ids</button>
+                    <button (click)="clearTrackByCounts()">Clear Counts</button>
+
+                    <div class="box">
+                          <div #noTrackBy *ngFor="let technology of technologies">
+                                ({{ technology.id }}) {{ technology.name }}
+                          </div>
+                    </div>
+
+                    <div *ngIf="technologiesNoTrackByCount">
+                          Technology DOM elements change #{{ technologiesNoTrackByCount }}
+                          without trackBy
+                    </div>
+
+                    <div class="box">
+                          <div #withTrackBy *ngFor="let technology of technologies;
+                                            trackBy: trackByTechnologies;">
+                                ({{ technology.id }}) {{ technology.name }}
+                          </div>
+                    </div>
+
+                    <div *ngIf="technologiesWithTrackByCount">
+                          Technology DOM elements change #{{ technologiesWithTrackByCount }}
+                          with trackBy
+                    </div>
+                    <br>
+                    <br>
+                    <br>
+                    <div class="box">
+                        <div *ngFor="let technology of technologies;
+                              trackBy: trackByTechnologies">
+                          ({{ technology.id }}) - {{ technology.name }}
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div *ngFor="let technology of technologies,
+                              trackBy: trackByTechnologies;">
+                          ({{ technology.id }}) - {{ technology.name }}
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div *ngFor="let technology of technologies;
+                              trackBy: trackById;">
+                            ({{ technology.id }}) - {{ technology.name }}
+                        </div>
+                    </div>
+      \`,
+      styles: [\`
+            .box {
+              border: 1px solid black;
+              padding: 6px;
+              max-width: 450px;
+            }
+
+      \`]
+    })
+    export class AppComponent implements OnInit, AfterViewInit {
+            title = 'Tour of Technologies';
+            @ViewChildren('noTrackBy') technologiesNoTrackBy: QueryList<ElementRef>;
+            @ViewChildren('withTrackBy') technologiesWithTrackBy: QueryList<ElementRef>;
+
+            technology: Technology;
+            currentTechnology: Technology;
+            technologies: Technology[];
+
+            technologiesNoTrackByCount = 0;
+            technologiesWithTrackByCount = 0;
+            technologiesWithTrackByCountReset = 0;
+            technologyIdIncrement = 1;
+
+            ngOnInit() {
+              this.resetTechnologies();
+            }
+
+            ngAfterViewInit() {
+                // detect effects of ngfortrackby
+                trackChanges(this.technologiesNoTrackBy,
+                            () => this.technologiesNoTrackByCount++);
+                trackChanges(this.technologiesWithTrackBy,
+                            () => this.technologiesWithTrackByCount++);
+            }
+
+            resetTechnologies() {
+              this.technologies =
+                   Technology.technologies.map(technology => technology.clone());
+              this.currentTechnology = this.technologies[0];
+              this.technology = this.currentTechnology;
+              this.technologiesWithTrackByCountReset = 0;
+            }
+
+            changeIds() {
+              this.resetTechnologies();
+              this.technologies.forEach(t => t.id +=10 * this.technologyIdIncrement++);
+              this.technologiesWithTrackByCountReset = -1;
+            }
+
+            clearTrackByCounts() {
+              const trackByCountReset = this.technologiesWithTrackByCountReset;
+              this.resetTechnologies();
+              this.technologiesNoTrackByCount = -1;
+              this.technologiesWithTrackByCount = trackByCountReset;
+              this.technologyIdIncrement = 1;
+            }
+
+            trackByTechnologies = (index: number, technology: Technology) => {
+              return technology.id
+            }
+
+            trackById = (index: number, item: any): number => {
+              return item['id'];
+            }
+    }
+
+    function trackChanges(views: QueryList<ElementRef>, changed: () => void) {
+          let oldRefs = views.toArray();
+          views.changes.subscribe((changes: QueryList<ElementRef>) => {
+          const changedRefs = changes.toArray();
+          const isSame =
+          oldRefs.every((v, i) => v.nativeElement === changedRefs[i].nativeElement);
+              if (!isSame) {
+                oldRefs = changedRefs;
+                setTimeout(changed, 0);
+              }
+          });
+    }
+
+  `
 };
 apip696 = {
-  name: '',
-  code: ``
+  name: 'NgSwitch',
+  code: `
+
+  import { Component, Input } from '@angular/core';
+
+
+  export class Technology {
+
+    constructor(
+      public id?: number,
+      public name?: string,
+      public emotion?: string,
+      public birthdate?: Date,
+      public url?: string,
+      public rating?: number) { }
+
+  }
+
+  @Component({
+    selector: 'app-happy-technology',
+    template: \`Wow. You like {{ technology.name }}.
+                What a happy technology ... just like you.\`
+  })
+  export class HappyTechnologyComponent {
+    @Input() technology: Technology;
+  }
+
+  @Component({
+    selector: 'app-awesome-technology',
+    template: \`You like {{ technology.name }}. Such an awesome technology.
+                Are you awesome too?\`
+  })
+  export class AwesomeTechnologyComponent {
+    @Input() technology: Technology;
+  }
+
+  @Component({
+    selector: 'app-strong-technology',
+    template: 'Are you as strong as {{ technology.name }}?'
+  })
+  export class StrongTechnologyComponent {
+    @Input() technology: Technology;
+  }
+
+  @Component({
+    selector: 'app-unknown-technology',
+    template: '{{ message }}'
+  })
+  export class UnknownTechnologyComponent {
+    @Input() technology: Technology;
+    get message() {
+      return this.technology && this.technology.name ?
+             \`\${this.technology.name} is strange and mysterious ...\` :
+             'Are you mysterious too?';
+    }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                    <h1>{{ title }}</h1>
+
+                    <p>Pick your favorite technology:</p>
+                      <label *ngFor="let tech of technologies">
+                            <input type="radio" name="technologies"
+                                   [(ngModel)]="currentTechnology"
+                                   [value]="tech">
+                                   {{ tech.name }}
+                      </label>
+                    <div [ngSwitch]="currentTechnology.emotion">
+                          <app-happy-technology *ngSwitchCase="'happy'"
+                                                [technology]="currentTechnology">
+                          </app-happy-technology>
+                          <app-awesome-technology *ngSwitchCase="'awesome'"
+                                                  [technology]="currentTechnology">
+                          </app-awesome-technology>
+                          <app-strong-technology *ngSwitchCase="'strong'"
+                                                  [technology]="currentTechnology">
+                          </app-strong-technology>
+                          <div *ngSwitchCase="'strong'">Are you as strong as
+                                {{ currentTechnology.name }}?</div>
+                          <app-unknown-technology *ngSwitchDefault
+                                       [technology]="currentTechnology">
+                                       </app-unknown-technology>
+                    </div>
+      \`
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+
+            technologies: Technology[] = [
+              new Technology(1, 'Angular 5.2.8', 'happy'),
+              new Technology(2, 'Angular CLI 1.7.3', 'awesome'),
+              new Technology(3, 'Angular Material 5.2.3', 'strong'),
+              new Technology(4, 'TypeScript 2.7.2', 'unknown')
+            ];
+
+            currentTechnology = this.technologies[0];
+
+    }
+
+  `
 };
 apip697 = {
-  name: '',
-  code: ``
+  name: 'Template Reference Variables',
+  code: `
+
+  import { Component, Input, ViewChild, OnInit } from '@angular/core';
+
+  import { NgForm } from '@angular/forms';
+
+  export class Technology {
+
+    constructor(
+      public id?: number,
+      public name?: string,
+      public emotion?: string,
+      public birthdate?: Date,
+      public url?: string,
+      public rating?: number) { }
+
+  }
+
+
+  @Component({
+    selector: 'app-technology-form',
+    template: \`
+              <div id="technologyForm">
+                    <form (ngSubmit)="onSubmit(technologyForm)" #technologyForm="ngForm">
+                        <div class="form-group">
+                          <label for="name">Name
+                                  <input class="form-control" name="name"
+                                  required [(ngModel)]="technology.name">
+                          </label>
+                        </div>
+                        <button type="submit"
+                                [disabled]="!technologyForm.form.valid">Submit</button>
+                    </form>
+                    <div [hidden]="!technologyForm.form.valid">
+                          {{ submitMessage }}
+                    </div>
+              </div>
+    \`,
+    styles: [\`
+            button { margin: 6px 0; }
+            #technologyForm { border: 1px solid black; margin: 20px 0;
+                              padding: 8px; max-width: 350px; }
+
+    \`]
+  })
+  export class TechnologyFormComponent {
+    @Input() technology: Technology;
+    @ViewChild('technologyForm') form: NgForm;
+
+    private _submitMessage = '';
+
+    get submitMessage() {
+      if (!this.form.valid) {
+        this._submitMessage = '';
+      }
+      return this._submitMessage;
+    }
+
+    onSubmit(form: NgForm) {
+      this._submitMessage = 'Submitted. form value is ' + JSON.stringify(form.value);
+    }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                    <h1>{{ title }}</h1>
+
+                    <input #phone placeholder="phone number">
+
+                    <button (click)="callPhone(phone.value)">Call</button>
+
+                    <input ref-fax placeholder="fax number">
+                    <button (click)="callFax(fax.value)">Fax</button>
+                    <br>
+                    <button #btn disabled
+                            [innerHTML]="'disabled by attribute: ' +btn.disabled">
+                    <button>
+
+                    <h4>Sample Form</h4>
+                    <app-technology-form [technology]="currentTechnology">
+                    </app-technology-form>
+                    {{ currentTechnology | json }}
+
+      \`
+    })
+    export class AppComponent implements OnInit {
+            title = 'Tour of Technologies';
+
+            currentTechnology: Technology;
+
+            callPhone(val: string) {
+              alert('Calling ...');
+            }
+
+            callFax(val: string) {
+              alert('Faxing ...');
+            }
+
+            ngOnInit() {
+              this.currentTechnology = new Technology(1, 'React 16');
+            }
+
+    }
+
+  `
 };
 apip698 = {
-  name: '',
+  name: 'Inputs && Outputs',
   code: ``
 };
 apip699 = {
-  name: '',
+  name: 'Pipes',
   code: ``
 };
 apip700 = {
-  name: '',
+  name: 'Safe Navigation Operator ?.',
   code: ``
 };
 apip701 = {
-  name: '',
+  name: 'Non Null Assertion Operator !.',
+  code: ``
+};
+apip702 = {
+  name: '$any type cast function $any()',
+  code: ``
+};
+apip703 = {
+  name: 'Enums in Binding',
   code: ``
 };
 
