@@ -36135,27 +36135,388 @@ apip697 = {
 };
 apip698 = {
   name: 'Inputs && Outputs',
-  code: ``
+  code: `
+
+  import { Component, Directive, ElementRef,
+           Input, Output, EventEmitter } from '@angular/core';
+
+  export class Technology {
+    static nextId = 0;
+    static technologies: Technology[] = [
+      new Technology(null, 'RocketXYZ Tech', 'happy', new Date(2018, 6, 15),
+                    'https://rocket.xyz.io', 200),
+      new Technology(1, 'Angular 5.2.8'),
+      new Technology(2, 'Angular CLI 1.7.3'),
+      new Technology(3, 'Angular Material 5.2.3'),
+      new Technology(4, 'TypeScript 2.7.2')
+
+
+    ];
+
+    constructor(
+      public id?: number,
+      public name?: string,
+      public emotion?: string,
+      public birthdate?: Date,
+      public url?: string,
+      public rating?: number) {
+        this.id = id ? id : Technology.nextId++;
+       }
+
+  }
+
+  @Directive({
+    selector: '[appMyClick]'
+  })
+  export class ClickDirective {
+    @Output('appMyClick') clicks = new EventEmitter<string>();
+
+    toggle = false;
+
+    constructor(el: ElementRef) {
+      el.nativeElement.addEventListener('click', (event: Event) => {
+                this.toggle = !this.toggle;
+                this.clicks.emit(this.toggle ? 'Clicked!' : '');
+      });
+    }
+
+  }
+
+
+  @Component({
+    selector: 'app-technology-detail',
+    template: \`
+              <div>
+                    <img src="{{ technologyImageUrl }}">
+                    <span [style.text-decoration]="lineThrough">
+                          {{ prefix }} {{ technology?.name }}
+                    </span>
+                    <button (click)="delete()">Delete</button>
+              </div>
+    \`,
+    styles: [\`button { margin-left: 8px; }
+              div { margin: 8px 0;}
+              img { height: 24px; }
+    \`]
+  })
+  export class TechnologyDetailComponent {
+              technologyImageUrl = 'assets/angular.svg';
+              lineThrough = '';
+              @Input() technology: Technology;
+              @Input() prefix = '';
+              @Output() deleteRequest = new EventEmitter<Technology>();
+
+              delete() {
+                this.deleteRequest.emit(this.technology);
+                this.lineThrough = this.lineThrough ? '' : 'line-through';
+              }
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                    <h1>{{ title }}</h1>
+                    <img [src]="technologyImageUrl" style="height: 100px;">
+                    <button (click)="onSave()">Save</button>
+
+                    <app-technology-detail [technology]="currentTechnology"
+                                           (deleteRequest)="deleteTechnology($event)">
+                    </app-technology-detail>
+
+                    <div (appMyClick)="clickMessage=$event">Click Me!</div>
+                    {{ clickMessage }}
+
+      \`
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            technologyImageUrl =
+                  'https://angular.io/assets/images/logos/angular/angular.svg';
+            currentTechnology: Technology = { id: 1, name: 'Angular'};
+            clickMessage = '';
+            onSave() {
+              alert('Saved.');
+            }
+
+            deleteTechnology(technology: Technology) {
+              alert(\`Delete \${technology ? technology.name : 'the technology'}.\`);
+            }
+
+    }
+
+  `
 };
 apip699 = {
   name: 'Pipes',
-  code: ``
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    static nextId = 0;
+    static technologies: Technology[] = [
+      new Technology(0, 'RocketXYZ Tech', 'happy', new Date(2018, 6, 15),
+                    'https://rocket.xyz.io', 200),
+      new Technology(1, 'Angular 5.2.8'),
+      new Technology(2, 'Angular CLI 1.7.3'),
+      new Technology(3, 'Angular Material 5.2.3'),
+      new Technology(4, 'TypeScript 2.7.2')
+
+
+    ];
+
+    constructor(
+      public id?: number,
+      public name?: string,
+      public emotion?: string,
+      public birthdate?: Date,
+      public url?: string,
+      public rating?: number) {
+        this.id = id ? id : Technology.nextId++;
+       }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                    <h1>{{ title }}</h1>
+                    <div>{{ title | uppercase }}</div>
+                    <div>{{ title | uppercase | lowercase }}</div>
+                    <div>Birthdate:
+                    {{ currentTechnology?.birthdate | date:'longDate' }}</div>
+                    <div>{{ currentTechnology | json }}</div>
+                    <div>Birthdate:
+                    {{ (currentTechnology?.birthdate | date:'longDate') | uppercase }}</div>
+
+                    <div>
+                        <label>Price: </label>
+                                {{ product.price | currency:'EUR':true }}
+                    </div>
+
+      \`
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            currentTechnology = Technology.technologies[0];
+            product = {
+              price: 42
+            };
+    }
+
+  `
 };
 apip700 = {
   name: 'Safe Navigation Operator ?.',
-  code: ``
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    static nextId = 0;
+    static technologies: Technology[] = [
+      new Technology(0, 'RocketXYZ Tech', 'happy', new Date(2018, 6, 15),
+                    'https://rocket.xyz.io', 200),
+      new Technology(1, 'Angular 5.2.8'),
+      new Technology(2, 'Angular CLI 1.7.3'),
+      new Technology(3, 'Angular Material 5.2.3'),
+      new Technology(4, 'TypeScript 2.7.2')
+
+
+    ];
+
+    constructor(
+      public id?: number,
+      public name?: string,
+      public emotion?: string,
+      public birthdate?: Date,
+      public url?: string,
+      public rating?: number) {
+        this.id = id ? id : Technology.nextId++;
+       }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                    <h1>{{ title }}</h1>
+                    <div>The title is {{ title }}</div>
+                    <div>
+                          The current technology's name is {{ currentTechnology?.name }}
+                    </div>
+                    <div>
+                          The current technology's name is {{ currentTechnology.name }}
+                    </div>
+
+                    <div *ngIf="nullTechnology">
+                          The null technology's name is {{ nullTechnology.name }}
+                    </div>
+
+                    <div>
+                          The null technology's name is
+                          {{ nullTechnology && nullTechnology.name }}
+                    </div>
+
+                    <div>
+                          The null technology's name is {{ nullTechnology?.name }}
+                    </div>
+
+      \`
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            currentTechnology = Technology.technologies[0];
+            nullTechnology = null;
+    }
+
+  `
 };
 apip701 = {
   name: 'Non Null Assertion Operator !.',
-  code: ``
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    static nextId = 0;
+    static technologies: Technology[] = [
+      new Technology(0, 'RocketXYZ Tech', 'happy', new Date(2018, 6, 15),
+                    'https://rocket.xyz.io', 200),
+      new Technology(1, 'Angular 5.2.8'),
+      new Technology(2, 'Angular CLI 1.7.3'),
+      new Technology(3, 'Angular Material 5.2.3'),
+      new Technology(4, 'TypeScript 2.7.2')
+
+
+    ];
+
+    constructor(
+      public id?: number,
+      public name?: string,
+      public emotion?: string,
+      public birthdate?: Date,
+      public url?: string,
+      public rating?: number) {
+        this.id = id ? id : Technology.nextId++;
+       }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                    <h1>{{ title }}</h1>
+                    <div>
+                              <div *ngIf="technology">
+                                      The technology's name is {{ technology!.name }}
+                              </div>
+                    </div>
+
+      \`
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            technology = Technology.technologies[0];
+    }
+
+  `
 };
 apip702 = {
   name: '$any type cast function $any()',
-  code: ``
+  code: `
+
+  import { Component } from '@angular/core';
+
+  export class Technology {
+    static nextId = 0;
+    static technologies: Technology[] = [
+      new Technology(0, 'RocketXYZ Tech', 'happy', new Date(2018, 6, 15),
+                    'https://rocket.xyz.io', 200),
+      new Technology(1, 'Angular 5.2.8'),
+      new Technology(2, 'Angular CLI 1.7.3'),
+      new Technology(3, 'Angular Material 5.2.3'),
+      new Technology(4, 'TypeScript 2.7.2')
+
+
+    ];
+
+    constructor(
+      public id?: number,
+      public name?: string,
+      public emotion?: string,
+      public birthdate?: Date,
+      public url?: string,
+      public rating?: number) {
+        this.id = id ? id : Technology.nextId++;
+       }
+
+  }
+
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                    <h1>{{ title }}</h1>
+                    <div>
+                              <div>
+                                    The technology's marker is {{ $any(technology).marker}}
+                              </div>
+                    </div>
+                    <div>
+                              <div>
+                                    Undeclared member is {{ $any(this).member}}
+                              </div>
+                    </div>
+
+      \`
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            technology = Technology.technologies[0];
+
+    }
+
+  `
 };
 apip703 = {
   name: 'Enums in Binding',
-  code: ``
+  code: `
+
+  import { Component } from '@angular/core';
+
+
+  export enum Color { Red, Green, Blue }
+
+  @Component({
+      selector: 'app-root',
+      template: \`
+                    <h1>{{ title }}</h1>
+                    <p>
+                      The name of the Color.Red enum is {{ Color[Color.Red] }}.<br>
+                      The current color is {{ Color[color] }}
+                      and its number is {{ color }}.<br>
+                      <button [style.color]="Color[color]"
+                              (click)="colorToggle()">Enum Toggle</button>
+                    </p>
+      \`
+    })
+    export class AppComponent {
+            title = 'Tour of Technologies';
+            Color = Color;
+            color = Color.Red;
+
+            colorToggle() {
+              this.color = (this.color === Color.Red) ? Color.Blue : Color.Red;
+            }
+
+    }
+
+  `
 };
 
   goToTop() {
